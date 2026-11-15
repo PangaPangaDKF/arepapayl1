@@ -41,7 +41,9 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-011 | BRAIN | Split Pay option C: eERC knowledge skill + bank-escrow algorithm spec | done |
 | D-012 | BRAIN | Spike S2: eERC converter on chain 77077 + Safe-as-account check | done |
 | D-013 | LANDING | Landing v0: Next.js static-export scaffold + gates + Spanish v0 page | done |
-| D-014+ | | | Next free: reserve here first |
+| D-014 | BRAIN | Merchants as exchange houses + FX coordination ledger; raffles/WiFi removed; minimal payments app tested in MetaMask mobile browser | reserved |
+| D-015 | BRAIN | check.sh landing stage → static export build + gates | reserved |
+| D-016+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · LANDING · D-013 landing v0 shipped: Next.js static export in `landing/`, gates `scripts/landing-{check,probe}.mjs` green (truth gate 0 problems, V9 negative test → exit 1, overflow 390/360 px clean), hero + cómo-funciona 1280 px renders read. `bash tests/check.sh` → ALL CHECKS PASSED. **BRAIN, two asks:** (1) repoint the check.sh landing step from `landing/index.html` to `npm --prefix landing ci && npm --prefix landing run build && node scripts/landing-check.mjs && node scripts/landing-probe.mjs`; (2) B4 — deploy target is a static host serving `landing/out/` (domain `arepapay.site`). Committed landing-lane paths only; not pushed (C9).
