@@ -2,6 +2,15 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-013 · 2026-11-15 · Landing v0: Next.js static-export scaffold + truth/overflow gates + Spanish page (Claude Opus 4.8, LANDING lane)
+- What: `landing/` as a Next.js App Router static export — `package.json` (pinned `next@15.1.6`, `react@19.0.0`), `next.config.mjs` (`output:'export'`, `images.unoptimized`, `trailingSlash`), `app/{layout,page,ui}.js`, `app/globals.css` (§3 tokens), `public/brand/arepapay-logo.png`, `app/icon.png`. Gates: `scripts/landing-check.mjs` (truth gate over `landing/out`) and `scripts/landing-probe.mjs` (390/360 px overflow + `--shot`). Spanish-first v0 with every section from STATE §2, status labels (T6) and the testnet disclaimer in hero + footer (T7); footer links X `@ArepaPay`.
+- Why: the user gave the launch domain `arepapay.site` and X `@ArepaPay` and said "continue". D-004 set the stack. Copy comes only from the charter role line and the settled architecture (D-005/D-007); everything is In development / Planned (R4/T6). Future tense throughout — never present tense for an unbuilt feature.
+- Tool: `npm run build` (Next 15.1.6 static export → `out/`), zero-dep node gates, Playwright Chromium 1208 for the overflow probe; master-method V9 (negative test).
+- Alternatives rejected: reuse the old TryNoah / infographic copy (false for v2 — STATE §3 forbidden sources, would repeat the DeepSeek-v1 failure); a single-file HTML page (superseded by D-004); present-tense feature copy (T6).
+- Verify: `node scripts/landing-check.mjs` → "Landing is truthful and labeled." (0 problems, 9 status-labeled features, disclaimer 2×); planted emoji + forbidden words + an unlabeled feature → exit 1 (V9); `node scripts/landing-probe.mjs` → 390/360 px nothing overflows; hero + "cómo funciona" 1280 px screenshots read by me; `bash tests/check.sh` → ALL CHECKS PASSED (its landing step still skips — it probes `landing/index.html`; repoint is BRAIN's, below).
+- Open (BRAIN): repoint `tests/check.sh` landing step to `npm --prefix landing ci && npm --prefix landing run build && node scripts/landing-check.mjs && node scripts/landing-probe.mjs`; B4 deploy target = a static host serving `landing/out/`. Open (LANDING, pre-launch): cleaned transparent logo + crisp wordmark + a real 1200×630 OG image + `favicon.ico` (today `app/icon.png` is the 1024 px watermarked brand PNG).
+- Commit: this commit.
+
 ### D-012 · 2026-11-15 · Spike S2: eERC converter on the bank's L1, visibility proof, contract account, proof times (Claude Opus 5.5, BRAIN lane, run by a subagent and spot-verified)
 - What: `scripts/eerc/s2-{run.sh,common.ts,converter.ts,bench.ts,phone-bench.sh}`, `config/l1/eerc.local.json` (generated), `docs/spikes/S2.md`; corrections to the `arepapay-eerc` skill (v1.1) and ARCHITECTURE §2/§3b.
 - Why: the go/no-go for "la cadena encriptada con sdk" (user, 2026-11-15).

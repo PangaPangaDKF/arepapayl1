@@ -5,8 +5,8 @@ description: Handoff skill for ArepaPay v2's landing page (landing/index.html) a
 
 # ArepaPay landing skill
 
-Version 1.2 · 2026-11-15 · D-004 (was 1.0, D-003) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
-DOGEON `dogeon-landing-design` 2.1 and master-method §4.6/§6.4.
+Version 1.3 · 2026-11-15 · D-013 (was 1.2, D-004) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
+DOGEON `dogeon-landing-design` 2.1 and master-method §4.6/§6.4. v0 built; gates `scripts/landing-{check,probe}.mjs` implemented and green.
 
 ## 0. Start here (every session)
 1. Read `references/STATE.md` (page map, verified facts, open tasks). Don't re-derive what it lists.
@@ -58,8 +58,9 @@ tables in a scroll wrapper; alt text; visible focus; `prefers-reduced-motion`.
 **Stack (D-004, supersedes "single HTML file, no framework"):** build the launch page as a **Next.js App Router app with static
 export** (`output: 'export'`) in `landing/`, for SEO + OpenGraph + Twitter-card control and image optimization. Follow
 `vercel-react-best-practices`. Keep it light (R8): server-components first, minimal client JS, fonts via `next/font` (Google only),
-images via `next/image`. The build still emits static HTML, so the truth/overflow gates below probe the exported output. The
-brand logo and exact palette come from the user's X account (pending); until then use the §3 cream/navy/gold tokens, no invented logo.
+images via `next/image` (or a plain `<img>` for a single logo — `images.unoptimized` is on for export). The build still emits
+static HTML, so the truth/overflow gates below probe the exported output. **Brand/domain are set (STATE §3):** mark at
+`landing/public/brand/arepapay-logo.png`, domain `arepapay.site` (metadataBase/canonical/OG), X `@ArepaPay` (footer + Twitter card).
 
 ## 5. Gates (all must pass before a commit)
 ```bash

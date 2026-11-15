@@ -1,0 +1,10 @@
+# Next.js landing — build output and deps are generated, not committed.
+/node_modules/
+/.next/
+/out/
+/.turbo/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+npm-debug.log*
+.env*.local

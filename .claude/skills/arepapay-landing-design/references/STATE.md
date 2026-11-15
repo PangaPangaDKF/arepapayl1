@@ -3,9 +3,11 @@
 Updated 2026-11-14 by BRAIN (initial). LANDING owns this file from now on.
 
 ## 1. Live status
-Nothing is deployed. The landing is not built yet. Launch stack = **Next.js (App Router) static export** in `landing/` (D-004,
-2026-11-15), superseding the single-file plan. Deploy target still BRAIN's call (board B4). Brand mark received 2026-11-15
-(see §3 Brand). Still blocked on the user for the **domain** and a **footer contact** before the page is launch-complete.
+The landing **v0 is built** (D-013, 2026-11-15) as a **Next.js (App Router) static export** in `landing/`; `npm --prefix landing
+run build` emits `landing/out/`. Not deployed yet — deploy target is BRAIN's call (board B4), a static host serving `out/`.
+Domain = **arepapay.site** (canonical/OG/metadataBase). Social = **X `@ArepaPay`** (footer + Twitter card). All 3 gates green
+(truth gate 0 problems, V9 negative test passes, 390/360 px overflow clean). Pre-launch cleanup still open (see §4): a cleaned
+transparent logo + crisp wordmark + a real 1200×630 OG image + `favicon.ico` (today `app/icon.png` is the watermarked brand PNG).
 
 ## 2. Page map (target for v0; each section lists its truth source)
 | Section | Content | Truth source | Status label |
@@ -38,7 +40,13 @@ Nothing is deployed. The landing is not built yet. Launch stack = **Next.js (App
   pixel/SVG wordmark for the header and favicon/OG; use this PNG as the reference and the hero icon.
 - Palette confirmed from the mark: cream ground, navy `#1A2472` wordmark, red/white checker (`--red #CC1111`), brown ring
   (`--brown-light #8A6A40`). No new tokens needed — §3 already covers it.
-- Tagline (brand, usable): "La arepa es venezolana."
+- Tagline (brand, usable): "La arepa es venezolana." (used in the footer)
+- Domain (user, 2026-11-15): **arepapay.site** — set as `metadataBase`, canonical, OpenGraph `url`. No other domain.
+- X / social (user, 2026-11-15): **https://x.com/ArepaPay**, handle `@ArepaPay` — the footer contact and the Twitter card
+  `site`/`creator`. This resolves the T8 "needs a contact" gap; no other contacts are invented.
+- Where assets live for the build: source originals in `landing/assets/brand/`; what ships is `landing/public/brand/` and
+  `landing/app/icon.png`. The gate's external-host allow-list is `arepapay.site`, `x.com`, Google Fonts (next/font self-hosts,
+  so fonts are actually local `/_next/`).
 - `/mnt/d/` also holds official Avalanche brand PNGs (logos, AVAX token). "Built on Avalanche" art may be used only within
   Avalanche's brand guidelines — confirm with BRAIN before placing it (T8).
 
@@ -51,7 +59,12 @@ Nothing is deployed. The landing is not built yet. Launch stack = **Next.js (App
   (Bs→USDT via a trusted local merchant, rewards from fees) is a Planned/In-dev truth source only via `docs/PLAN.md`, not their words.
 
 ## 4. Open tasks
-See board tasks L1–L3 (now on the Next.js static-export stack, D-004). Brand mark received (§3). Still blocked on the user:
-domain and footer contact. L1 gate scripts probe the exported `landing/out/**.html`.
-Next build steps: scaffold the Next.js app in `landing/`, place the brand, build the Spanish-first v0 from §2 with status
-labels, then write the L1 gates and run them.
+L1–L3 are **done** (D-013): v0 built, gates green, renders read. Remaining:
+- **Pre-launch cleanup (LANDING):** a cleaned transparent logo + a crisp pixel/SVG wordmark; a real 1200×630 OG image;
+  `favicon.ico`. Today `app/icon.png` and the OG image both point to the 1024 px watermarked brand PNG — fine for v0, not launch.
+- **BRAIN:** repoint `tests/check.sh` landing step to `npm --prefix landing ci && npm --prefix landing run build && node
+  scripts/landing-check.mjs && node scripts/landing-probe.mjs` (it still skips, looking for `landing/index.html`); confirm the
+  deploy target (B4) = a static host serving `landing/out/`, domain `arepapay.site`.
+- **Keep copy honest as phases land:** the page is all Planned / In development, so it is not blocked; when a phase status
+  changes, flip the matching `data-status` label (T6) and re-run the gates. Custody is settled (D-007: bank-run bridge, KYC for all).
+- Build + probe recipes: RUNBOOK §3 and §6.

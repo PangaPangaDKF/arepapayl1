@@ -4,8 +4,9 @@
 2026-11-14 · Phase 1 rails committed by BRAIN. LANDING starts now on L1–L3 (landing v0). BRAIN waits on the user for Q1 (custody)
 and U1–U3 (security), then runs spikes S1–S4. Nothing is deployed.
 2026-11-15 · LANDING took the lane. Launch stack set to Next.js static export (D-004); `vercel-react-best-practices` loaded.
-L1–L3 now target that stack. LANDING blocked on the user for brand (logo+palette from X), domain and contact before the visual
-build. BRAIN: please confirm the deploy target (B4).
+2026-11-15 · LANDING shipped the v0 (D-013): built in `landing/`, all 3 gates green, renders read. User gave domain
+`arepapay.site` and X `@ArepaPay` — LANDING no longer blocked. BRAIN: confirm deploy target (B4) and repoint the check.sh
+landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 
 ## Tasks for BRAIN
 - [x] B1 · (done D-006) Fetch and read L1 skills from avaxskills.com (subnet-deployment, subnet-evm-config, precompiles, validator-manager-contract, kyc-aml-integration, safe-multisig, upgradeable-contracts); install the useful ones into `.claude/skills/`, record sources in `skills-lock.json`.
@@ -20,9 +21,9 @@ build. BRAIN: please confirm the deploy target (B4).
 > Copy update (D-007 supersedes D-005 where they differ): the bank runs the chain, its validators and **one bridge** for real USDT/USDC; merchants deposit their own collateral (self-custody); **KYC is mandatory for everyone**; liquidity is provable on C-Chain. Older note (D-005): truth sources now include `docs/ARCHITECTURE.md`. Key truths: merchants are the main customers; banks are the only ramps; the chain is private and never bridged; balances use eERC, which hides **amounts and balances, not who pays whom** (say so honestly); oversight is split between two multisig councils; everything is In development / Planned.
 > Stack note (D-004): L1–L2 build on a Next.js App Router static export in `landing/`; the gates probe the exported
 > `landing/out/**.html`. Blocked on the user for brand + domain before the L2 visual build.
-- [ ] L1 · Write the gates. Files: `scripts/landing-check.mjs` (zero deps, rules in `arepapay-landing-design` §5) and `scripts/landing-probe.mjs` (390/360 px iframe overflow probe and `--shot '#id' --out <png>` at 1280 px; reference implementations at `/mnt/c/Users/dulbi/dogeon/scripts/landing-check.mjs` and `landing-probe.mjs`, read-only). Prove `landing-check.mjs` fails once on purpose (plant an emoji and a forbidden word in a temp copy) before trusting it. Verify: both scripts exit 0 on the finished page.
-- [ ] L2 · Build `landing/index.html` v0: Spanish first, single file, design tokens and sections exactly as in `arepapay-landing-design` §3 and `references/STATE.md` §2. Every feature section carries a status label (T6). Disclaimer in hero and footer (T7). No contacts, addresses, numbers, screenshots or partner logos (T2–T4, T8). CTAs are in-page anchors only. Truth sources: `docs/PLAN.md`, `.claude/skills/arepapay-mission/SKILL.md`, `docs/research/arepapay_ground_truth.md` §2 and §4. Verify: the 3 gates green and one 1280 px render of hero + one section read by you.
-- [ ] L3 · Close out with RULE L0 (reserve your D-number below first), report under `## Log` and in `docs/HANDOFF_LOOP.md`, list under "Needs the user" what the page needs from them (contact channel, domain), and request B4.
+- [x] L1 · (done D-013) Gates written: `scripts/landing-check.mjs` (zero deps, parses `config/`, enforces §5 over `landing/out/**.html`) and `scripts/landing-probe.mjs` (390/360 px iframe overflow + `--shot`). Proven to fail once on purpose (emoji + forbidden words + unlabeled feature → exit 1, V9).
+- [x] L2 · (done D-013) Built as a **Next.js static export** (D-004 superseded the single-file plan): Spanish-first v0 in `landing/`, §3 tokens, every section from STATE §2, status labels (T6), disclaimer in hero + footer (T7), CTAs are in-page anchors, X `@ArepaPay` in footer. No addresses/numbers/screenshots/partner logos. 3 gates green; hero + "cómo funciona" 1280 px renders read.
+- [x] L3 · (done D-013) Closed out: DECISIONS D-013, STATE/CHANGELOG/RUNBOOK/SKILL (v1.3), HANDOFF turn 2, committed landing-lane paths. See "Needs the user" and the BRAIN note below.
 
 ## D-numbers
 | D | Lane | Title | Status |
@@ -39,10 +40,11 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-010 | BRAIN | Split Pay option A: SplitPayEscrow contract + tests | done |
 | D-011 | BRAIN | Split Pay option C: eERC knowledge skill + bank-escrow algorithm spec | done |
 | D-012 | BRAIN | Spike S2: eERC converter on chain 77077 + Safe-as-account check | done |
-| D-013 | LANDING | Landing v0: Next.js static-export scaffold + gates + Spanish v0 page | reserved |
+| D-013 | LANDING | Landing v0: Next.js static-export scaffold + gates + Spanish v0 page | done |
 | D-014+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-15 · LANDING · D-013 landing v0 shipped: Next.js static export in `landing/`, gates `scripts/landing-{check,probe}.mjs` green (truth gate 0 problems, V9 negative test → exit 1, overflow 390/360 px clean), hero + cómo-funciona 1280 px renders read. `bash tests/check.sh` → ALL CHECKS PASSED. **BRAIN, two asks:** (1) repoint the check.sh landing step from `landing/index.html` to `npm --prefix landing ci && npm --prefix landing run build && node scripts/landing-check.mjs && node scripts/landing-probe.mjs`; (2) B4 — deploy target is a static host serving `landing/out/` (domain `arepapay.site`). Committed landing-lane paths only; not pushed (C9).
 - 2026-11-15 · BRAIN · NOTE for LANDING: my commit eb1318d swept your uncommitted board line reserving D-013 (landing v0). Content unchanged, nothing reverted; your reservation is now committed. Sorry; L-005 added.
 - 2026-11-15 · BRAIN · S2 done (D-012): eERC converter works on chain 77077; desktop transfer proof 4.4–7.6 s; phone measurement needed from the user; skill v1.1 corrections, L-004.
 - 2026-11-15 · BRAIN · D-010 Split Pay A: 34 tests green, audit 0 crit/0 high/3 med fixed/2 low fixed/1 low accepted; S2 (D-012) running.

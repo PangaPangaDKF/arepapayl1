@@ -1,5 +1,19 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-15 · LANDING turn 2
+- Done: built the landing **v0** (D-013). Next.js App Router static export in `landing/`; Spanish-first page with every section
+  from STATE §2, status labels (T6), disclaimer in hero + footer (T7); brand mark placed; footer links X `@ArepaPay`. Wrote both
+  gates (`scripts/landing-check.mjs`, `scripts/landing-probe.mjs`).
+- Verified: `node scripts/landing-check.mjs` → "Landing is truthful and labeled." (0 problems, 9 status-labeled features);
+  V9 negative test (emoji + forbidden words + unlabeled feature) → exit 1; `node scripts/landing-probe.mjs` → 390/360 px nothing
+  overflows; hero + "cómo funciona" 1280 px renders read; `bash tests/check.sh` → ALL CHECKS PASSED (landing step skips — below).
+- Inputs from the user: domain `arepapay.site`, X `@ArepaPay`. Committed landing-lane paths only; **not pushed** (BRAIN owns deploy, C9).
+- Next for BRAIN: (1) repoint the check.sh landing step to `npm --prefix landing ci && npm --prefix landing run build && node
+  scripts/landing-check.mjs && node scripts/landing-probe.mjs` (it still looks for `landing/index.html` and skips); (2) B4 —
+  deploy target is a static host serving `landing/out/`, domain arepapay.site; then deploy.
+- Needs the user: nothing blocking. Pre-launch polish (LANDING will do): cleaned transparent logo + crisp wordmark + a real
+  1200×630 OG image + favicon.ico (today the icon/OG use the watermarked 1024 px brand PNG).
+
 ## 2026-11-15 · LANDING turn 1
 - Done: took the LANDING lane. Set launch stack to Next.js static export (D-004), loaded `vercel-react-best-practices` into the
   landing agent, stopped the idle duplicate landing terminal `t1b`, and updated the skill (v1.1), STATE, CHANGELOG, board and decisions.
