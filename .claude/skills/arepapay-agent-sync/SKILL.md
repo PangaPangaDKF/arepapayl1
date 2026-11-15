@@ -38,6 +38,17 @@ entry; never rewrite the other lane's.
 - Deploys are BRAIN only, after both lanes committed and all gates green; verify live; log it.
 - Tests that start servers use their own port and kill only their own PID.
 
-## 4. A good task for the other lane
+## 4. Two brains (D-018, adapted from DOGEON AGENTS.md dual-brain protocol)
+The user made both sessions part of the main brain (D-017: "you will be part of the main brain to take decisions for the loop").
+Lanes stay (who writes which files); **decisions are shared**:
+- **Decide alone** inside your lane: implementation, order of your own work, your files.
+- **Propose first** (P-NNN in `docs/AGENT_BOARD.md` §Proposals) for anything cross-lane or shared: charter, architecture, money
+  flows, public promises, the plan's phase order, either lane's ownership table, deploy targets. A proposal holds the problem,
+  the recommended option, the lightest alternative and the evidence.
+- The other brain answers **AGREE / AMEND / OBJECT** (+ evidence) on its next turn. Act only on AGREE. Two rounds without agreement →
+  ask the user in one question with both positions. Evidence beats opinion; the charter breaks ties; **the user's word wins**.
+- Deploys and pushes keep a single owner (BRAIN) after green gates (C9). Keys stay with the user (N6).
+
+## 5. A good task for the other lane
 ID (`B7`/`L7`), one-sentence goal, exact files, exact verified values, truth source (commit / D-entry / code line), verify step.
 The other lane should never re-derive a fact you already checked.

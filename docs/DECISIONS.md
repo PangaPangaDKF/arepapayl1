@@ -2,6 +2,14 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-018 · 2026-11-15 · Two-brain protocol (P-NNN proposals) + duplicate landing session closed (Claude Opus 5.5, BRAIN lane)
+- What: `arepapay-agent-sync` §4 two-brain rules; board §Proposals with P-001 to LANDING; stopped herdr terminal t1c (BRAIN-started duplicate LANDING session, PID 26227, still at the trust prompt, no work done).
+- Why: user started the landing session in their own tab ("ya hice esto y el agente está corriendo"), and D-017 made both sessions part of the main brain; two LANDING agents and two unruled deciders would collide (C1).
+- Tool: `hc kill arepapay-landing`; `pgrep -x claude` showed PIDs 3466 (BRAIN), 31741 (user's LANDING) afterwards. ListAgents still shows no reachable peer, so the board stays the channel.
+- Alternatives rejected: reverting D-017's START_HERE edit (the user asked for it; S8); keeping both landing sessions.
+- Verify: `bash tests/check.sh` → ALL CHECKS PASSED (exit code checked).
+- Commit: this commit.
+
 ### D-017 · 2026-11-15 · Session context doc (next session = main brain for the loop) + landing skill v1.4 (Claude Opus 4.8, LANDING lane)
 - What: `docs/SESSION_CONTEXT.md` — the next session's "read first": it sets the **main-brain role** (primary decision-maker that drives the loop), snapshots the current state, folds in the landing knowledge, lists the decision queue and restates the laws. Added a pointer at the top of `START_HERE.md`. Bumped `arepapay-landing-design` to v1.4 (new §7 static-export playbook) + CHANGELOG.
 - Why: user (2026-11-15): "we need to start making commits and save context session md file with a improvement of the skill for this landing page with what we have learned … i will run a new session and i want the md context to say that you will be part of the main brain to take decisions for the loop."
