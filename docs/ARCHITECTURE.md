@@ -141,6 +141,16 @@ Facts for stage C:
 - blackout downtime;
 - theft/freeze cases handled.
 
+## 3a. Who can see wallet addresses (user question, D-014)
+- **Outside the chain:** nobody, as long as the RPC is private (production: authenticated gateway).
+- **The bank (node operator):** sees every address pair. That is how R12 is enforced (unexplained or customer → customer
+  transfers are flagged). It never sees amounts, only the auditor key does.
+- **Public test phase:** testers' MetaMask needs a reachable RPC, so **anyone with the test RPC can read addresses** (never
+  amounts). Acceptable for testnet; production uses the private gateway, where the RPC answers each user only about their own
+  wallet.
+- Hiding addresses from the bank too would need fresh addresses per payment, which breaks the KYC allowlist. Not compatible with
+  R11.
+
 ## 3b. Measured so far (S1, S2, local)
 - S1: allowlist, freeze switch, deployer allowlist and native minter off: 15/15 PASS.
 - S2: eERC converter end to end works. Transfer proof 4.4–7.6 s on a desktop CPU; gas ~1.1M per private transfer (~3.5 tx/s at

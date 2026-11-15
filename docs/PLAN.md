@@ -1,6 +1,6 @@
 # ArepaPay v2 — master plan
 
-Version 1.2 · 2026-11-15 (D-005 architecture, D-007 user correction: bank bridge, real collateral, mandatory KYC) · Owner: BRAIN (decides inside the user's rules) · Method: `master-method` skill · Charter: skill `arepapay-mission`
+Version 1.3 · 2026-11-15 (D-014 merchant FX, minimal app, MetaMask testing) (D-005 architecture, D-007 user correction: bank bridge, real collateral, mandatory KYC) · Owner: BRAIN (decides inside the user's rules) · Method: `master-method` skill · Charter: skill `arepapay-mission`
 Ground truth: `docs/research/arepapay_ground_truth.md` (what exists, FACT vs CLAIM) · Method source: `docs/research/dogeon_methodology.md`
 
 ## 0. Thinking (M0: what we believe and why)
@@ -84,6 +84,14 @@ Screens:
 
 Wallet rules K3/K4/K8/K9. One generated `config/deployments/<chain>.json` feeds app, backend, landing and docs (B6).
 
+### Phase 5b — Test dApp (minimal, D-014)
+One small web page that works inside the **MetaMask mobile in-app browser** and on a PC (looks don't matter, it must work):
+- connect + one-click "add ArepaPay L1" network (RPC from `config/`);
+- eERC register / deposit / private pay with the SDK;
+- Split Pay QR;
+- merchant FX sale with the FX ledger.
+Proof time is accepted as is (user: "no importa el tiempo"). It must be reachable by anyone, which needs a public RPC (Q18).
+
 ### Phase 6 — Agent (later, optional)
 Reuse the v1 x402 pattern and tool dispatch; role-gated; replay protection persisted.
 
@@ -111,7 +119,7 @@ Gates: `node scripts/landing-check.mjs`, `node scripts/landing-probe.mjs`, `bash
 | Q3 | Privacy layer | **Chosen: eERC standalone + private RPC (D-005)**, go/no-go after S2 numbers. |
 | Q4 | KYC provider | The bank does KYC (mandatory for everyone, D-007); ArepaPay stores no ID documents. |
 | Q5 | Fee model | One fee in bps with a cap, enforced in code; set with the partner bank's costs once known. |
-| Q6 | Raffles / WiFi minutes | Parked: not in the user's 2026-11-15 model; revisit after the pilot. |
+| Q6 | Raffles / WiFi minutes | **Removed by D-014:** a light payments app only. |
 | Q7 | Repo visibility | Private until the Phase 8 audit. |
 | Q8 | Customer KYC | **Resolved by D-007: mandatory KYC for everyone.** |
 | Q9 | Multisig signers (audit + freeze) | Proposal 2-of-3: bank, bank, ArepaPay. User decides. |
@@ -120,6 +128,9 @@ Gates: `node scripts/landing-check.mjs`, `node scripts/landing-probe.mjs`, `bash
 | Q13 | Split Pay capture | Automatic at 100% or a final confirm from each payer (SPLIT_PAY §2). |
 | Q14 | Split Pay share changes | Can a payer change/withdraw a share before capture? |
 | Q15 | Split Pay escrow | A, B or C after spike S7. |
+| Q16 | No-resale rule: detect + freeze or prevent | Default detect + freeze with unmodified eERC (MERCHANT_FX §2). |
+| Q17 | Bank rate band | Who signs the bank rate and how wide the spread is. |
+| Q18 | Public test network | Testers on phones need a reachable RPC: Fuji-hosted L1 (needs Fuji AVAX + a public node) or a tunnel to the local L1. |
 | Q11 | Recovery/reversal power | Default no (freeze yes, reverse no); possible only with a custom design. User decides. |
 
 ## 3. Risks

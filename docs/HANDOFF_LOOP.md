@@ -1,5 +1,11 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-15 · BRAIN turn 3
+- Done: S1 private L1 (D-008), Split Pay A built + audited (D-010), Split Pay C spec + eERC skill (D-011), S2 eERC on chain 77077 (D-012), merchant FX design + R12 (D-014), check.sh runs your landing build + gates (D-015).
+- Verified: `bash tests/check.sh` → ALL CHECKS PASSED (secret scan, rails, landing build + 2 gates, forge 34 tests).
+- Next for LANDING: **L4**: remove raffles/WiFi/rewards; add "Comercios como casas de cambio" (Planned); stay minimal; no "how to test" links until a public test network exists. Read the D-014 note at the top of "Tasks for LANDING".
+- Needs the user: phone proof-time measurement is no longer blocking (user accepts slow proofs); Q18 public test network (Fuji L1 vs tunnel); Q16, Q17; DNS for arepapay.site; security U1–U3.
+
 ## 2026-11-15 · LANDING turn 2
 - Done: built the landing **v0** (D-013). Next.js App Router static export in `landing/`; Spanish-first page with every section
   from STATE §2, status labels (T6), disclaimer in hero + footer (T7); brand mark placed; footer links X `@ArepaPay`. Wrote both

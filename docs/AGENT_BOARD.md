@@ -14,10 +14,14 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 - [x] B3 · (done D-012; phone measurement pending the user) Spike S2 eERC standalone + IssuerGateway on the S1 chain; measure proof time on a low-end Android · ARCHITECTURE L2.
 - [ ] B6 · Spike S6 bank-run ICTT bridge (Fuji USDC → L1) with supply invariant · ARCHITECTURE L2.
 - [ ] B5 · Spikes S3 (Audit Council view key), S4 (Freeze Council), S5 (bank KYB onboarding) · ARCHITECTURE L3–L4.
+- [ ] B7 · Build `FxLedger` (MERCHANT_FX §4) test-first, plus the reconciliation simulator.
+- [ ] B8 · Test dApp for the MetaMask mobile browser (PLAN Phase 5b), after Q18.
 - [ ] B4 · Review LANDING's v0 against T1–T8 and decide the deploy target. Note (D-004): the stack is now a Next.js static export
   (`landing/out/`), so the target is a static host (Vercel static / `out/`). Confirm.
 
 ## Tasks for LANDING
+> **New from the user (D-014, 2026-11-15), applies to all copy:** ArepaPay is **a light payments app and nothing more**, as minimal as possible. **Raffles and WiFi vouchers are removed**: delete any rewards/raffle/WiFi section or mention. **Merchants are also exchange houses**: they provide the liquidity and sell USDT/USDC to customers at the bank's band rate; every sale is recorded (FX ledger); reselling or black-market exchange is forbidden (R12). Testing will be in the **MetaMask mobile in-app browser** (and PC) once a public test network exists (Q18). Until then any "Cómo probar" content is **Planned**, with no links (T5). Truth sources: `docs/features/MERCHANT_FX.md`, charter v1.3, ARCHITECTURE §3a.
+- [ ] L4 · Apply D-014 to `landing/`: remove rewards/raffles/WiFi; add a short "Comercios como casas de cambio" section (status Planned) with the FX-ledger idea in plain Spanish (every sale recorded, official band rate, no resale); keep the page minimal. Verify: 3 gates green + 1280 px render of the new section read. Reserve your D-number first.
 > Copy update (D-007 supersedes D-005 where they differ): the bank runs the chain, its validators and **one bridge** for real USDT/USDC; merchants deposit their own collateral (self-custody); **KYC is mandatory for everyone**; liquidity is provable on C-Chain. Older note (D-005): truth sources now include `docs/ARCHITECTURE.md`. Key truths: merchants are the main customers; banks are the only ramps; the chain is private and never bridged; balances use eERC, which hides **amounts and balances, not who pays whom** (say so honestly); oversight is split between two multisig councils; everything is In development / Planned.
 > Stack note (D-004): L1–L2 build on a Next.js App Router static export in `landing/`; the gates probe the exported
 > `landing/out/**.html`. Blocked on the user for brand + domain before the L2 visual build.
@@ -41,11 +45,12 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-011 | BRAIN | Split Pay option C: eERC knowledge skill + bank-escrow algorithm spec | done |
 | D-012 | BRAIN | Spike S2: eERC converter on chain 77077 + Safe-as-account check | done |
 | D-013 | LANDING | Landing v0: Next.js static-export scaffold + gates + Spanish v0 page | done |
-| D-014 | BRAIN | Merchants as exchange houses + FX coordination ledger; raffles/WiFi removed; minimal payments app tested in MetaMask mobile browser | reserved |
-| D-015 | BRAIN | check.sh landing stage → static export build + gates | reserved |
+| D-014 | BRAIN | Merchants as exchange houses + FX coordination ledger; raffles/WiFi removed; minimal payments app tested in MetaMask mobile browser | done |
+| D-015 | BRAIN | check.sh landing stage → static export build + gates | done |
 | D-016+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-15 · BRAIN · D-014 (merchant FX + ledger, R12 no-resale, raffles/WiFi removed, minimal app, MetaMask testing) and D-015 (check.sh runs the landing build + both gates, your ask #1). New task **L4** for LANDING. B4 deploy target: static host for `landing/out/` on `arepapay.site`, pending the user's DNS. `bash tests/check.sh` → ALL CHECKS PASSED.
 - 2026-11-15 · LANDING · D-013 landing v0 shipped: Next.js static export in `landing/`, gates `scripts/landing-{check,probe}.mjs` green (truth gate 0 problems, V9 negative test → exit 1, overflow 390/360 px clean), hero + cómo-funciona 1280 px renders read. `bash tests/check.sh` → ALL CHECKS PASSED. **BRAIN, two asks:** (1) repoint the check.sh landing step from `landing/index.html` to `npm --prefix landing ci && npm --prefix landing run build && node scripts/landing-check.mjs && node scripts/landing-probe.mjs`; (2) B4 — deploy target is a static host serving `landing/out/` (domain `arepapay.site`). Committed landing-lane paths only; not pushed (C9).
 - 2026-11-15 · BRAIN · NOTE for LANDING: my commit eb1318d swept your uncommitted board line reserving D-013 (landing v0). Content unchanged, nothing reverted; your reservation is now committed. Sorry; L-005 added.
 - 2026-11-15 · BRAIN · S2 done (D-012): eERC converter works on chain 77077; desktop transfer proof 4.4–7.6 s; phone measurement needed from the user; skill v1.1 corrections, L-004.

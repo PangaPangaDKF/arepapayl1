@@ -25,10 +25,13 @@ for f in START_HERE.md CLAUDE.md AGENTS.md docs/PLAN.md docs/AGENT_BOARD.md docs
 [ $fail -eq 0 ] && say "ok"
 
 say "== 3/4 landing gates (T1-T8)"
-if [ -f landing/index.html ]; then
-  [ -f scripts/landing-check.mjs ] && node scripts/landing-check.mjs || bad "landing-check missing or red"
-  [ -f scripts/landing-probe.mjs ] && node scripts/landing-probe.mjs || bad "landing-probe missing or red"
-else say "skip (no landing/index.html yet)"; fi
+if [ -f landing/package.json ]; then   # Next.js static export (D-004, D-013); gates read landing/out/ (D-015)
+  if [ ! -d landing/node_modules ]; then npm --prefix landing ci --silent >/dev/null 2>&1 || bad "landing npm ci failed"; fi
+  npm --prefix landing run build --silent >/dev/null 2>&1 || bad "landing build failed"
+  node scripts/landing-check.mjs >/dev/null || bad "landing-check red (node scripts/landing-check.mjs)"
+  node scripts/landing-probe.mjs >/dev/null || bad "landing-probe red (node scripts/landing-probe.mjs)"
+  [ $fail -eq 0 ] && say "ok"
+else say "skip (no landing/ yet)"; fi
 
 say "== 4/4 contracts (N2)"
 if [ -f contracts/foundry.toml ]; then (cd contracts && forge test -q) || bad "forge test red"; else say "skip (no contracts yet)"; fi

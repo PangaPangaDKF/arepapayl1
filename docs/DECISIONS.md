@@ -2,6 +2,20 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-015 · 2026-11-15 · check.sh landing stage runs the Next.js static export and both landing gates (Claude Opus 5.5, BRAIN lane)
+- What: `tests/check.sh` stage 3 now does `npm ci` (if needed) → `npm run build` → `landing-check.mjs` → `landing-probe.mjs` when `landing/package.json` exists.
+- Why: LANDING's ask in the D-013 board log.
+- Verify: `bash tests/check.sh` → ALL CHECKS PASSED; an earlier run during a concurrent LANDING build reported "landing build failed" (the stage can fail, V9).
+- Commit: this commit.
+
+### D-014 · 2026-11-15 · Merchants as exchange houses + FX ledger; unbreakable no-resale rule; raffles/WiFi removed; minimal app tested in MetaMask mobile browser (user decision, designed by BRAIN)
+- What: `docs/features/MERCHANT_FX.md` (FX order flow on `FxLedger`: open with rate in the bank band + commitment, customer accepts, eERC transfer linked by tx hash, customer confirms, bank reconciles with the auditor key; 6 enforcement layers for R12); charter v1.3 (R12, minimal scope, raffles/WiFi removed); PLAN v1.3 (Phase 5b test dApp, Q16–Q18); ARCHITECTURE §3a (who sees addresses); LANDING task L4.
+- Why: user: "los comercios van a vender usdt o usdc a los clientes y serán casas de cambio … un registro que muestre que se realizó para que el comerciante no mueva fondos y no los declare … evitar acciones deshonestas como revender los usdt o crear mercados negros … es una regla que no se puede quebrar"; "no importa el tiempo"; "se debe probar dentro del explorador de la app de metamask … agregarás el rpc de arepapay l1"; "deberás quitar la parte de las rifas o los vouchers de internet … mientras más minimalista y sencilla mejor"; "recuerda decirle eso al otro agente".
+- Tool: eERC facts from S2 (addresses visible to the bank, amounts only to the auditor) used as the R12 detection basis.
+- Alternatives rejected: storing FX amounts in plaintext on chain (leaks amounts to any RPC reader); modifying audited eERC to block customer→customer transfers by default (left as Q16).
+- Verify: docs only; `bash tests/check.sh` → ALL CHECKS PASSED.
+- Commit: this commit.
+
 ### D-013 · 2026-11-15 · Landing v0: Next.js static-export scaffold + truth/overflow gates + Spanish page (Claude Opus 4.8, LANDING lane)
 - What: `landing/` as a Next.js App Router static export — `package.json` (pinned `next@15.1.6`, `react@19.0.0`), `next.config.mjs` (`output:'export'`, `images.unoptimized`, `trailingSlash`), `app/{layout,page,ui}.js`, `app/globals.css` (§3 tokens), `public/brand/arepapay-logo.png`, `app/icon.png`. Gates: `scripts/landing-check.mjs` (truth gate over `landing/out`) and `scripts/landing-probe.mjs` (390/360 px overflow + `--shot`). Spanish-first v0 with every section from STATE §2, status labels (T6) and the testnet disclaimer in hero + footer (T7); footer links X `@ArepaPay`.
 - Why: the user gave the launch domain `arepapay.site` and X `@ArepaPay` and said "continue". D-004 set the stack. Copy comes only from the charter role line and the settled architecture (D-005/D-007); everything is In development / Planned (R4/T6). Future tense throughout — never present tense for an unbuilt feature.
