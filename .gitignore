@@ -14,3 +14,6 @@ out/
 cache/
 broadcast/
 .DS_Store
+
+# vendored Solidity libs (install: bash scripts/setup-contracts.sh)
+contracts/lib/

@@ -1,6 +1,6 @@
 # Feature: Split Pay (one QR, several payers, one payment)
 
-Version 1.0 · 2026-11-15 · D-009 · Owner: BRAIN · Status: **design (not built)** · Spike: S7
+Version 1.1 · 2026-11-15 · D-009, D-010 · Owner: BRAIN · Status: **option A built** (`contracts/src/SplitPayEscrow.sol`, 34 tests, audited `docs/audits/2026-11-15/split-pay-A.md`) · option C spec: `SPLIT_PAY_C.md`
 
 ## 0. The user's spec (their words, condensed and translated)
 - "The customer wants to pay $5, but one customer has $3 and the other the rest."
@@ -62,7 +62,12 @@ Spike S7 measures A, then C. B is the fallback if neither is acceptable.
 - Concurrency: two payers racing for the last share → the second gets only the remainder or reverts. Never over-cover.
 - Expiry always ends in a terminal state (captured or voided). No funds stuck forever.
 - The same payer can top up or withdraw before capture (decide: Q14).
-- Max payers per intent (gas bound, no unbounded loops): e.g. 10.
+- Max payers per intent (gas bound, no unbounded loops): up to 10.
+- **Fair share (audit F-01):** a new payer must cover at least `remaining / free slots` (or the whole remainder). Dust can't fill the slots, and the free slots can always complete the total.
+- **Confirm window (audit F-02):** in confirm mode, once 100% is covered, payers have 5 minutes (`CONFIRM_TTL`) to confirm; otherwise the intent becomes voidable and everyone withdraws.
+- **Merchant fee cap (audit F-07):** `createIntent(..., maxFeeBps)` reverts if the current fee is higher than the merchant accepts.
+- **Anyone can `expire`** an intent past its expiry (audit F-08).
+- **Full delivery only (audit F-03):** a token that delivers less than requested is rejected (`UnsupportedToken`).
 - Every payer must be KYC'd (txAllowList already enforces it).
 - 6-decimal USDT/USDC rounding: shares in base units; the UI shows Bs and USD.
 - Invariant tests (Foundry): sum of holds ≤ total; contract balance == sum of open holds; after capture, the merchant got total − fee and

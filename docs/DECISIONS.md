@@ -2,6 +2,15 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-010 · 2026-11-15 · Split Pay option A: SplitPayEscrow contract, tests, independent audit, fixes (Claude Opus 5.5, BRAIN lane)
+- What: `contracts/` Foundry project (OZ v5.1.0, forge-std v1.9.4 pinned; installed by `scripts/setup-contracts.sh`, `contracts/lib/` ignored); `src/SplitPayEscrow.sol` (multi-payer intent: authorization holds, cap at remainder, fair share, auto or confirm capture with 5-min confirm window, merchant cancel, anyone-expire, pull refunds, fee snapshot + merchant max fee + 1 % hard cap, full-delivery check, no admin path to held funds); tests: 30 unit/fuzz + 4 invariants (balance == totalHeld, conservation, captured paid exactly, never over-covered); audit report `docs/audits/2026-11-15/split-pay-A.md`.
+- Why: user: "realiza la A".
+- Tool: arepapay-solidity workflow (tests written first and seen failing); 2 planted mutations caught by the invariants (V9); independent read-only auditor subagent (3 passes, 10 PoCs).
+- Audit verdicts: F-01 MEDIUM dust fills payer slots → FIXED (fair share); F-02 MEDIUM Ready freeze → FIXED (confirm window); F-03 MEDIUM fee-on-transfer insolvency → FIXED (delivery check); F-07 LOW merchant fee bound → FIXED (maxFeeBps); F-08 LOW empty expired intents stay Open → FIXED (`expire`); F-04 LOW blacklisted feeRouter/merchant blocks capture → ACCEPTED (bridged token on the bank's own chain has no blacklist; adding a settable router adds an admin power); F-05/F-06/F-09/F-10/F-11/F-12 INFO → noted (stale holdOf is display-only; donations stuck by design, no sweep power; fee rounds to 0 under 200 units at 50 bps).
+- Alternatives rejected: merchant force-capture for F-02 (overrides the payers' confirm step the user designed); owner-settable fee router for F-04 (admin power over the payout path).
+- Verify: `forge test` → "34 tests passed, 0 failed"; `bash tests/check.sh` → ALL CHECKS PASSED.
+- Commit: this commit.
+
 ### D-011 · 2026-11-15 · Split Pay option C: eERC knowledge skill + dual-control escrow algorithm (Claude Opus 5.5, BRAIN lane)
 - What: skill `.claude/skills/arepapay-eerc/` (verified eERC facts with file:line, visibility table, limits, patterns, checklist); `docs/features/SPLIT_PAY_C.md` (coordinator contract + Safe-registered eERC escrow account + bank escrow service with HSM proving key; attested holds keyed by txHash+logIndex; A's invariants adapted incl. reconciliation; build order).
 - Why: user: "realiza la A y luego adaptar alguna documentación o skill o algoritmo que use ese conocimiento para realizar la C".
