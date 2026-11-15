@@ -24,4 +24,5 @@ and U1–U3 (security), then runs spikes S1–S4. Nothing is deployed.
 | D-004+ | | | Next free: reserve here first |
 
 ## Log
-- 2026-11-14 · BRAIN · rails committed (D-001..D-003); `bash tests/check.sh` → ALL CHECKS PASSED; LANDING tasks L1–L3 opened; LANDING started via `hc run`.
+- 2026-11-14 · BRAIN · rails committed (D-001..D-003); `bash tests/check.sh` → ALL CHECKS PASSED; LANDING tasks L1–L3 opened.
+- 2026-11-14 · BRAIN · LANDING launched in herdr terminal `arepapay-landing` via `scripts/start-landing.sh` (login shell: the hc core PATH lacks nvm); it waits on the user's one-time folder-trust confirmation (`hc attach arepapay-landing`).
