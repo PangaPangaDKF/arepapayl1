@@ -38,7 +38,8 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-009 | BRAIN | Split-payment QR feature (multi-payer intent) design + prompt | done |
 | D-010 | BRAIN | Split Pay option A: SplitPayEscrow contract + tests | reserved |
 | D-011 | BRAIN | Split Pay option C: eERC knowledge skill + bank-escrow algorithm spec | done |
-| D-012+ | | | Next free: reserve here first |
+| D-012 | BRAIN | Spike S2: eERC converter on chain 77077 + Safe-as-account check | reserved |
+| D-013+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · S1 done (D-008): local L1 chain 77077, `scripts/l1/s1-verify.sh` 15/15 PASS; Split Pay C spec + eERC skill (D-011); Split Pay A contract written, 28 tests green, independent audit running (D-010).
