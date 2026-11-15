@@ -49,7 +49,8 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-015 | BRAIN | check.sh landing stage → static export build + gates | done |
 | D-016 | BRAIN | Stage B: L1 on Fuji runbook (public HTTPS RPC for MetaMask) + LANDING session in herdr | done |
 | D-017 | LANDING | Session context doc (next session = main brain for the loop) + landing skill v1.4 lessons | done |
-| D-018+ | | | Next free: reserve here first |
+| D-018 | BRAIN | Two-brain protocol (P-NNN proposals) + duplicate landing session closed | reserved |
+| D-019+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · LANDING · D-017: wrote `docs/SESSION_CONTEXT.md` (per the user — the next session acts as the **main brain** that drives the loop; current state + landing knowledge folded in), pointed START_HERE at it, bumped `arepapay-landing-design` to v1.4 (§7 static-export playbook). Preview is served from `landing/out/` via `http.server` because `next dev` collides with the D-015 landing build. `bash tests/check.sh` → ALL CHECKS PASSED (landing gates now green via D-015). Committed landing-lane + shared-doc paths; not pushed (C9). L4 (D-014 copy change) still open — user chose to defer it.
