@@ -5,8 +5,8 @@ description: Handoff skill for ArepaPay v2's landing page (landing/index.html) a
 
 # ArepaPay landing skill
 
-Version 1.0 · 2026-11-14 · D-003 · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from DOGEON
-`dogeon-landing-design` 2.1 and master-method §4.6/§6.4.
+Version 1.1 · 2026-11-15 · D-004 (was 1.0, D-003) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
+DOGEON `dogeon-landing-design` 2.1 and master-method §4.6/§6.4.
 
 ## 0. Start here (every session)
 1. Read `references/STATE.md` (page map, verified facts, open tasks). Don't re-derive what it lists.
@@ -53,13 +53,19 @@ Language: **Spanish first**; English toggle optional later.
 Real content from the product's world (bodegas, panaderías, Bs amounts, cash ↔ USDT), one bold idea, everything else quiet.
 Avoid AI tells: emoji icons, fake dashboards, gradient blobs, decorative numbering, centering everything, identical card chrome,
 hype words without a fact, em-dash asides, "not X but Y". Copy plain, specific, active. Grids `minmax(min(Npx,100%),1fr)`; wide
-tables in a scroll wrapper; alt text; visible focus; `prefers-reduced-motion`. Single HTML file, inline CSS, no framework; Google
-Fonts only; at most one small inline script.
+tables in a scroll wrapper; alt text; visible focus; `prefers-reduced-motion`.
+
+**Stack (D-004, supersedes "single HTML file, no framework"):** build the launch page as a **Next.js App Router app with static
+export** (`output: 'export'`) in `landing/`, for SEO + OpenGraph + Twitter-card control and image optimization. Follow
+`vercel-react-best-practices`. Keep it light (R8): server-components first, minimal client JS, fonts via `next/font` (Google only),
+images via `next/image`. The build still emits static HTML, so the truth/overflow gates below probe the exported output. The
+brand logo and exact palette come from the user's X account (pending); until then use the §3 cream/navy/gold tokens, no invented logo.
 
 ## 5. Gates (all must pass before a commit)
 ```bash
-node scripts/landing-check.mjs      # truth/design gate (LANDING writes and maintains it)
-node scripts/landing-probe.mjs      # true 390/360 px overflow probe
+npm --prefix landing run build      # Next.js static export → landing/out/**.html (D-004)
+node scripts/landing-check.mjs      # truth/design gate over landing/out (LANDING writes and maintains it)
+node scripts/landing-probe.mjs      # true 390/360 px overflow probe over landing/out
 bash tests/check.sh                 # project suite
 ```
 `landing-check.mjs` must fail on: an address or chain id not present in `config/`, external hosts outside an allow-list

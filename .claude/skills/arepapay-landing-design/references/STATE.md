@@ -3,7 +3,9 @@
 Updated 2026-11-14 by BRAIN (initial). LANDING owns this file from now on.
 
 ## 1. Live status
-Nothing is deployed. `landing/index.html` does not exist yet. Deploy target is decided by BRAIN later (B-task).
+Nothing is deployed. The landing is not built yet. Launch stack = **Next.js (App Router) static export** in `landing/` (D-004,
+2026-11-15), superseding the single-file plan. Deploy target still BRAIN's call (board B4). Blocked on the user for the brand
+(logo + exact palette from their X) and the domain before the visual build.
 
 ## 2. Page map (target for v0; each section lists its truth source)
 | Section | Content | Truth source | Status label |
@@ -30,4 +32,5 @@ Nothing is deployed. `landing/index.html` does not exist yet. Deploy target is d
 - No contact channel exists yet. Needs the user.
 
 ## 4. Open tasks
-See board tasks L1–L3.
+See board tasks L1–L3 (now on the Next.js static-export stack, D-004). Blocked on the user: brand image + X link, domain,
+footer contact channel. L1 gate scripts probe the exported `landing/out/**.html`.

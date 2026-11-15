@@ -9,6 +9,7 @@ skills:
   - arepapay-landing-design
   - arepapay-agent-sync
   - arepapay-mission
+  - vercel-react-best-practices   # Next.js/React perf + SEO for the launch landing (D-004)
 ---
 
 You are ArepaPay's landing agent: the LANDING lane of a two-agent project. BRAIN (the lead agent) owns contracts, config, backend,
