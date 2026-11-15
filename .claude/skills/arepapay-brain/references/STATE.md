@@ -22,9 +22,14 @@ Phase 1 (rails) done; architecture decided (D-005); Phase 0 user actions U1–U3
 - OFAC GL 57 (2026-04-14) authorizes financial services with BCV, Banco de Venezuela, Banco Digital de los Trabajadores, Banco del Tesoro (law-firm alerts; check OFAC text before relying).
 - Brazil Drex blockchain shut down Nov 2025, privacy cited (press, BC unofficial).
 
+## Local L1 (D-008)
+- Chain 77077, config `config/l1/arepapaybank.local.json` (never hand-type values), verify `bash scripts/l1/s1-verify.sh`.
+- avalanche-cli v1.9.6 is `~/bin/avalanche` (`~/.avalanche-cli/bin/avalanche` is the old v1.2.4). Don't run `avalanche network clean` (it touches the v1 ArepaPay config).
+- ewoq (public test key) is allowlisted locally only.
+
 ## Open items
 - U1–U3 (user): repo private, revoke PAT, move funds off old keys.
-- Q1/Q3/Q4 resolved by D-005. Open: Q8–Q11, pilot partners. Next: spikes S1→S2 (B2, B3).
+- Q1/Q3/Q4 resolved by D-005. Open: Q8–Q11, pilot partners. Next: S2 eERC converter on chain 77077 (B3), S6 bridge (B6, needs ICM), Split Pay A audit fixes (D-010).
 - (done D-006) Fetch L1 skills from avaxskills.com (subnet-deployment, subnet-evm-config, precompiles, validator-manager-contract,
   kyc-aml-integration, safe-multisig, upgradeable-contracts); read each before installing; re-fetch or delete the broken
   `avax-dapp-architecture` / `avax-smart-contract-patterns` (not installed here).

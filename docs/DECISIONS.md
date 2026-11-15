@@ -2,6 +2,22 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-011 · 2026-11-15 · Split Pay option C: eERC knowledge skill + dual-control escrow algorithm (Claude Opus 5.5, BRAIN lane)
+- What: skill `.claude/skills/arepapay-eerc/` (verified eERC facts with file:line, visibility table, limits, patterns, checklist); `docs/features/SPLIT_PAY_C.md` (coordinator contract + Safe-registered eERC escrow account + bank escrow service with HSM proving key; attested holds keyed by txHash+logIndex; A's invariants adapted incl. reconciliation; build order).
+- Why: user: "realiza la A y luego adaptar alguna documentación o skill o algoritmo que use ese conocimiento para realizar la C".
+- Tool: read `EncryptedERC.sol` (transfer with `message` metadata, ReceiverPCT/AuditorPCT), `circom/registration.circom` + `Registrar.sol:82-110` (registration binds a public SenderAddress and requires msg.sender == it → a Safe can be an eERC account), Go/gnark prover in `zk/`.
+- Alternatives rejected: contract-held encrypted escrow (impossible without an off-chain proving key); single-key bank escrow (one key can move funds; dual control requires key + t-of-n Safe).
+- Verify: docs/skill only; `bash tests/check.sh` → ALL CHECKS PASSED.
+- Commit: this commit.
+
+### D-008 · 2026-11-15 · Spike S1: the bank's private L1 on the local network (Claude Opus 5.5, BRAIN lane, run by a subagent and re-verified)
+- What: `config/l1/genesis.arepapaybank.json`, `config/l1/arepapaybank.local.json` (single source of truth: chain 77077, RPC, ids, precompiles), `scripts/l1/s1-create.sh`, `scripts/l1/s1-verify.sh`, `docs/spikes/S1.md`; `tests/check.sh` secret scan now skips genesis storage-slot pairs (public constants) and still fails on a planted key.
+- Why: user: "sí, crea la L1 y migra todo allí".
+- Tool: avalanche-cli v1.9.6 (`~/bin/avalanche`), avalanchego v1.14.0, cast; sovereign L1, PoA, 1 validator.
+- Verify: BRAIN re-ran `bash scripts/l1/s1-verify.sh` → "15/15 checks passed, RESULT: PASS" (allowlist rejects a fresh funded address, setEnabled lets it send, setNone freezes it again, deployer allowlist blocks deploys, native minter inactive and mints nothing); `EXPECT_CHAIN_ID=13370` makes it fail (V9).
+- Notes: the CLI's local test key (ewoq, public) is in `enabledAddresses` because the CLI signs validator setup with it: local only, never on Fuji/mainnet. Fee for stage B/C confirmed: 512 nAVAX/s ≈ 1.33 AVAX/validator/month (ACP-77). Not yet: gateway RPC, ICM (needed for S6).
+- Commit: this commit.
+
 ### D-009 · 2026-11-15 · Split Pay QR feature: design + reusable prompt (Claude Opus 5.5, BRAIN lane)
 - What: `docs/features/SPLIT_PAY.md` (user's spec, names, step mapping, eERC escrow options A/B/C, contract rules), `prompts/SPLIT_PAY_PROMPT.md`; PLAN spike S7, Q13–Q15.
 - Why: user: "si el cliente quiere pagar 5$ pero un cliente tiene 3$ y el otro el resto … el contrato del qr será una transacción abierta … es como cuando el cliente hace lo mismo pero con diferentes tarjetas"; "ayúdame a descifrar cómo promptear".

@@ -1,0 +1,36 @@
+{
+  "_note": "Single source of truth (R7) for the LOCAL arepapaybank L1 (spike S1). No keys here. All keys named below are LOCAL-TEST-ONLY and must never hold value.",
+  "network": "local",
+  "name": "arepapaybank",
+  "chainId": 77077,
+  "tokenSymbol": "ARPB",
+  "rpcUrl": "http://127.0.0.1:9654/ext/bc/o26UiDDFKEqyXqqrukUkH4AZxe3puPGhZWgYz7RnAToLzYLD9/rpc",
+  "blockchainId": "o26UiDDFKEqyXqqrukUkH4AZxe3puPGhZWgYz7RnAToLzYLD9",
+  "blockchainIdHex": "0x687dd1328223395bc4991dc57006e18a76575d3a94fd097bdc91f1d01bc58ce0",
+  "subnetId": "AsoinseuPEhUCbRP2Vdk6yiuVVe285E5kh8vDsLK9AXt6AvXa",
+  "vmId": "jv9f7NYx4CMWokVdnVgVioNpveNAkE8Hu5FMFjBa9hNfHtPkn",
+  "subnetEvmVersion": "v0.8.0",
+  "avalanchegoVersion": "v1.14.0",
+  "l1ValidatorNodeId": "NodeID-HxdAGBxkTUBWZxofgipkbrt3AfTJJS956",
+  "genesisFile": "config/l1/genesis.arepapaybank.json",
+  "precompiles": {
+    "contractDeployerAllowList": { "address": "0x0200000000000000000000000000000000000000", "enabled": true },
+    "contractNativeMinter": { "address": "0x0200000000000000000000000000000000000001", "enabled": false },
+    "txAllowList": { "address": "0x0200000000000000000000000000000000000002", "enabled": true },
+    "feeManager": { "address": "0x0200000000000000000000000000000000000003", "enabled": true },
+    "rewardManager": { "address": "0x0200000000000000000000000000000000000004", "enabled": false },
+    "warpMessenger": { "address": "0x0200000000000000000000000000000000000005", "enabled": true }
+  },
+  "validatorManager": {
+    "type": "PoA, ValidatorManager v2 (genesis-deployed)",
+    "proxy": "0x0Feedc0de0000000000000000000000000000000",
+    "implementation": "0x0C0DEbA5E0000000000000000000000000000000",
+    "proxyAdmin": "0xa0AffE1234567890ABcDef1234567890ABCdEF34",
+    "owner": "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC"
+  },
+  "accounts": {
+    "admin": { "cliKeyName": "arepapay-local-admin", "address": "0x73de462800e064ba0CB53bDA6218B7F014a518B4", "roles": ["txAllowList admin", "contractDeployerAllowList admin", "feeManager admin"] },
+    "gasStation": { "cliKeyName": "arepapay-local-gasstation", "address": "0x6951db73A88833c3F51e613b7D4F2c7c0aA7A293", "roles": ["genesis-funded, not yet allowlisted"] },
+    "cliOperator": { "cliKeyName": "ewoq (avalanche-cli built-in)", "address": "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC", "roles": ["txAllowList enabled (needed for the CLI's PoA validator-manager txs)", "validator-manager owner", "proxy-admin owner"] }
+  }
+}
