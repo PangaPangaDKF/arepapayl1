@@ -1,6 +1,6 @@
 # Feature: merchants as exchange houses + the FX coordination ledger
 
-Version 1.0 · 2026-11-15 · D-014 · Owner: BRAIN · Status: **design (not built)**
+Version 1.1 · 2026-11-15 · D-014, D-020 · Owner: BRAIN · Status: **`FxLedger` built** (`contracts/src/FxLedger.sol`, 65 tests incl. invariants)
 
 ## 0. The user's spec (their words, condensed and translated)
 - "The merchants will **sell USDT or USDC to customers** and will be **exchange houses**, since they provide the liquidity."
@@ -19,7 +19,7 @@ Customer pays Bs (cash / Pago Móvil)  ──▶  Merchant (exchange house, KYC'
 ```
 | Step | Who | On chain (`FxLedger`) |
 |---|---|---|
-| 1. Quote | Merchant POS | `openOrder(customer, rate, commitment, expiry)`. The `rate` (Bs per USD) is checked against the bank's band; `commitment = hash(orderId, usdAmount, bsAmount, bsMethod, bsRef, salt)` |
+| 1. Quote | Merchant POS | `openOrder(customer, rate, commitment, expiry)`. The `rate` (Bs per USD) is checked against the bank's band; `commitment = hash(merchant, usdAmount, bsAmount, bsMethod, bsRef, salt)`. The orderId is left out because the merchant can't know it before the tx lands (D-020) |
 | 2. Customer accepts | Customer app | `acceptOrder(orderId)`: the customer agrees to the quote and states they paid the Bs |
 | 3. Merchant sends | Merchant POS | eERC `transfer(customer, …)`, then `markSent(orderId, eercTxHash)` |
 | 4. Customer confirms | Customer app | `confirmReceived(orderId)` → **Settled**. Or `dispute(orderId)` → the bank's compliance reviews |
@@ -66,6 +66,15 @@ with unmodified eERC; switching to prevention is the user's decision.**
 - `markSent` hashes are unique (one transfer can't settle two orders, N4).
 - Tests: every transition, wrong-actor reverts, rate band edges, expiry, duplicate tx hash, and a reconciliation simulator that
   flags an unexplained transfer.
+
+## 4b. Decisions taken while building (D-020)
+- The reconciler may also attest **Expired orders that already have a delivering transfer**. Otherwise a customer could receive
+  the USD and let the order expire, which would escape reconciliation and open an R12 gap.
+- A **Disputed** order is closed by the reconciler's result (Ok / Flagged); the follow-up (refund, freeze) happens off chain or
+  through the Freeze multisig.
+- A registered merchant may also be a customer of another merchant (a B2B restock purchase is legitimate).
+- Roles are single addresses (rate signer, reconciler) under an Ownable2Step admin; `renounceOwnership` is disabled; the rate moves
+  at most ±20 % per update; the spread is capped at 3 %.
 
 ## 5. Open decisions (user)
 - Q16: detect + freeze (default) or prevention by modified eERC.

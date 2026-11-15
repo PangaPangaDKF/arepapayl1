@@ -55,6 +55,14 @@ Start LANDING: `hc run --bg --name arepapay-landing --cwd /mnt/c/Users/dulbi/are
 D-number reserved → DECISIONS entry → CLAUDE.md/PLAN/STATE updated → Conventional Commit of your paths → deploy if gates green
 → push → board log → `references/CHANGELOG.md` Lesson + version bump.
 
+## 7b. Learn and remember (master-method §5.7, D-023)
+- Label every fact PROVEN / TRACED / SUSPECTED; only PROVEN goes into a skill or STATE "verified facts" (L-004).
+- Incident → `docs/LESSONS.md` entry at once (What / Root cause / RULE / Enforced by). General rules → promote to master-method.
+- User corrections and preferences → auto-memory (`feedback`, with Why and How to apply). Never keys or secrets in any memory.
+- Subagent lessons are claims: verify before recording (C14).
+- End every session with a 5-line retro at the top of `docs/HANDOFF_LOOP.md`: shipped + proof · broke + rule added · read first next
+  time · waits on the user · one prompt/skill improvement.
+
 ## 8. Talking to the user
 User's language (they write mixed English/Spanish; answer in English unless they switch), plain words, outcome → proof → what
 waits on them, one question with a recommendation, no caveman style.

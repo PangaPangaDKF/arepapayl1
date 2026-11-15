@@ -2,6 +2,20 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-023 · 2026-11-15 · Learning + memory loop in master-method and lane skills (Claude Opus 5.5, BRAIN lane)
+- What: master-method v1.3 §5.7 (three memory layers, PROVEN/TRACED/SUSPECTED labels, immediate LESSONS entries, promotion of general rules, auto-memory for user corrections, 5-line retro, subagent lessons verified) + checklist item 11; `arepapay-brain` §7b; LANDING task L5 for its own skill; auto-memory updated (project state, test keys).
+- Why: user: "improve the skills we are using with learning and memories features to enhance it with the best llm practices and with the style we are creating".
+- Verify: docs/skills only; `bash tests/check.sh` → ALL CHECKS PASSED (exit code).
+- Commit: this commit.
+
+### D-020 · 2026-11-15 · FxLedger contract (Claude Opus 5.5, BRAIN lane; built by a subagent, verified and amended by BRAIN)
+- What: `contracts/src/FxLedger.sol` (no value moved, N0; merchant registry; rate signer with ±20 % per-update bound; spread cap 3 %; band check in exact integers; orders Open→Accepted→Sent→Settled / Disputed / Expired / Cancelled; unique commitments and eERC tx hashes with `orderIdOfTx`; reconciler result stored separately); tests `FxLedger.t.sol` (62) + `FxLedger.invariant.t.sol` (3).
+- Why: user: "un registro que muestre que se realizó para que el comerciante no mueva fondos y no los declare" (D-014, R12).
+- Tool: tests written first against a stub (59 failed); mutations caught (cancel-after-accept, expire-on-settled → invariant handler improved); BRAIN re-ran `forge test` → 97 passed, then fixed ambiguity #1 test-first (reconcile Expired orders that have a transfer; old test and invariant updated to the new rule) → 99 passed.
+- Alternatives rejected: AccessControl multi-holder roles (a forgotten second holder is a risk; one key per role, rotated in one step).
+- Verify: `forge test` → "99 tests passed, 0 failed"; `bash tests/check.sh` → ALL CHECKS PASSED (exit code).
+- Commit: this commit.
+
 ### D-018 · 2026-11-15 · Two-brain protocol (P-NNN proposals) + duplicate landing session closed (Claude Opus 5.5, BRAIN lane)
 - What: `arepapay-agent-sync` §4 two-brain rules; board §Proposals with P-001 to LANDING; stopped herdr terminal t1c (BRAIN-started duplicate LANDING session, PID 26227, still at the trust prompt, no work done).
 - Why: user started the landing session in their own tab ("ya hice esto y el agente está corriendo"), and D-017 made both sessions part of the main brain; two LANDING agents and two unruled deciders would collide (C1).

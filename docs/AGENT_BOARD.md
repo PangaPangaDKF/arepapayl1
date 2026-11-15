@@ -14,13 +14,14 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 - [x] B3 · (done D-012; phone measurement pending the user) Spike S2 eERC standalone + IssuerGateway on the S1 chain; measure proof time on a low-end Android · ARCHITECTURE L2.
 - [ ] B6 · Spike S6 bank-run ICTT bridge (Fuji USDC → L1) with supply invariant · ARCHITECTURE L2.
 - [ ] B5 · Spikes S3 (Audit Council view key), S4 (Freeze Council), S5 (bank KYB onboarding) · ARCHITECTURE L3–L4.
-- [ ] B7 · Build `FxLedger` (MERCHANT_FX §4) test-first, plus the reconciliation simulator.
+- [x] B7 · (done D-020, 99 tests) Build `FxLedger` (MERCHANT_FX §4) test-first, plus the reconciliation simulator.
 - [ ] B8 · Test dApp for the MetaMask mobile browser (PLAN Phase 5b), after Q18.
 - [ ] B4 · Review LANDING's v0 against T1–T8 and decide the deploy target. Note (D-004): the stack is now a Next.js static export
   (`landing/out/`), so the target is a static host (Vercel static / `out/`). Confirm.
 
 ## Tasks for LANDING
 > **New from the user (D-014, 2026-11-15), applies to all copy:** ArepaPay is **a light payments app and nothing more**, as minimal as possible. **Raffles and WiFi vouchers are removed**: delete any rewards/raffle/WiFi section or mention. **Merchants are also exchange houses**: they provide the liquidity and sell USDT/USDC to customers at the bank's band rate; every sale is recorded (FX ledger); reselling or black-market exchange is forbidden (R12). Testing will be in the **MetaMask mobile in-app browser** (and PC) once a public test network exists (Q18). Until then any "Cómo probar" content is **Planned**, with no links (T5). Truth sources: `docs/features/MERCHANT_FX.md`, charter v1.3, ARCHITECTURE §3a.
+- [ ] L5 · (D-023) Add a "Learn and remember" section to `arepapay-landing-design` mirroring master-method §5.7 (evidence labels PROVEN/TRACED, LESSONS entry on every incident, retro line in HANDOFF_LOOP). Your lane, your wording.
 - [ ] L4 · Apply D-014 to `landing/`: remove rewards/raffles/WiFi; add a short "Comercios como casas de cambio" section (status Planned) with the FX-ledger idea in plain Spanish (every sale recorded, official band rate, no resale); keep the page minimal. Verify: 3 gates green + 1280 px render of the new section read. Reserve your D-number first.
 > Copy update (D-007 supersedes D-005 where they differ): the bank runs the chain, its validators and **one bridge** for real USDT/USDC; merchants deposit their own collateral (self-custody); **KYC is mandatory for everyone**; liquidity is provable on C-Chain. Older note (D-005): truth sources now include `docs/ARCHITECTURE.md`. Key truths: merchants are the main customers; banks are the only ramps; the chain is private and never bridged; balances use eERC, which hides **amounts and balances, not who pays whom** (say so honestly); oversight is split between two multisig councils; everything is In development / Planned.
 > Stack note (D-004): L1–L2 build on a Next.js App Router static export in `landing/`; the gates probe the exported
@@ -54,10 +55,10 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-017 | LANDING | Session context doc (next session = main brain for the loop) + landing skill v1.4 lessons | done |
 | D-018 | BRAIN | Two-brain protocol (P-NNN proposals) + duplicate landing session closed | done |
 | D-019 | BRAIN | Stage B execution: test keys, sweep of burned-key Fuji AVAX, this PC as Fuji node/validator, HTTPS tunnel RPC | reserved |
-| D-020 | BRAIN | FxLedger contract (MERCHANT_FX) test-first | reserved |
+| D-020 | BRAIN | FxLedger contract (MERCHANT_FX) test-first | done |
 | D-021 | BRAIN | Economics ("tokenomics") of the bank chain + pitch plan (decision memo) | reserved |
 | D-022 | BRAIN | MVP test dApp for MetaMask mobile browser + onboarding (test-KYC) | reserved |
-| D-023 | BRAIN | Learning + memory upgrade to master-method and lane skills | reserved |
+| D-023 | BRAIN | Learning + memory upgrade to master-method and lane skills | done |
 | D-024+ | | | Next free: reserve here first |
 
 ## Log
