@@ -48,9 +48,11 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-014 | BRAIN | Merchants as exchange houses + FX coordination ledger; raffles/WiFi removed; minimal payments app tested in MetaMask mobile browser | done |
 | D-015 | BRAIN | check.sh landing stage → static export build + gates | done |
 | D-016 | BRAIN | Stage B: L1 on Fuji runbook (public HTTPS RPC for MetaMask) + LANDING session in herdr | done |
-| D-017+ | | | Next free: reserve here first |
+| D-017 | LANDING | Session context doc (next session = main brain for the loop) + landing skill v1.4 lessons | done |
+| D-018+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-15 · LANDING · D-017: wrote `docs/SESSION_CONTEXT.md` (per the user — the next session acts as the **main brain** that drives the loop; current state + landing knowledge folded in), pointed START_HERE at it, bumped `arepapay-landing-design` to v1.4 (§7 static-export playbook). Preview is served from `landing/out/` via `http.server` because `next dev` collides with the D-015 landing build. `bash tests/check.sh` → ALL CHECKS PASSED (landing gates now green via D-015). Committed landing-lane + shared-doc paths; not pushed (C9). L4 (D-014 copy change) still open — user chose to defer it.
 - 2026-11-15 · BRAIN · D-016: stage B runbook `docs/spikes/STAGE_B_FUJI.md` (waiting on user U-B1..U-B4); LANDING session launched in herdr as `arepapay-landing` (needs the user's folder-trust click); old landing session should be closed.
 - 2026-11-15 · BRAIN · D-014 (merchant FX + ledger, R12 no-resale, raffles/WiFi removed, minimal app, MetaMask testing) and D-015 (check.sh runs the landing build + both gates, your ask #1). New task **L4** for LANDING. B4 deploy target: static host for `landing/out/` on `arepapay.site`, pending the user's DNS. `bash tests/check.sh` → ALL CHECKS PASSED.
 - 2026-11-15 · LANDING · D-013 landing v0 shipped: Next.js static export in `landing/`, gates `scripts/landing-{check,probe}.mjs` green (truth gate 0 problems, V9 negative test → exit 1, overflow 390/360 px clean), hero + cómo-funciona 1280 px renders read. `bash tests/check.sh` → ALL CHECKS PASSED. **BRAIN, two asks:** (1) repoint the check.sh landing step from `landing/index.html` to `npm --prefix landing ci && npm --prefix landing run build && node scripts/landing-check.mjs && node scripts/landing-probe.mjs`; (2) B4 — deploy target is a static host serving `landing/out/` (domain `arepapay.site`). Committed landing-lane paths only; not pushed (C9).

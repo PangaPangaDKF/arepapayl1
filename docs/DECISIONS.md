@@ -2,6 +2,14 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-017 · 2026-11-15 · Session context doc (next session = main brain for the loop) + landing skill v1.4 (Claude Opus 4.8, LANDING lane)
+- What: `docs/SESSION_CONTEXT.md` — the next session's "read first": it sets the **main-brain role** (primary decision-maker that drives the loop), snapshots the current state, folds in the landing knowledge, lists the decision queue and restates the laws. Added a pointer at the top of `START_HERE.md`. Bumped `arepapay-landing-design` to v1.4 (new §7 static-export playbook) + CHANGELOG.
+- Why: user (2026-11-15): "we need to start making commits and save context session md file with a improvement of the skill for this landing page with what we have learned … i will run a new session and i want the md context to say that you will be part of the main brain to take decisions for the loop."
+- Tool: the live-preview session itself — `next dev` crashed (`Cannot find module './627.js'`) the moment `check.sh` ran `next build` on the shared `landing/.next`; switched the preview to a static `http.server` over `landing/out/`. That lesson is now in the skill §7 and the context doc. master-method §5.4 closeout, §0 skill-editing.
+- Alternatives rejected: rewrite the charter to collapse LANDING into BRAIN (heavier, and would clobber BRAIN's active lane) — instead the context doc sets the main-brain role while keeping the lane split as a work/truth-check organizer; keep `next dev` for preview (it collides with the landing build, D-015).
+- Verify: `bash tests/check.sh` → ALL CHECKS PASSED (docs/skill only; no landing output changed). Landing gates still green from D-013.
+- Commit: this commit.
+
 ### D-016 · 2026-11-15 · Stage B on Fuji (runbook) + LANDING session started in herdr (Claude Opus 5.5, BRAIN lane)
 - What: `docs/spikes/STAGE_B_FUJI.md` (user steps U-B1 server, U-B2 Fuji key, U-B3 faucet + C→P transfer, U-B4 DNS `rpc.arepapay.site`; BRAIN steps: `avalanche node setup`, Fuji genesis without ewoq, deploy with `--bootstrap-endpoints` and `--balance`, Caddy HTTPS RPC exposing only the L1 path, verify, eERC redeploy, MetaMask add-network from config, manual tester approval as test-KYC). LANDING launched as herdr terminal `arepapay-landing` (t1c) with task L4.
 - Why: user: "quiero la b, realiza tú la opción 1".

@@ -1,5 +1,15 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-15 · LANDING turn 3 (→ main-brain handoff)
+- Done: ran the v0 preview, hit and diagnosed the `next dev` vs `check.sh`-build collision, switched to serving `landing/out/`
+  via `python3 -m http.server`. Wrote **`docs/SESSION_CONTEXT.md`** — per the user, the next session acts as the **main brain**
+  that takes decisions and drives the loop; it snapshots current state, folds in the landing knowledge, and lists the decision
+  queue. Pointed `START_HERE.md` at it. Bumped `arepapay-landing-design` to v1.4 (§7 static-export playbook) + CHANGELOG. (D-017)
+- Verified: `bash tests/check.sh` → ALL CHECKS PASSED (secret scan, rails, **landing build + 2 gates green via D-015**, contracts).
+- Next session (main brain): read `docs/SESSION_CONTEXT.md` first. Priority queue there — security U1–U3 (user's hands), B4 deploy
+  target + DNS for arepapay.site, L4 landing copy (D-014), B7 FxLedger, B6 bridge, B5 councils, B8 after Q18.
+- Needs the user: deferred L4 by choice; DNS for arepapay.site when ready; Q16/Q17/Q18; U1–U3 security.
+
 ## 2026-11-15 · BRAIN turn 3
 - Done: S1 private L1 (D-008), Split Pay A built + audited (D-010), Split Pay C spec + eERC skill (D-011), S2 eERC on chain 77077 (D-012), merchant FX design + R12 (D-014), check.sh runs your landing build + gates (D-015).
 - Verified: `bash tests/check.sh` → ALL CHECKS PASSED (secret scan, rails, landing build + 2 gates, forge 34 tests).

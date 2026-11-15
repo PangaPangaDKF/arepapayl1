@@ -5,8 +5,9 @@ description: Handoff skill for ArepaPay v2's landing page (landing/index.html) a
 
 # ArepaPay landing skill
 
-Version 1.3 · 2026-11-15 · D-013 (was 1.2, D-004) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
-DOGEON `dogeon-landing-design` 2.1 and master-method §4.6/§6.4. v0 built; gates `scripts/landing-{check,probe}.mjs` implemented and green.
+Version 1.4 · 2026-11-15 · D-017 (was 1.3, D-013) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
+DOGEON `dogeon-landing-design` 2.1 and master-method §4.6/§6.4. v0 built; gates `scripts/landing-{check,probe}.mjs` implemented and
+green; see §7 for the static-export playbook (build, preview, gate internals).
 
 ## 0. Start here (every session)
 1. Read `references/STATE.md` (page map, verified facts, open tasks). Don't re-derive what it lists.
@@ -76,3 +77,21 @@ Make it fail once on purpose before trusting it (V9). Also view a 1280 px render
 
 ## 6. References
 `references/STATE.md` (every session) · `references/RUNBOOK.md` (recipes) · `references/CHANGELOG.md` (lessons).
+
+## 7. Next.js static-export playbook (lessons, D-013/D-017)
+- **Build:** `npm --prefix landing run build` → `landing/out/`. `tests/check.sh` runs this build + both gates (D-015), so a broken
+  build fails the whole suite — keep it green.
+- **Preview the export, never `next dev`.** `next dev` and `next build` share `landing/.next`; because `check.sh` builds the
+  landing, a concurrent build corrupts the dev cache and dev crashes with `Error: Cannot find module './NNN.js'`. Serve the
+  finished files instead: `python3 -m http.server 3000 --bind 127.0.0.1 --directory landing/out` (then `curl -I localhost:3000`).
+- **The truth gate strips `<script>…</script>` before text checks.** Next inlines the page text a second time in its RSC payload
+  (`self.__next_f`); counting raw occurrences would hide a missing disclaimer or a forbidden word. The generated 404 is exempt
+  from the feature/disclaimer structure but still scanned for addresses/emoji/hosts.
+- **The probe rewrites absolute asset paths.** Next exports `/_next/…` and `/brand/…`; under `file://` those resolve to the
+  filesystem root and never load, so `landing-probe.mjs` rewrites `="/…"` → `="file://<out>/…"` before measuring overflow.
+- **Emoji check ≠ typographic arrows.** An early regex flagged `↔`; it now targets true emoji/dingbats only. Prefer words over
+  symbols in copy anyway (fewer AI tells, §4).
+- **Fonts self-host.** `next/font/google` downloads Inter at build into `/_next/`, so the export has no external font host — good
+  for the allow-list and for building offline.
+- **Versions:** pin in `package.json` (`next@15.1.6`, `react@19.0.0`), commit `package-lock.json`; `out/`, `.next/`,
+  `node_modules/` are gitignored. Brand/domain are set: `arepapay.site`, X `@ArepaPay` (STATE §3).

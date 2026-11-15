@@ -1,5 +1,8 @@
 # START HERE — any agent opening ArepaPay v2
 
+> **Latest session handoff + your role: read `docs/SESSION_CONTEXT.md` first** (2026-11-15, D-017). It sets the main-brain role
+> for the loop and folds in the landing knowledge; this file remains the lane/rule reference.
+
 ArepaPay v2 is a rebuild of ArepaPay as a permissioned Avalanche L1 (testnet) with KYC, encrypted balances and a bank-style back
 office. Plan: `docs/PLAN.md`. What v1 really was: `docs/research/arepapay_ground_truth.md`.
 Two Claude Code lanes work it in turns. **Pick one before you touch anything. If you are not sure which, ask the user.**

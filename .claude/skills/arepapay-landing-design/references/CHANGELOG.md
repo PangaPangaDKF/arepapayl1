@@ -1,5 +1,12 @@
 # arepapay-landing-design changelog (newest first)
 
+## 1.4 · 2026-11-15 · D-017 — static-export playbook (§7) + session context doc
+- Added §7 to the skill: build, **preview via a static server (not `next dev`)**, and the gate internals, so the next session
+  doesn't rediscover them. Wrote `docs/SESSION_CONTEXT.md` (next session = main brain for the loop) and pointed START_HERE at it.
+- Lesson (the one that triggered this): running `next dev` for a live preview **crashed** (`Cannot find module './627.js'`) the
+  moment BRAIN's `check.sh` ran `next build` — they share `landing/.next`. Serving `landing/out/` with `python3 -m http.server`
+  is collision-proof and previews the real artifact. Never hand the user a `next dev` URL on this repo.
+
 ## 1.3 · 2026-11-15 · D-013 — landing v0 built (Next.js static export) + gates implemented
 - Scaffolded `landing/` (Next.js App Router static export), built the Spanish-first v0 from STATE §2 with T6 status labels and
   the T7 disclaimer in hero + footer, and wrote the two gates (`scripts/landing-check.mjs`, `scripts/landing-probe.mjs`).
