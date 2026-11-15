@@ -1,5 +1,14 @@
 # arepapay-landing-design changelog (newest first)
 
+## 1.2 · 2026-11-15 — brand mark ingested; old materials flagged as anti-references
+- Saved the user's pixel logo to `landing/assets/brand/arepapay-logo.png` and recorded the brand facts in STATE §3.
+- Lesson: the user also sent an old TryNoah landing and hand-drawn infographics. They describe a **different, older product**
+  (Solana, non-custodial, no-KYC) and state planned features as live with fake balances and fake app UI. Reusing their copy
+  would reproduce exactly the DeepSeek-v1 failure (false claims). STATE §3 now lists them as forbidden sources; v2 copy comes
+  from the charter and `docs/PLAN.md` only, with status labels (T6).
+- Lesson: AI-generated brand art ships with watermarks and ghost artifacts. Treat the delivered PNG as a reference; produce a
+  cleaned transparent logo + a crisp wordmark for the real header/favicon/OG before launch.
+
 ## 1.1 · 2026-11-15 · D-004 — LANDING took the lane; launch stack = Next.js static export
 - Loaded `vercel-react-best-practices` into the landing agent. Set the launch stack to Next.js (App Router) static export,
   superseding the single-file/no-framework rule, for SEO/OG/Twitter-card and image optimization on a real domain.
