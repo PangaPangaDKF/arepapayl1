@@ -36,7 +36,9 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-007 | BRAIN | User correction: bank-run bridge + real USDT/USDC collateral, mandatory KYC, real IRL pilot | done |
 | D-008 | BRAIN | Spike S1: bank's private L1 on local network | reserved |
 | D-009 | BRAIN | Split-payment QR feature (multi-payer intent) design + prompt | done |
-| D-010+ | | | Next free: reserve here first |
+| D-010 | BRAIN | Split Pay option A: SplitPayEscrow contract + tests | reserved |
+| D-011 | BRAIN | Split Pay option C: eERC knowledge skill + bank-escrow algorithm spec | reserved |
+| D-012+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · D-009 Split Pay design + prompt (docs/features/SPLIT_PAY.md, prompts/SPLIT_PAY_PROMPT.md); spike S1 (D-008) running.
