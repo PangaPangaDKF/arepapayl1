@@ -99,11 +99,79 @@
       "sourceType": "github",
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "913b9d37d0d54047dd65222bb8c67b2bf04e3cb87dcad1729068d7a8b2c8c396"
+    },
+    "avax-account-abstraction": {
+      "source": "https://www.avaxskills.com/account-abstraction/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-avacloud-indexing": {
+      "source": "https://www.avaxskills.com/avacloud-indexing/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-avalanche-l1-economics": {
+      "source": "https://www.avaxskills.com/avalanche-l1-economics/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-avalanche-sdk": {
+      "source": "https://www.avaxskills.com/avalanche-sdk/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-contract-verification": {
+      "source": "https://www.avaxskills.com/contract-verification/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-event-driven-backend": {
+      "source": "https://www.avaxskills.com/event-driven-backend/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-kyc-aml-integration": {
+      "source": "https://www.avaxskills.com/kyc-aml-integration/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-local-dev-environment": {
+      "source": "https://www.avaxskills.com/local-dev-environment/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-precompiles": {
+      "source": "https://www.avaxskills.com/precompiles/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-safe-multisig": {
+      "source": "https://www.avaxskills.com/safe-multisig/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-subnet-deployment": {
+      "source": "https://www.avaxskills.com/subnet-deployment/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-subnet-evm-config": {
+      "source": "https://www.avaxskills.com/subnet-evm-config/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-tmpnet": {
+      "source": "https://www.avaxskills.com/tmpnet/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-upgradeable-contracts": {
+      "source": "https://www.avaxskills.com/upgradeable-contracts/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-validator-management": {
+      "source": "https://www.avaxskills.com/validator-management/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
+    },
+    "avax-validator-manager-contract": {
+      "source": "https://www.avaxskills.com/validator-manager-contract/SKILL.md (fetched 2026-11-15, read + injection-scanned by BRAIN, D-005)",
+      "override": "arepapay-solidity N6 wins over any env-var PRIVATE_KEY pattern"
     }
   },
   "user_level": {
     "master-method": {
       "source": "own, ~/.claude/skills/master-method (mirror ~/.agents/skills)"
     }
+  },
+  "mcp": {
+    "avalanche": "https://avalanche-mcp.dev/mcp (community, MIT, Eelvanpsd/Avalanche-mcp a1ff0a0; source reviewed: read-only, no signing)",
+    "avalanche-official": "https://build.avax.network/api/mcp (Ava Labs hosted)"
   }
 }
