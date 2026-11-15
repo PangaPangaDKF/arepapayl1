@@ -2,6 +2,15 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-016 · 2026-11-15 · Stage B on Fuji (runbook) + LANDING session started in herdr (Claude Opus 5.5, BRAIN lane)
+- What: `docs/spikes/STAGE_B_FUJI.md` (user steps U-B1 server, U-B2 Fuji key, U-B3 faucet + C→P transfer, U-B4 DNS `rpc.arepapay.site`; BRAIN steps: `avalanche node setup`, Fuji genesis without ewoq, deploy with `--bootstrap-endpoints` and `--balance`, Caddy HTTPS RPC exposing only the L1 path, verify, eERC redeploy, MetaMask add-network from config, manual tester approval as test-KYC). LANDING launched as herdr terminal `arepapay-landing` (t1c) with task L4.
+- Why: user: "quiero la b, realiza tú la opción 1".
+- Tool: avalanche-cli v1.9.6 help (deploy flags `--fuji --key --bootstrap-endpoints --balance --use-local-machine`; `node setup` over SSH).
+- Alternatives rejected: this PC as Fuji validator via `--use-local-machine` (WSL NAT, needs router/Windows port forwarding, stops when the PC sleeps).
+- Notes: the new LANDING session waits on the user's one-time folder-trust confirmation (consent gate, not answered by BRAIN); the user's older landing session (PID 1217, started as plain `claude` in /home/panga) should be closed to avoid two LANDING agents (C1).
+- Verify: docs only; `bash tests/check.sh` → ALL CHECKS PASSED.
+- Commit: this commit.
+
 ### D-015 · 2026-11-15 · check.sh landing stage runs the Next.js static export and both landing gates (Claude Opus 5.5, BRAIN lane)
 - What: `tests/check.sh` stage 3 now does `npm ci` (if needed) → `npm run build` → `landing-check.mjs` → `landing-probe.mjs` when `landing/package.json` exists.
 - Why: LANDING's ask in the D-013 board log.

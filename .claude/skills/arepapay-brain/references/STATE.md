@@ -31,6 +31,10 @@ Phase 1 (rails) done; architecture decided (D-005); Phase 0 user actions U1–U3
 - Addresses: `config/l1/eerc.local.json` (generated). Run: `bash scripts/eerc/s2-run.sh`; phone bench: `scripts/eerc/s2-phone-bench.sh`, `docs/spikes/S2.md` §8.
 - Proofs (i5-6500): transfer 4.4–7.6 s, withdraw 2.2–4.1 s, register 0.4–1.1 s; transfer ~1.1M gas.
 
+## Stage B (D-016)
+- Runbook `docs/spikes/STAGE_B_FUJI.md`; waiting on user U-B1 server (IP + SSH user), U-B2 key, U-B3 ≥ 3 test AVAX on P-Chain, U-B4 DNS rpc.arepapay.site.
+- LANDING runs in herdr terminal `arepapay-landing` (`hc read/send arepapay-landing`).
+
 ## Open items
 - U1–U3 (user): repo private, revoke PAT, move funds off old keys.
 - Q1/Q3/Q4 resolved by D-005. Open: Q8–Q11, pilot partners. **Waiting on the user: phone proof-time measurement (S2 §8), the go/no-go for eERC on phones.** Next for BRAIN: S6 bridge (B6, needs ICM), S3/S4 multisig audit/freeze with a real Safe, SplitPayCoordinator (option C step 1).
