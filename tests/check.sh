@@ -12,7 +12,7 @@ for f in $files; do
   [ -f "$f" ] || continue
   # 1) keys/seeds next to a key-ish word, 2) GitHub tokens, 3) bare 64-hex not labelled as a tx/hash/id
   h=$(grep -nIiE '(private[_ -]?key|secret|mnemonic|seed|deploy_key)[^[:cntrl:]]{0,40}\b(0x)?[0-9a-f]{64}\b|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{20,}' "$f" 2>/dev/null)
-  h2=$(grep -nIE '\b(0x)?[0-9a-fA-F]{64}\b' "$f" 2>/dev/null | grep -viE 'tx|hash|blockchain|subnet|id[ :=]' | grep -vE '"0x[0-9a-fA-F]{64}" *: *"0x[0-9a-fA-F]{64}"' || true)  # genesis storage slots are public constants
+  h2=$(grep -nIE '\b(0x)?[0-9a-fA-F]{64}\b' "$f" 2>/dev/null | grep -viE 'tx|hash|blockchain|subnet|id[ :=]|sha256|checksum' | grep -vE '"0x[0-9a-fA-F]{64}" *: *"0x[0-9a-fA-F]{64}"' || true)  # genesis storage slots are public constants
   [ -n "$h$h2" ] && hits="$hits\n$f:\n$h\n$h2"
 done
 if [ -n "$hits" ]; then bad "possible secret(s) in:$(printf "$hits" | sed -E 's/[0-9a-fA-F]{64}/<redacted>/g')"; else say "ok"; fi

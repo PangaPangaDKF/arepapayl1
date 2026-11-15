@@ -38,3 +38,9 @@ Inherited general lessons: master-method KNOWLEDGE §9 (C1–C15).
 - Root cause: exit code lost in a pipe.
 - RULE: never pipe the gate inside an `&&` chain; run `bash tests/check.sh > /tmp/gate.log; rc=$?; tail -3 /tmp/gate.log; [ $rc -eq 0 ] && git commit …`, or use `set -o pipefail`.
 - Enforced by: this lesson + `arepapay-brain` §6 gate line updated in the same commit.
+
+### L-007 · 2026-11-15 · BRAIN · tooling · the CLI lagged a mandatory network upgrade
+- What happened: Fuji's Helicon upgrade requires avalanchego ≥ 1.15, and subnet-evm moved inside the avalanchego release. avalanche-cli 1.9.7 still resolves subnet-evm v0.8.0 (plugin 44), and the public API dropped methods the CLI uses (`platform.getBalance`, `avax.getAtomicTxStatus`).
+- Root cause: tool versions were assumed compatible with the live network.
+- RULE: before any public-network deploy, check (1) the network's required node version and active upgrades, (2) the VM plugin version that node needs, (3) that every API method the tool calls still exists. Run your own node and use `--endpoint` when the public API is trimmed.
+- Enforced by: STAGE_B_FUJI runbook preflight + this lesson (promoted to master-method G6 note).

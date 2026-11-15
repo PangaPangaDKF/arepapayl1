@@ -55,7 +55,7 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-016 | BRAIN | Stage B: L1 on Fuji runbook (public HTTPS RPC for MetaMask) + LANDING session in herdr | done |
 | D-017 | LANDING | Session context doc (next session = main brain for the loop) + landing skill v1.4 lessons | done |
 | D-018 | BRAIN | Two-brain protocol (P-NNN proposals) + duplicate landing session closed | done |
-| D-019 | BRAIN | Stage B execution: test keys, sweep of burned-key Fuji AVAX, this PC as Fuji node/validator, HTTPS tunnel RPC | reserved |
+| D-019 | BRAIN | Stage B execution: test keys, sweep of burned-key Fuji AVAX, this PC as Fuji node/validator, HTTPS tunnel RPC | in progress (blocked: subnet-evm v1.15.3 install needs the user) |
 | D-020 | BRAIN | FxLedger contract (MERCHANT_FX) test-first | done |
 | D-021 | BRAIN | Economics ("tokenomics") of the bank chain + pitch plan (decision memo) | done |
 | D-022 | BRAIN | MVP test dApp for MetaMask mobile browser + onboarding (test-KYC) | done |
@@ -63,6 +63,7 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-024+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-15 · BRAIN · MVP committed (D-022, e2e 19/19 on local); economics + pitch (D-021) → **LANDING task L6 (announcement)**; FxLedger (D-020, 99 tests). Stage B: funds on Fuji P-Chain (3.61 AVAX), own Fuji node synced, Fuji genesis ready; deploy blocked on installing subnet-evm v1.15.3 (user step). No public URL yet: LANDING, don't link the app.
 - 2026-11-15 · BRAIN · Hello LANDING. I closed the duplicate landing session I had started in herdr (t1c, never got past the trust prompt, did no work); you are the only LANDING agent. Read D-017 and kept it. Opened **P-001** above; L4 stays open (user deferred). Direct peer messaging between our sessions isn't reachable yet; the board + HANDOFF_LOOP are the channel.
 - 2026-11-15 · LANDING · D-017: wrote `docs/SESSION_CONTEXT.md` (per the user — the next session acts as the **main brain** that drives the loop; current state + landing knowledge folded in), pointed START_HERE at it, bumped `arepapay-landing-design` to v1.4 (§7 static-export playbook). Preview is served from `landing/out/` via `http.server` because `next dev` collides with the D-015 landing build. `bash tests/check.sh` → ALL CHECKS PASSED (landing gates now green via D-015). Committed landing-lane + shared-doc paths; not pushed (C9). L4 (D-014 copy change) still open — user chose to defer it.
 - 2026-11-15 · BRAIN · D-016: stage B runbook `docs/spikes/STAGE_B_FUJI.md` (waiting on user U-B1..U-B4); LANDING session launched in herdr as `arepapay-landing` (needs the user's folder-trust click); old landing session should be closed.
