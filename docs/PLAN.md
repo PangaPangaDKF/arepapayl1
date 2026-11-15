@@ -1,6 +1,6 @@
 # ArepaPay v2 — master plan
 
-Version 1.1 · 2026-11-15 (D-005: encrypted consortium architecture) · Owner: BRAIN (decides inside the user's rules) · Method: `master-method` skill · Charter: skill `arepapay-mission`
+Version 1.2 · 2026-11-15 (D-005 architecture, D-007 user correction: bank bridge, real collateral, mandatory KYC) · Owner: BRAIN (decides inside the user's rules) · Method: `master-method` skill · Charter: skill `arepapay-mission`
 Ground truth: `docs/research/arepapay_ground_truth.md` (what exists, FACT vs CLAIM) · Method source: `docs/research/dogeon_methodology.md`
 
 ## 0. Thinking (M0: what we believe and why)
@@ -34,10 +34,11 @@ Exit: `bash tests/check.sh` green; START_HERE + both agents launchable; board ha
 | ID | Question | Method | Decides |
 |---|---|---|---|
 | S1 | **Private permissioned L1** we control | avalanche-cli / platform-cli (skills `avax-subnet-deployment`, `avax-precompiles`, `avax-subnet-evm-config`), local tmpnet first: `txAllowList` + `contractDeployerAllowList` + `feeManager`, native minter off, admin = test Safe; RPC behind an authenticated gateway; genesis gas station | L1 config + hosting (Q2) |
-| S2 | **eERC standalone** on that L1 | deploy `ava-labs/EncryptedERC` standalone with an `IssuerGateway` owner; measure registration/transfer proof time on desktop and a low-end Android, gas, UX of key backup | Go/no-go for encrypted balances; fallback = signed ledger |
+| S2 | **eERC converter (SDK)** on that L1 | deploy `ava-labs/EncryptedERC` converter mode over the bridged ERC-20 with `@avalabs/eerc-sdk`; measure registration/transfer proof time on desktop and a low-end Android, gas, UX of key backup | Go/no-go for encrypted balances; fallback = signed ledger |
 | S3 | **Audit Council view key** | Shamir t-of-n split of the auditor key in a ceremony + on-chain `AuditRequest` flow; research threshold ElGamal decryption so the key is never rebuilt | View-power design |
 | S4 | **Freeze Council** | Safe multisig as `txAllowList` admin, `FreezeRegistry` with expiring holds | Freeze-power design |
-| S5 | **Bank KYB → onboarding** | bank approval (mock bank API) → `Onboarding` contract enables wallet with tier/expiry/hash | Identity flow (Q8) |
+| S5 | **Bank KYC → onboarding** | bank approval (mock bank API) → `Onboarding` contract enables wallet with tier/expiry/hash | Identity flow (KYC mandatory, D-007) |
+| S6 | **Bank-run ICTT bridge** | Fuji C-Chain USDC home → L1 remote ERC-20, bank relayer; invariant L1 supply == locked; no admin drain | Ramp + provable liquidity (D-007) |
 
 ### Phase 3 — Contracts v2 (BRAIN; tests first; nerves N0–N7; v1 is a spec, not code)
 - **KYCRegistry:** tier, expiry, provider-reference hash; **no PII on chain**; compliance role only.
@@ -105,16 +106,17 @@ Gates: `node scripts/landing-check.mjs`, `node scripts/landing-probe.mjs`, `bash
 | Q | Decision | Status / recommendation |
 |---|---|---|
 | Q1 | Custody | **Resolved by D-005:** non-custodial by construction (eERC proofs need the holder's key); key backup/recovery UX is part of S2. |
-| Q2 | L1 hosting | Local tmpnet for dev; for the pilot, validators run by ArepaPay + the partner bank (one small server each). |
+| Q2 | L1 hosting | Stage A local tmpnet, stage B Fuji L1, stage C mainnet L1 with bank-run validators (ARCHITECTURE §3, D-007). |
 | Q3 | Privacy layer | **Chosen: eERC standalone + private RPC (D-005)**, go/no-go after S2 numbers. |
-| Q4 | KYC provider | **Replaced:** the partner bank does KYB/KYC (it must anyway); ArepaPay stores no ID documents. |
+| Q4 | KYC provider | The bank does KYC (mandatory for everyone, D-007); ArepaPay stores no ID documents. |
 | Q5 | Fee model | One fee in bps with a cap, enforced in code; set with the partner bank's costs once known. |
 | Q6 | Raffles / WiFi minutes | Parked: not in the user's 2026-11-15 model; revisit after the pilot. |
 | Q7 | Repo visibility | Private until the Phase 8 audit. |
-| Q8 | Customer KYC | **Light tier** (phone + merchant sponsorship, low limits) upgrading to full KYC at the bank. |
-| Q9 | Council seats | 3-of-5 independent entities: issuing bank, second bank, ArepaPay, merchant cooperative, independent auditor/notary. |
+| Q8 | Customer KYC | **Resolved by D-007: mandatory KYC for everyone.** |
+| Q9 | Multisig signers (audit + freeze) | Proposal 2-of-3: bank, bank, ArepaPay. User decides. |
 | Q10 | Legal wrapper | Operate under a licensed bank or SUNACRIP licensee + written OFAC opinion before any real money (market §5). |
-| Q11 | Recovery/reversal power | **No** for the pilot: freeze yes, reverse no (reversal makes the councils custodians). |
+| Q12 | USDT, USDC or both on the bridge | USDC first on Fuji (Circle testnet faucet exists); both on mainnet if the bank wants. |
+| Q11 | Recovery/reversal power | Default no (freeze yes, reverse no); possible only with a custom design. User decides. |
 
 ## 3. Risks
 - Fuji L1 validator uptime.

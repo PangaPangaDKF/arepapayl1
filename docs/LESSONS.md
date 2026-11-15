@@ -14,3 +14,9 @@ Inherited general lessons: master-method KNOWLEDGE §9 (C1–C15).
 - Root cause: commit messages and landing copy were trusted as state.
 - RULE: inherited features are claims until a test or live check proves them (C14); public copy carries status labels (T6).
 - Enforced by: `arepapay-landing-design` T6 + `landing-check.mjs` (status label check); BRAIN STATE "verified facts" list.
+
+### L-003 · 2026-11-15 · BRAIN · analysis · steered the user's model toward an incumbent design
+- What happened: D-005 v1.0 turned "the bank is the ramp" into "no bridge, bank-issued IOU" and added a no-KYC customer tier and a council of outside entities, framing the user's blockchain design through traditional-finance assumptions. The user corrected it.
+- Root cause: research findings (what incumbents do) were used to redesign the user's model instead of to analyze it.
+- RULE: master-method S8: analyze the user's model on its own terms first; present risks as engineering facts next to it, never as a replacement; any departure from the user's words is a question, not a decision.
+- Enforced by: master-method S8 + M0 (state which part is the user's spec and which is BRAIN's analysis); ARCHITECTURE §0 quotes the user's spec verbatim before any design.

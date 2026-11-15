@@ -2,6 +2,14 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-007 · 2026-11-15 · User correction: bank-run bridge, real USDT/USDC collateral, mandatory KYC, real IRL pilot (user decision, recorded by BRAIN)
+- What: ARCHITECTURE v1.1 (bridge + liquidity on chain, eERC converter over bridged USDT/USDC, auditor/freeze multisigs bank-led, KYC for everyone, staged pilot A/B/C with ~$1,000 initial liquidity and ~$100 real collateral per merchant); charter v1.2 (R1 staged money, R9 one bank-run bridge, R10 bank-led logged oversight, R11 KYC mandatory); PLAN v1.2 (S6 bridge spike, Q2/Q4/Q8/Q9/Q11/Q12).
+- Why: user: "la parte centralizada y que el banco controla o es la rampa significa que sí existirá un puente y una liquidez inicial, los micro negocios colocarán el colateral de usdt o usdc"; "el testing a nivel de prueba en IRL es real, 100$ por micro negocio"; "si se cierra la cadena la liquidez está allí dentro y no en el banco"; "no quiero que los balances de las personas o las transacciones sean trazadas"; "quiero que el kyc sea obligatorio"; "estás para analizar, no para inclinar lo que estoy pensando".
+- Tool: eERC source (converter `Deposit`/`Withdraw` amounts visible, transfers/balances encrypted); master-method M0.
+- Alternatives rejected: D-005 v1.0 choices (no bridge, bank-issued IOU, light KYC tier) — they replaced the user's model with an incumbent-style one (L-003).
+- Verify: `bash tests/check.sh` → ALL CHECKS PASSED (docs only).
+- Commit: this commit.
+
 ### D-006 · 2026-11-15 · Avalanche MCP + 16 avaxskills (Claude Opus 5.5, BRAIN lane)
 - What: `.mcp.json` with `avalanche` (community, avalanche-mcp.dev, repo Eelvanpsd/Avalanche-mcp@a1ff0a0) and `avalanche-official` (Ava Labs hosted build.avax.network/api/mcp); 16 `avax-*` skills from avaxskills.com (precompiles, subnet-deployment, subnet-evm-config, validator-manager-contract, validator-management, safe-multisig, kyc-aml-integration, avalanche-sdk, upgradeable-contracts, avalanche-l1-economics, tmpnet, avacloud-indexing, event-driven-backend, account-abstraction, contract-verification, local-dev-environment).
 - Why: user: "this is the mcp, the avalanche dev repo … and the skills".

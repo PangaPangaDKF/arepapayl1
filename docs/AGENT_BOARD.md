@@ -11,12 +11,13 @@ build. BRAIN: please confirm the deploy target (B4).
 - [x] B1 · (done D-006) Fetch and read L1 skills from avaxskills.com (subnet-deployment, subnet-evm-config, precompiles, validator-manager-contract, kyc-aml-integration, safe-multisig, upgradeable-contracts); install the useful ones into `.claude/skills/`, record sources in `skills-lock.json`.
 - [ ] B2 · Spike S1 private permissioned L1 on local tmpnet · PLAN Phase 2, ARCHITECTURE L1.
 - [ ] B3 · Spike S2 eERC standalone + IssuerGateway on the S1 chain; measure proof time on a low-end Android · ARCHITECTURE L2.
+- [ ] B6 · Spike S6 bank-run ICTT bridge (Fuji USDC → L1) with supply invariant · ARCHITECTURE L2.
 - [ ] B5 · Spikes S3 (Audit Council view key), S4 (Freeze Council), S5 (bank KYB onboarding) · ARCHITECTURE L3–L4.
 - [ ] B4 · Review LANDING's v0 against T1–T8 and decide the deploy target. Note (D-004): the stack is now a Next.js static export
   (`landing/out/`), so the target is a static host (Vercel static / `out/`). Confirm.
 
 ## Tasks for LANDING
-> Copy update (D-005): truth sources now include `docs/ARCHITECTURE.md`. Key truths: merchants are the main customers; banks are the only ramps; the chain is private and never bridged; balances use eERC, which hides **amounts and balances, not who pays whom** (say so honestly); oversight is split between two multisig councils; everything is In development / Planned.
+> Copy update (D-007 supersedes D-005 where they differ): the bank runs the chain, its validators and **one bridge** for real USDT/USDC; merchants deposit their own collateral (self-custody); **KYC is mandatory for everyone**; liquidity is provable on C-Chain. Older note (D-005): truth sources now include `docs/ARCHITECTURE.md`. Key truths: merchants are the main customers; banks are the only ramps; the chain is private and never bridged; balances use eERC, which hides **amounts and balances, not who pays whom** (say so honestly); oversight is split between two multisig councils; everything is In development / Planned.
 > Stack note (D-004): L1–L2 build on a Next.js App Router static export in `landing/`; the gates probe the exported
 > `landing/out/**.html`. Blocked on the user for brand + domain before the L2 visual build.
 - [ ] L1 · Write the gates. Files: `scripts/landing-check.mjs` (zero deps, rules in `arepapay-landing-design` §5) and `scripts/landing-probe.mjs` (390/360 px iframe overflow probe and `--shot '#id' --out <png>` at 1280 px; reference implementations at `/mnt/c/Users/dulbi/dogeon/scripts/landing-check.mjs` and `landing-probe.mjs`, read-only). Prove `landing-check.mjs` fails once on purpose (plant an emoji and a forbidden word in a temp copy) before trusting it. Verify: both scripts exit 0 on the finished page.
@@ -32,10 +33,11 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-004 | LANDING | Launch stack = Next.js static export; load vercel-react-best-practices | done |
 | D-005 | BRAIN | Architecture: encrypted consortium chain (eERC + private RPC + multisig audit/freeze) | done |
 | D-006 | BRAIN | Avalanche MCP + 16 avaxskills installed | done |
-| D-007 | BRAIN | User correction: bank-run bridge + real USDT/USDC collateral, mandatory KYC, real IRL pilot | reserved |
+| D-007 | BRAIN | User correction: bank-run bridge + real USDT/USDC collateral, mandatory KYC, real IRL pilot | done |
 | D-008+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-15 · BRAIN · D-007 user correction applied: ARCHITECTURE v1.1, charter v1.2, PLAN v1.2, L-003, master-method S8. `bash tests/check.sh` → ALL CHECKS PASSED.
 - 2026-11-15 · BRAIN · D-005 architecture (encrypted consortium chain) + D-006 MCP/skills; market research in `docs/research/market_landscape.md`; PLAN v1.1, charter v1.1. `bash tests/check.sh` → ALL CHECKS PASSED.
 - 2026-11-14 · BRAIN · rails committed (D-001..D-003); `bash tests/check.sh` → ALL CHECKS PASSED; LANDING tasks L1–L3 opened.
 - 2026-11-14 · BRAIN · LANDING launched in herdr terminal `arepapay-landing` via `scripts/start-landing.sh` (login shell: the hc core PATH lacks nvm); it waits on the user's one-time folder-trust confirmation (`hc attach arepapay-landing`).
