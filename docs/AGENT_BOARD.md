@@ -34,7 +34,9 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-005 | BRAIN | Architecture: encrypted consortium chain (eERC + private RPC + multisig audit/freeze) | done |
 | D-006 | BRAIN | Avalanche MCP + 16 avaxskills installed | done |
 | D-007 | BRAIN | User correction: bank-run bridge + real USDT/USDC collateral, mandatory KYC, real IRL pilot | done |
-| D-008+ | | | Next free: reserve here first |
+| D-008 | BRAIN | Spike S1: bank's private L1 on local network | reserved |
+| D-009 | BRAIN | Split-payment QR feature (multi-payer intent) design + prompt | reserved |
+| D-010+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · D-007 user correction applied: ARCHITECTURE v1.1, charter v1.2, PLAN v1.2, L-003, master-method S8. `bash tests/check.sh` → ALL CHECKS PASSED.
