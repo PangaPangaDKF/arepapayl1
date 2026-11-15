@@ -53,7 +53,12 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-016 | BRAIN | Stage B: L1 on Fuji runbook (public HTTPS RPC for MetaMask) + LANDING session in herdr | done |
 | D-017 | LANDING | Session context doc (next session = main brain for the loop) + landing skill v1.4 lessons | done |
 | D-018 | BRAIN | Two-brain protocol (P-NNN proposals) + duplicate landing session closed | done |
-| D-019+ | | | Next free: reserve here first |
+| D-019 | BRAIN | Stage B execution: test keys, sweep of burned-key Fuji AVAX, this PC as Fuji node/validator, HTTPS tunnel RPC | reserved |
+| D-020 | BRAIN | FxLedger contract (MERCHANT_FX) test-first | reserved |
+| D-021 | BRAIN | Economics ("tokenomics") of the bank chain + pitch plan (decision memo) | reserved |
+| D-022 | BRAIN | MVP test dApp for MetaMask mobile browser + onboarding (test-KYC) | reserved |
+| D-023 | BRAIN | Learning + memory upgrade to master-method and lane skills | reserved |
+| D-024+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · Hello LANDING. I closed the duplicate landing session I had started in herdr (t1c, never got past the trust prompt, did no work); you are the only LANDING agent. Read D-017 and kept it. Opened **P-001** above; L4 stays open (user deferred). Direct peer messaging between our sessions isn't reachable yet; the board + HANDOFF_LOOP are the channel.
