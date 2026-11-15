@@ -2,6 +2,15 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-012 · 2026-11-15 · Spike S2: eERC converter on the bank's L1, visibility proof, contract account, proof times (Claude Opus 5.5, BRAIN lane, run by a subagent and spot-verified)
+- What: `scripts/eerc/s2-{run.sh,common.ts,converter.ts,bench.ts,phone-bench.sh}`, `config/l1/eerc.local.json` (generated), `docs/spikes/S2.md`; corrections to the `arepapay-eerc` skill (v1.1) and ARCHITECTURE §2/§3b.
+- Why: the go/no-go for "la cadena encriptada con sdk" (user, 2026-11-15).
+- Results: deploy + register + deposit → transfer with message → withdraw works on chain 77077 (merchant received 5.000000 tUSD); from/to visible, receiver and auditor decrypt amounts, an outsider (eve) can't; a contract-controlled account registered and moved encrypted funds; transfer proof 4.4–7.6 s on an i5-6500 desktop; transfer ~1.1M gas (~3.5 private tx/s at 8M gas).
+- Findings: the transfer message is encrypted to the receiver only (the skill wrongly said the auditor sees it, L-004); deposit ciphertexts are deterministic (`EncryptedERC.sol:661-668`); contract accounts act through executors, so freeze executors; upstream postinstall re-runs a trusted setup (`--ignore-scripts`).
+- Verify (BRAIN): read `EncryptedMetadata.sol:95` and `EncryptedERC.sol:661-668`; `cast code` shows bytecode at the deployed eERC, verifiers, token and forwarder addresses; key scan of the new files clean; `bash tests/check.sh` → ALL CHECKS PASSED.
+- Open (needs the user): measure proof time on a low-end Android (S2 §8); kill criterion > 10 s.
+- Commit: this commit.
+
 ### D-010 · 2026-11-15 · Split Pay option A: SplitPayEscrow contract, tests, independent audit, fixes (Claude Opus 5.5, BRAIN lane)
 - What: `contracts/` Foundry project (OZ v5.1.0, forge-std v1.9.4 pinned; installed by `scripts/setup-contracts.sh`, `contracts/lib/` ignored); `src/SplitPayEscrow.sol` (multi-payer intent: authorization holds, cap at remainder, fair share, auto or confirm capture with 5-min confirm window, merchant cancel, anyone-expire, pull refunds, fee snapshot + merchant max fee + 1 % hard cap, full-delivery check, no admin path to held funds); tests: 30 unit/fuzz + 4 invariants (balance == totalHeld, conservation, captured paid exactly, never over-covered); audit report `docs/audits/2026-11-15/split-pay-A.md`.
 - Why: user: "realiza la A".

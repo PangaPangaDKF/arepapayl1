@@ -80,7 +80,7 @@ Lesson L-003.
 | Balances | hidden (private chain + encrypted) | **encrypted** | can decrypt |
 | Transfer amounts | hidden | **encrypted** | can decrypt |
 | Who paid whom (addresses) | hidden (private chain) | visible (eERC emits `from`/`to`) | visible |
-| Deposit / withdraw amounts (entering/leaving encryption) | hidden | visible (`Deposit`/`Withdraw` events) | visible |
+| Deposit / withdraw amounts (entering/leaving encryption) | hidden | visible (`Deposit`/`Withdraw` events); deposit ciphertexts are deterministic, so deposit-only balances are derivable (S2) | visible |
 - So nobody outside can trace anything, and inside the bank amounts and balances stay encrypted. The bank knows the network
   (who pays whom), like any bank knows its customers' counterparties.
 - **Holders keep their own keys:** the ZK proofs require the holder's key, so the system is self-custody by construction.
@@ -97,6 +97,8 @@ Lesson L-003.
   4. the bank tells the user where the funds went (the counterparty is a KYC'd person on the bank's network);
   5. the Freeze multisig freezes the receiving wallet through `txAllowList`;
   6. legal process.
+- **Freezing contract accounts:** `txAllowList` checks the sending EOA, so freezing a contract account means removing its
+  executors. Only the bank can deploy contracts (deployer allowlist), so every contract account is known (S2).
 - **Freeze yes, reverse no** (default): eERC balances can't be moved without the holder's key. Adding a reversal/recovery power is
   possible only with a custom design and is the user's decision (Q11).
 
@@ -138,6 +140,14 @@ Facts for stage C:
 - bridge in/out time;
 - blackout downtime;
 - theft/freeze cases handled.
+
+## 3b. Measured so far (S1, S2, local)
+- S1: allowlist, freeze switch, deployer allowlist and native minter off: 15/15 PASS.
+- S2: eERC converter end to end works. Transfer proof 4.4–7.6 s on a desktop CPU; gas ~1.1M per private transfer (~3.5 tx/s at
+  an 8M gas limit). **Biggest risk: proof time on cheap phones (projected 25–60 s in the browser).** It needs the user's
+  measurement. Options if too slow: a native mobile prover instead of the browser, a merchant POS device doing the proving, or
+  the signed-ledger fallback. Proving on a server with the user's key would end self-custody, so it is only for the bank's own
+  escrow (option C).
 
 ## 4. Spikes
 | ID | Proves |

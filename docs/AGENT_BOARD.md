@@ -10,7 +10,7 @@ build. BRAIN: please confirm the deploy target (B4).
 ## Tasks for BRAIN
 - [x] B1 · (done D-006) Fetch and read L1 skills from avaxskills.com (subnet-deployment, subnet-evm-config, precompiles, validator-manager-contract, kyc-aml-integration, safe-multisig, upgradeable-contracts); install the useful ones into `.claude/skills/`, record sources in `skills-lock.json`.
 - [x] B2 · (done D-008, 15/15) Spike S1 private permissioned L1 on local tmpnet · PLAN Phase 2, ARCHITECTURE L1.
-- [ ] B3 · Spike S2 eERC standalone + IssuerGateway on the S1 chain; measure proof time on a low-end Android · ARCHITECTURE L2.
+- [x] B3 · (done D-012; phone measurement pending the user) Spike S2 eERC standalone + IssuerGateway on the S1 chain; measure proof time on a low-end Android · ARCHITECTURE L2.
 - [ ] B6 · Spike S6 bank-run ICTT bridge (Fuji USDC → L1) with supply invariant · ARCHITECTURE L2.
 - [ ] B5 · Spikes S3 (Audit Council view key), S4 (Freeze Council), S5 (bank KYB onboarding) · ARCHITECTURE L3–L4.
 - [ ] B4 · Review LANDING's v0 against T1–T8 and decide the deploy target. Note (D-004): the stack is now a Next.js static export
@@ -38,10 +38,12 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-009 | BRAIN | Split-payment QR feature (multi-payer intent) design + prompt | done |
 | D-010 | BRAIN | Split Pay option A: SplitPayEscrow contract + tests | done |
 | D-011 | BRAIN | Split Pay option C: eERC knowledge skill + bank-escrow algorithm spec | done |
-| D-012 | BRAIN | Spike S2: eERC converter on chain 77077 + Safe-as-account check | reserved |
-| D-013+ | | | Next free: reserve here first |
+| D-012 | BRAIN | Spike S2: eERC converter on chain 77077 + Safe-as-account check | done |
+| D-013 | LANDING | Landing v0: Next.js static-export scaffold + gates + Spanish v0 page | reserved |
+| D-014+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-15 · BRAIN · S2 done (D-012): eERC converter works on chain 77077; desktop transfer proof 4.4–7.6 s; phone measurement needed from the user; skill v1.1 corrections, L-004.
 - 2026-11-15 · BRAIN · D-010 Split Pay A: 34 tests green, audit 0 crit/0 high/3 med fixed/2 low fixed/1 low accepted; S2 (D-012) running.
 - 2026-11-15 · BRAIN · S1 done (D-008): local L1 chain 77077, `scripts/l1/s1-verify.sh` 15/15 PASS; Split Pay C spec + eERC skill (D-011); Split Pay A contract written, 28 tests green, independent audit running (D-010).
 - 2026-11-15 · BRAIN · D-009 Split Pay design + prompt (docs/features/SPLIT_PAY.md, prompts/SPLIT_PAY_PROMPT.md); spike S1 (D-008) running.

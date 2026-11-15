@@ -5,7 +5,7 @@ description: Verified knowledge of Avalanche's encrypted ERC-20 (eERC, ava-labs/
 
 # ArepaPay eERC knowledge
 
-Version 1.0 · 2026-11-15 · D-011 · Source read by BRAIN: `ava-labs/EncryptedERC@8dc98cd` (audited circom + gnark; last security
+Version 1.1 · 2026-11-15 · D-011, corrected by spike S2 (D-012) · Source read by BRAIN: `ava-labs/EncryptedERC@8dc98cd` (audited circom + gnark; last security
 fix 2026-08-31). Every fact below cites the file it was read from. Re-verify the line numbers if the upstream commit changes.
 
 ## 1. What eERC hides, and from whom
@@ -15,7 +15,11 @@ fix 2026-08-31). Every fact below cites the file it was read from. Re-verify the
 | Transfer amount | hidden | encrypted | decrypts (`AuditorPCT`) | decrypts (`ReceiverPCT`) |
 | Sender / receiver addresses | hidden | **visible** (`PrivateTransfer(address indexed from, address indexed to, …)`, `EncryptedERC.sol:122`) | visible | visible |
 | Deposit / withdraw amounts (converter mode) | hidden | **visible** (`Deposit(user, amount, …)`, `Withdraw(user, amount, …)`, `EncryptedERC.sol:137,153`) | visible | — |
-| Message attached to a transfer | hidden | visible (metadata event, `EncryptedERC.sol:830`) | visible | visible |
+| Message attached to a transfer | hidden | raw bytes as the sender chose them (`PrivateMessage`, `EncryptedMetadata.sol:95`); the SDK encrypts them **to the receiver only** | **not readable** unless the app also encrypts a copy to the auditor | decrypts |
+
+**Deposits are not private:** converter deposits encrypt with a fixed randomness of 1 (`EncryptedERC.sol:661-668`), so the
+balance of an account that has only deposited/withdrawn is derivable by anyone who sees the chain. Privacy starts with the first
+private transfer (real randomness).
 
 Encryption hides **amounts and balances**, not counterparties. Counterparties are hidden from outsiders only because the L1 is
 private (ARCHITECTURE L1).
@@ -52,9 +56,22 @@ private (ARCHITECTURE L1).
 2. **The receiver learns the amount** (`ReceiverPCT`). An escrow account's key holder sees every amount sent to it.
 3. **Proofs are per transfer** and depend on the sender's current encrypted balance. Two transfers from the same account must be
    sequenced (the second proof uses the balance after the first).
-4. **Addresses are public inside the chain.** Never promise "nobody knows who paid whom" to the bank or the auditor.
+4. **Contract accounts bypass `txAllowList` for the account itself:** the allowlist checks the EOA that sends the tx, so a
+   contract account (Safe, forwarder) acts through its executors. **Freezing a contract account = removing every EOA that can
+   execute for it.** Mitigation on ArepaPay: `contractDeployerAllowList` means only the bank deploys contracts, so every contract
+   account is bank-approved (S2).
+5. **Capacity:** a private transfer costs about 1.0–1.14M gas. At an 8M block gas limit and 2 s blocks that's about 3.5 private
+   transfers/s; raise the gas limit in genesis or through the fee manager before the pilot (S2).
+6. **Proof time is the bottleneck.** Measured on an i5-6500 (S2): transfer 4.4–6.5 s in Node and 7.6 s in headless Chrome;
+   withdraw 2.2–4.1 s; registration 0.4–1.1 s. A low-end Android browser is projected at 25–60 s (**unmeasured, the user's
+   step**, `docs/spikes/S2.md` §8). Kill criterion: more than 10 s on median phones.
+7. **Install upstream with `npm install --ignore-scripts`.** The postinstall runs a fresh trusted setup that would not match the
+   shipped prod verifiers.
+8. **Addresses are public inside the chain.** Never promise "nobody knows who paid whom" to the bank or the auditor.
 
 ## 4. Patterns
+- **Contract-controlled account (proven in S2):** a forwarder registered with a proof made for its own address received 1.00
+  and sent 0.40 out; the owner calling `register` directly is refused (`InvalidSender`). A real Safe is the same pattern (not yet run).
 - **Dual-control encrypted escrow (Split Pay option C):**
   - the escrow *account* is a **Safe** registered in eERC;
   - the **bank's escrow service** holds the BabyJubJub key (HSM) and builds proofs;

@@ -20,3 +20,9 @@ Inherited general lessons: master-method KNOWLEDGE §9 (C1–C15).
 - Root cause: research findings (what incumbents do) were used to redesign the user's model instead of to analyze it.
 - RULE: master-method S8: analyze the user's model on its own terms first; present risks as engineering facts next to it, never as a replacement; any departure from the user's words is a question, not a decision.
 - Enforced by: master-method S8 + M0 (state which part is the user's spec and which is BRAIN's analysis); ARCHITECTURE §0 quotes the user's spec verbatim before any design.
+
+### L-004 · 2026-11-15 · BRAIN · knowledge · a "verified" skill fact was inferred, not run
+- What happened: `arepapay-eerc` v1.0 said the auditor can read the transfer message. Spike S2 showed the message is raw bytes that the SDK encrypts to the receiver only.
+- Root cause: the row was written from the event's existence (code read) without running a flow.
+- RULE: a skill fact is marked verified only after a run that exercises it; code-read-only facts are labeled TRACED.
+- Enforced by: `arepapay-eerc` §1 now cites the S2 run; skill checklist and STATE "verified facts" use PROVEN/TRACED labels.

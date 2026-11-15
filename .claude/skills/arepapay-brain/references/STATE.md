@@ -27,9 +27,13 @@ Phase 1 (rails) done; architecture decided (D-005); Phase 0 user actions U1–U3
 - avalanche-cli v1.9.6 is `~/bin/avalanche` (`~/.avalanche-cli/bin/avalanche` is the old v1.2.4). Don't run `avalanche network clean` (it touches the v1 ArepaPay config).
 - ewoq (public test key) is allowlisted locally only.
 
+## eERC on chain 77077 (D-012)
+- Addresses: `config/l1/eerc.local.json` (generated). Run: `bash scripts/eerc/s2-run.sh`; phone bench: `scripts/eerc/s2-phone-bench.sh`, `docs/spikes/S2.md` §8.
+- Proofs (i5-6500): transfer 4.4–7.6 s, withdraw 2.2–4.1 s, register 0.4–1.1 s; transfer ~1.1M gas.
+
 ## Open items
 - U1–U3 (user): repo private, revoke PAT, move funds off old keys.
-- Q1/Q3/Q4 resolved by D-005. Open: Q8–Q11, pilot partners. Next: S2 eERC converter on chain 77077 (B3), S6 bridge (B6, needs ICM), Split Pay A audit fixes (D-010).
+- Q1/Q3/Q4 resolved by D-005. Open: Q8–Q11, pilot partners. **Waiting on the user: phone proof-time measurement (S2 §8), the go/no-go for eERC on phones.** Next for BRAIN: S6 bridge (B6, needs ICM), S3/S4 multisig audit/freeze with a real Safe, SplitPayCoordinator (option C step 1).
 - (done D-006) Fetch L1 skills from avaxskills.com (subnet-deployment, subnet-evm-config, precompiles, validator-manager-contract,
   kyc-aml-integration, safe-multisig, upgradeable-contracts); read each before installing; re-fetch or delete the broken
   `avax-dapp-architecture` / `avax-smart-contract-patterns` (not installed here).
