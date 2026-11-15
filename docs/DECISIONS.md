@@ -2,6 +2,24 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-006 · 2026-11-15 · Avalanche MCP + 16 avaxskills (Claude Opus 5.5, BRAIN lane)
+- What: `.mcp.json` with `avalanche` (community, avalanche-mcp.dev, repo Eelvanpsd/Avalanche-mcp@a1ff0a0) and `avalanche-official` (Ava Labs hosted build.avax.network/api/mcp); 16 `avax-*` skills from avaxskills.com (precompiles, subnet-deployment, subnet-evm-config, validator-manager-contract, validator-management, safe-multisig, kyc-aml-integration, avalanche-sdk, upgradeable-contracts, avalanche-l1-economics, tmpnet, avacloud-indexing, event-driven-backend, account-abstraction, contract-verification, local-dev-environment).
+- Why: user: "this is the mcp, the avalanche dev repo … and the skills".
+- Tool: cloned and grepped the MCP source (no signing, no wallet client, no key handling; exec/fs writes only in the dev index builder; hosted mode proxies to Ava Labs' official MCP); fetched each skill and scanned for injected agent instructions (none; only official installer docs).
+- Alternatives rejected: run the MCP locally from source — extra install of third-party code for no gain while it is read-only; the hosted endpoint sees our doc queries only (no secrets).
+- Notes: skills load env-var private keys in examples; `arepapay-solidity` N6 (encrypted keystore) overrides. MCP servers appear in the next session (`/mcp` to verify).
+- Verify: `bash tests/check.sh` → ALL CHECKS PASSED.
+- Commit: e35c379.
+
+### D-005 · 2026-11-15 · Architecture: encrypted consortium chain (Claude Opus 5.5, BRAIN lane)
+- What: `docs/ARCHITECTURE.md`; PLAN v1.1 (spikes S1–S5, Q1/Q3/Q4 resolved, Q8–Q11 added); charter v1.1 (role line, R9 never bridged, R10 split oversight, scope).
+- Why: user: "i want it with sdk encrypted chain … a multisig system for data cooperation because banks need privacy and customers too, they can freeze funds and watch who has your money if you get hacked … you can't track trxs like in a normal evm … centralized privacy … a centralized banking chain for micro and small business … banks will be the ramps … it always will be a private chain for merchants".
+- Tool: eERC source read (`EncryptedERC.sol`: amounts/balances encrypted, from/to public, single owner-set auditor, owner-only mint, token-level blacklist); market research subagent (`docs/research/market_landscape.md`), key claims re-checked by BRAIN (OFAC GL 57, Drex shutdown, Kontigo bank ramps).
+- Alternatives rejected: see ARCHITECTURE §3 (public chain + eERC; signed ledger first — kept as fallback; Canton/Besu; single auditor key; clawback power).
+- Verify: `bash tests/check.sh` → ALL CHECKS PASSED (docs only).
+- Open (needs the user): Q8–Q11, pilot partners (one bank, one distributor).
+- Commit: this commit.
+
 ### D-004 · 2026-11-15 · Landing launch stack = Next.js static export; load vercel-react-best-practices (Claude Opus 4.8, LANDING lane)
 - What: the launch landing is built as a Next.js (App Router) app with static export (`output: 'export'`) in `landing/`,
   superseding the single-file/no-framework practice (`arepapay-landing-design` §4). Added `vercel-react-best-practices` to the

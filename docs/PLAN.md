@@ -1,6 +1,6 @@
 # ArepaPay v2 — master plan
 
-Version 1.0 · 2026-11-14 · Owner: BRAIN (decides inside the user's rules) · Method: `master-method` skill · Charter: skill `arepapay-mission`
+Version 1.1 · 2026-11-15 (D-005: encrypted consortium architecture) · Owner: BRAIN (decides inside the user's rules) · Method: `master-method` skill · Charter: skill `arepapay-mission`
 Ground truth: `docs/research/arepapay_ground_truth.md` (what exists, FACT vs CLAIM) · Method source: `docs/research/dogeon_methodology.md`
 
 ## 0. Thinking (M0: what we believe and why)
@@ -30,13 +30,14 @@ Ground truth: `docs/research/arepapay_ground_truth.md` (what exists, FACT vs CLA
 Repo, charter, lane skills, board, decisions/lessons ledgers, research reports, gate script, caveman disabled, LANDING started.
 Exit: `bash tests/check.sh` green; START_HERE + both agents launchable; board has the first tasks.
 
-### Phase 2 — Spikes (time-boxed, each ends in a D-entry with numbers, not opinions)
+### Phase 2 — Spikes (time-boxed, each ends in a D-entry with numbers, not opinions) · architecture: `docs/ARCHITECTURE.md` (D-005)
 | ID | Question | Method | Decides |
 |---|---|---|---|
-| S1 | Can we run a **permissioned L1 on Fuji** we control? | avalanche-cli: new L1, PoA ValidatorManager, precompiles `txAllowList` + `contractDeployerAllowList` + `feeManager` (admin = test Safe/multisig, never an EOA), **`contractNativeMinter` disabled** (N0); local first, then Fuji with 1 validator node (fetch current avalanche-cli docs first: G6). | L1 config + hosting (Q2) |
-| S2 | Can **eERC** (Avalanche encrypted ERC-20, ZK + ElGamal, auditor key) give private balances on our L1 with acceptable UX? | Deploy eERC in converter mode over test USDT on the local L1; measure proof time in desktop and mobile browser, gas, registration flow; confirm the auditor-key model fits compliance. | Privacy layer (Q3); fallback = private balances in the bank ledger with public on-chain settlement |
-| S3 | Which **KYC provider** works for Venezuelan users in sandbox? | Compare 2–3 sandboxes on: cédula/passport support, liveness, free sandbox, webhooks, data residency. Build webhook → compliance service → `txAllowList.setEnabled` + `KYCRegistry` tier. | Provider (Q4) |
-| S4 | **Custody model** | Non-custodial embedded wallet (Tether WDK, PBKDF2 → AES-GCM vault, recovery) vs custodial/MPC. | Q1 |
+| S1 | **Private permissioned L1** we control | avalanche-cli / platform-cli (skills `avax-subnet-deployment`, `avax-precompiles`, `avax-subnet-evm-config`), local tmpnet first: `txAllowList` + `contractDeployerAllowList` + `feeManager`, native minter off, admin = test Safe; RPC behind an authenticated gateway; genesis gas station | L1 config + hosting (Q2) |
+| S2 | **eERC standalone** on that L1 | deploy `ava-labs/EncryptedERC` standalone with an `IssuerGateway` owner; measure registration/transfer proof time on desktop and a low-end Android, gas, UX of key backup | Go/no-go for encrypted balances; fallback = signed ledger |
+| S3 | **Audit Council view key** | Shamir t-of-n split of the auditor key in a ceremony + on-chain `AuditRequest` flow; research threshold ElGamal decryption so the key is never rebuilt | View-power design |
+| S4 | **Freeze Council** | Safe multisig as `txAllowList` admin, `FreezeRegistry` with expiring holds | Freeze-power design |
+| S5 | **Bank KYB → onboarding** | bank approval (mock bank API) → `Onboarding` contract enables wallet with tier/expiry/hash | Identity flow (Q8) |
 
 ### Phase 3 — Contracts v2 (BRAIN; tests first; nerves N0–N7; v1 is a spec, not code)
 - **KYCRegistry:** tier, expiry, provider-reference hash; **no PII on chain**; compliance role only.
@@ -44,8 +45,9 @@ Exit: `bash tests/check.sh` green; START_HERE + both agents launchable; board ha
   the minimum and never to the payee (fixes zero-amount farming), fee routed atomically to the FeeRouter.
 - **FeeRouter / Treasury:** one distributor (replaces RevenueDistributor + FeeDistributor); prizes paid only from fees that
   arrived (N2); access-controlled `notify`.
-- **OTCEscrow v2** (cash Bs ↔ USDT through merchants): buyer bond on reserve (kills free griefing), merchant bond, dispute window,
-  compliance arbiter role.
+- **IssuerGateway** (owns the eERC; bank-only mint after confirmed deposit, burn on payout, reserve attestation hash), **FXDesk**
+  (USD↔Bs only against bank-signed quotes), **AuditRequest**, **FreezeRegistry**, **Onboarding**, **GasStation** (genesis-funded, N0).
+- **OTCEscrow v2** moved to later: banks are the ramps (D-005).
 - **MerchantRegistry v2:** verify / unverify / KYB status.
 - **Rewards:** non-transferable ERC-1155 tickets; Raffle with commit-reveal (or VRF if available on the L1); InternetVoucher kept.
 - **Dropped (by plan, D-entry each):** ERC-20 ArepaToken (native AREPA gas covers it), LiquidityManager, SavingsVault admin
@@ -100,15 +102,19 @@ Gates: `node scripts/landing-check.mjs`, `node scripts/landing-probe.mjs`, `bash
 - Pilot with 3–4 real merchants.
 
 ## 2. Decisions needed from the user (one at a time, each with a recommendation)
-| Q | Decision | Recommendation (why) |
+| Q | Decision | Status / recommendation |
 |---|---|---|
-| Q1 | Custody: non-custodial embedded wallet vs custodial | **Non-custodial + permissioned chain.** We centralize *access* (allowlist, KYC, freeze via compliance role) without holding users' keys: lighter legal load, and agents never touch keys (N6). |
-| Q2 | L1 hosting | **Local L1 for dev + Fuji-hosted L1 with 1 validator on a small VPS/Fly machine** for the public testnet. Fuji AVAX comes from the faucet; the server is the only cost. |
-| Q3 | Privacy layer | **Decide after spike S2** by measured proof time; eERC preferred because its auditor key matches KYC/compliance. |
-| Q4 | KYC provider | **Decide after spike S3**; sandbox only until legal review. |
-| Q5 | Fee model (v1 docs said 0.03%, 0.5% and 1.5%; code had none) | **One fee, 0.5% with a cap**, split decided once and enforced in FeeRouter. |
-| Q6 | Keep raffles and WiFi minutes? | **Keep as rewards funded only by fees** (N0/N2); they are ArepaPay's character. |
-| Q7 | Repo visibility | **Private until the Phase 8 audit.** |
+| Q1 | Custody | **Resolved by D-005:** non-custodial by construction (eERC proofs need the holder's key); key backup/recovery UX is part of S2. |
+| Q2 | L1 hosting | Local tmpnet for dev; for the pilot, validators run by ArepaPay + the partner bank (one small server each). |
+| Q3 | Privacy layer | **Chosen: eERC standalone + private RPC (D-005)**, go/no-go after S2 numbers. |
+| Q4 | KYC provider | **Replaced:** the partner bank does KYB/KYC (it must anyway); ArepaPay stores no ID documents. |
+| Q5 | Fee model | One fee in bps with a cap, enforced in code; set with the partner bank's costs once known. |
+| Q6 | Raffles / WiFi minutes | Parked: not in the user's 2026-11-15 model; revisit after the pilot. |
+| Q7 | Repo visibility | Private until the Phase 8 audit. |
+| Q8 | Customer KYC | **Light tier** (phone + merchant sponsorship, low limits) upgrading to full KYC at the bank. |
+| Q9 | Council seats | 3-of-5 independent entities: issuing bank, second bank, ArepaPay, merchant cooperative, independent auditor/notary. |
+| Q10 | Legal wrapper | Operate under a licensed bank or SUNACRIP licensee + written OFAC opinion before any real money (market §5). |
+| Q11 | Recovery/reversal power | **No** for the pilot: freeze yes, reverse no (reversal makes the councils custodians). |
 
 ## 3. Risks
 - Fuji L1 validator uptime.
