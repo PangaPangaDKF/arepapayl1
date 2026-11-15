@@ -31,6 +31,7 @@ entry; never rewrite the other lane's.
 
 ## 3. Collision rules
 - `git status --short` right before every write; a file you own changed by someone else → stop and ask on the board.
+- A **shared** file (board, handoff, decisions, lessons) that is already dirty is the other lane mid-task: don't stage it; add your line after they commit (L-005).
 - Reserve D-numbers on the board and **commit that line first**.
 - Never commit, revert, stash or reformat the other lane's files; never `git add -A`, `git stash`, `git reset --hard`.
 - If HEAD moved while you worked: `git log --stat` the new commits and confirm they don't touch your files.

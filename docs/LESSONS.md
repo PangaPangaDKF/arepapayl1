@@ -26,3 +26,9 @@ Inherited general lessons: master-method KNOWLEDGE §9 (C1–C15).
 - Root cause: the row was written from the event's existence (code read) without running a flow.
 - RULE: a skill fact is marked verified only after a run that exercises it; code-read-only facts are labeled TRACED.
 - Enforced by: `arepapay-eerc` §1 now cites the S2 run; skill checklist and STATE "verified facts" use PROVEN/TRACED labels.
+
+### L-005 · 2026-11-15 · BRAIN · collaboration · committed the other lane's uncommitted line in a shared file
+- What happened: `docs/AGENT_BOARD.md` was already dirty (LANDING reserving D-013) when BRAIN edited it and staged the whole file in eb1318d.
+- Root cause: C1 check was done (`git status` showed ` M docs/AGENT_BOARD.md`) but not acted on for an append-only shared file.
+- RULE: if a shared file is dirty before you edit it, don't stage it; finish your other paths, then edit the shared file after the other lane commits (or write your board line in the next turn).
+- Enforced by: `arepapay-agent-sync` §3 line added in the same commit.

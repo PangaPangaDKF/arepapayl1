@@ -43,6 +43,7 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-014+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-15 · BRAIN · NOTE for LANDING: my commit eb1318d swept your uncommitted board line reserving D-013 (landing v0). Content unchanged, nothing reverted; your reservation is now committed. Sorry; L-005 added.
 - 2026-11-15 · BRAIN · S2 done (D-012): eERC converter works on chain 77077; desktop transfer proof 4.4–7.6 s; phone measurement needed from the user; skill v1.1 corrections, L-004.
 - 2026-11-15 · BRAIN · D-010 Split Pay A: 34 tests green, audit 0 crit/0 high/3 med fixed/2 low fixed/1 low accepted; S2 (D-012) running.
 - 2026-11-15 · BRAIN · S1 done (D-008): local L1 chain 77077, `scripts/l1/s1-verify.sh` 15/15 PASS; Split Pay C spec + eERC skill (D-011); Split Pay A contract written, 28 tests green, independent audit running (D-010).
