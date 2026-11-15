@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArepaPay MVP (testnet)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 520px; margin: 0 auto; padding: 12px; background: #fbf6ec; color: #1b2a4a; }
+  .warn { background: #fff3c4; border: 1px solid #c9a227; padding: 8px; font-weight: 600; }
+  section { border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #fff; }
+  button { padding: 10px 12px; margin: 4px 4px 4px 0; font-size: 16px; }
+  input { padding: 8px; font-size: 16px; width: 9em; }
+  .row { margin: 4px 0; word-break: break-all; }
+  .muted { color: #666; font-size: 13px; }
+  .err { color: #b00020; white-space: pre-wrap; }
+  .ok { color: #11692b; }
+  .hidden { display: none; }
+  #qr svg { width: 220px; height: 220px; }
+</style>
+</head>
+<body>
+<div class="warn">TESTNET: dinero de prueba, sin valor real. No envíes fondos reales.</div>
+<h2>ArepaPay (prueba)</h2>
+<div class="muted" id="netinfo">Cargando configuración…</div>
+
+<section>
+  <button id="btnNet">Agregar / cambiar a ArepaPay L1</button>
+  <button id="btnConnect">Conectar</button>
+  <div class="row">Dirección: <span id="addr">-</span></div>
+  <div class="row">Red: <span id="chain">-</span></div>
+  <div class="row">Saldo gas: <span id="native">-</span></div>
+  <div class="row">Saldo: <span id="usd">-</span></div>
+  <div class="row">Acceso: <span id="access">-</span></div>
+  <button id="btnRequest">Solicitar acceso</button>
+  <div class="row">Tasa Bs/USD: <input id="rate" type="number" min="0" step="0.01" value="0"></div>
+</section>
+
+<section>
+  <button id="tabMerchant">Comercio</button>
+  <button id="tabCustomer">Cliente</button>
+</section>
+
+<section id="merchant" class="hidden">
+  <h3>Cobrar</h3>
+  <div class="row">Monto USD: <input id="amount" type="number" min="0" step="0.01" placeholder="5.00"> <span id="amountBs"></span></div>
+  <div class="row"><label><input id="split" type="checkbox" style="width:auto"> Pago dividido</label></div>
+  <div id="splitOpts" class="hidden">
+    <div class="row">Nº de pagadores: <input id="maxPayers" type="number" min="2" max="10" value="2"></div>
+    <div class="row"><label><input id="needConfirm" type="checkbox" style="width:auto"> Cada pagador confirma al final</label></div>
+  </div>
+  <div class="row">Vence en (min): <input id="ttl" type="number" min="2" max="1440" value="10"></div>
+  <button id="btnCreate">Crear cobro (QR)</button>
+  <div id="created" class="hidden">
+    <div id="qr"></div>
+    <div class="row"><a id="link" href="#"></a></div>
+  </div>
+</section>
+
+<section id="customer" class="hidden">
+  <h3>Pagar</h3>
+  <div class="row">Cobro #: <input id="intentId" type="number" min="1"> <button id="btnLoad">Ver</button></div>
+</section>
+
+<section id="intentBox" class="hidden">
+  <h3>Cobro #<span id="iId"></span></h3>
+  <div class="row">Estado: <b id="iState"></b></div>
+  <div class="row">Total: <span id="iTotal"></span></div>
+  <div class="row">Cubierto: <span id="iCovered"></span> · Falta: <span id="iRemaining"></span></div>
+  <div class="row">Comisión: <span id="iFee"></span> (el comercio recibe <span id="iNet"></span>)</div>
+  <div class="row">Pagadores: <span id="iPayers"></span> · Vence: <span id="iExpiry"></span></div>
+  <div class="row">Mi parte: <span id="iMine"></span></div>
+  <div id="payBox">
+    <div class="row">Pagar USD: <input id="share" type="number" min="0" step="0.01"> <button id="btnPay">Pagar</button></div>
+  </div>
+  <button id="btnConfirm" class="hidden">Confirmar pago</button>
+  <button id="btnWithdraw" class="hidden">Retirar mi parte</button>
+  <button id="btnCancel" class="hidden">Cancelar cobro</button>
+</section>
+
+<div id="msg" class="row"></div>
+<div id="err" class="err"></div>
+<p class="muted">Prueba mínima de ArepaPay sobre una L1 Avalanche de prueba. Acceso solo con aprobación (KYC de prueba).</p>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.16.0/dist/ethers.umd.min.js" integrity="sha384-id0TslbJZjX9r2IGNL8B1MyE0pjkF0h8S+5bc8YV+VE+AQ7N1aOlGKYy+Dy3CD0V" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="app.js"></script>
+</body>
+</html>

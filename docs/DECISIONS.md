@@ -8,6 +8,15 @@ Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD
 - Verify: docs/skills only; `bash tests/check.sh` → ALL CHECKS PASSED (exit code).
 - Commit: this commit.
 
+### D-022 · 2026-11-15 · MVP test dApp + onboarding (test-KYC) on the local L1 (Claude Opus 5.5, BRAIN lane; built by a subagent, re-verified by BRAIN)
+- What: `app/` (one static page + app.js: add/switch ArepaPay L1, connect, balances + allowlist status, request access, merchant mode creates a Split Pay intent with QR/link, customer mode authorizes a share, confirm, withdraw; EVM provider picked from `providers[]`, refresh on chain/account change, instant wallet popup, Spanish, testnet disclaimer); `backend/onboarding/` (request/status API, admin CLI approve → txAllowList enable + gas + 50 test USD, AUTO_APPROVE flag, serves generated config; keys read from CLI key files at runtime, never logged); `contracts/script/DeployMvp.s.sol` (test USD with capped minter + SplitPayEscrow 50 bps); `scripts/mvp/{deploy.sh,e2e-local.sh,smoke-page.mjs}`; generated `config/l1/mvp.local.json`.
+- Why: user: "continue the loop and do what you need to do to at least have something testable … just a functional MVP"; D-014 minimal app for the MetaMask mobile browser.
+- Tool: subagent; BRAIN re-ran `bash scripts/mvp/e2e-local.sh` → "19 PASS … E2E PASS, rc=0" (onboard 3 wallets, $5 = 3 + 2 captured, merchant got 4.975, fee 0.025, expire + withdraw, escrow balance == totalHeld == 0, no key in service log); `E2E_BREAK=1` makes it fail (V9). Key scan of new files clean.
+- Found: an idle chain estimates gas with the last block's timestamp, so expiry-dependent calls fail estimation → fixed gas limit for expire/withdraw.
+- Alternatives rejected: a framework/build step for the app (minimal rule R8).
+- Verify: see Tool; `bash tests/check.sh` → ALL CHECKS PASSED (exit code).
+- Commit: this commit.
+
 ### D-021 · 2026-11-15 · Economics ("tokenomics") of the bank chain + pitch (Claude Opus 5.5, BRAIN lane; decision memo by a subagent, reviewed by BRAIN)
 - What: `docs/ECONOMICS.md` (every unit: ARPB gas coin from genesis, bridged USDT/USDC 1:1 with reserves on C-Chain, eERC 1:1; money flows; fee options with worked examples marked ASSUMPTION; costs; risks; recommendation F2) and `docs/PITCH.md` (Spanish, English summary; honest roadmap A built/B in preparation/C planned; disclaimer; no yield promises).
 - Why: user: "a strong plan [and] tokenomics for centralized banking system people or clients to understand it"; "use the sub agents for decisions".

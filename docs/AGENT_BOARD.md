@@ -15,7 +15,7 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 - [ ] B6 · Spike S6 bank-run ICTT bridge (Fuji USDC → L1) with supply invariant · ARCHITECTURE L2.
 - [ ] B5 · Spikes S3 (Audit Council view key), S4 (Freeze Council), S5 (bank KYB onboarding) · ARCHITECTURE L3–L4.
 - [x] B7 · (done D-020, 99 tests) Build `FxLedger` (MERCHANT_FX §4) test-first, plus the reconciliation simulator.
-- [ ] B8 · Test dApp for the MetaMask mobile browser (PLAN Phase 5b), after Q18.
+- [x] B8 · (done D-022 on local; Fuji in D-019) Test dApp for the MetaMask mobile browser (PLAN Phase 5b), after Q18.
 - [ ] B4 · Review LANDING's v0 against T1–T8 and decide the deploy target. Note (D-004): the stack is now a Next.js static export
   (`landing/out/`), so the target is a static host (Vercel static / `out/`). Confirm.
 
@@ -58,7 +58,7 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-019 | BRAIN | Stage B execution: test keys, sweep of burned-key Fuji AVAX, this PC as Fuji node/validator, HTTPS tunnel RPC | reserved |
 | D-020 | BRAIN | FxLedger contract (MERCHANT_FX) test-first | done |
 | D-021 | BRAIN | Economics ("tokenomics") of the bank chain + pitch plan (decision memo) | done |
-| D-022 | BRAIN | MVP test dApp for MetaMask mobile browser + onboarding (test-KYC) | reserved |
+| D-022 | BRAIN | MVP test dApp for MetaMask mobile browser + onboarding (test-KYC) | done |
 | D-023 | BRAIN | Learning + memory upgrade to master-method and lane skills | done |
 | D-024+ | | | Next free: reserve here first |
 

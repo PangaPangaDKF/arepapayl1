@@ -1,0 +1,14 @@
+{
+  "name": "arepapay-onboarding-test",
+  "private": true,
+  "description": "TEST-ONLY stand-in for bank KYC on the ArepaPay test L1. Testnet, no real money.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.mjs",
+    "admin": "node admin.mjs"
+  },
+  "dependencies": {
+    "viem": "2.57.14"
+  }
+}
