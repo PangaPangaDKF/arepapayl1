@@ -2,7 +2,7 @@
 //   node scripts/landing-probe.mjs                      -> overflow check at 390 and 360 px (exit 1 if anything overflows)
 //   node scripts/landing-probe.mjs --widths 390,360,320
 //   node scripts/landing-probe.mjs --file <path.html>   -> probe another exported file
-//   node scripts/landing-probe.mjs --shot '#id' [--out shot.png] [--width 1280]  -> screenshot one section
+//   node scripts/landing-probe.mjs --shot '#id' [--out shot.png] [--width 1280] [--height 900]  -> screenshot one section
 // Why an iframe: headless Chrome won't lay out narrower than ~500 px, so a real 390 px viewport needs an <iframe width=390>.
 // Chrome: $CHROME, else the newest Playwright Chromium in ~/.cache/ms-playwright.
 // Next exports assets with absolute paths (/_next/.., /brand/..); under file:// we rewrite them to the out/ dir so CSS loads.
@@ -36,11 +36,11 @@ const run = (extra, target) => execFileSync(chrome, ['--headless=new', '--no-san
 
 const shot = arg('--shot');
 if (shot) {
-  const out = arg('--out', join(tmp, 'shot.png')), w = arg('--width', '1280');
+  const out = arg('--out', join(tmp, 'shot.png')), w = arg('--width', '1280'), h = arg('--height', '900');
   const sel = JSON.stringify(shot);
   writeFileSync(join(tmp, 'shot.html'), page.replace('</body>', `<script>addEventListener('load',()=>{const el=document.querySelector(${sel});if(!el)return;` +
     `const y=el.getBoundingClientRect().top+scrollY-40;document.body.style.marginTop=(-y)+'px';const h=document.querySelector('.site-header');if(h)h.style.position='static';})</script></body>`));
-  run([`--window-size=${w},900`, '--virtual-time-budget=5000', `--screenshot=${out}`], join(tmp, 'shot.html'));
+  run([`--window-size=${w},${h}`, '--virtual-time-budget=5000', `--screenshot=${out}`], join(tmp, 'shot.html'));
   console.log(`screenshot of ${shot} at ${w}px -> ${out}`);
   process.exit(0);
 }

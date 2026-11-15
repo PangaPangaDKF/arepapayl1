@@ -1,5 +1,24 @@
 # arepapay-landing-design changelog (newest first)
 
+## 1.5 · 2026-11-15 · D-024 — announcement + pitch page (L6), merchants as exchange houses (L4), Learn and remember (L5), Pages sub-path, probar/ link
+- Rewrote `landing/app/page.js` as the announcement: hero "ArepaPay: la cadena bancaria privada para micro y pequeños comercios",
+  problem, six solution lines each with its own status, "Cómo probar" (testnet, MetaMask, chainId 77078 from config), merchants as
+  exchange houses (in development), 1:1 reserves (planned), privacy and oversight, the economics table with SUPUESTO tags and "sin
+  token para invertir", stages A/B/C with known risks, the ask. Raffles/WiFi, the old features grid and "Seguridad" are gone.
+- `landing/public/probar/index.html`: the only test link. Reads `../mvp-url.json`, redirects to `url + '/?net=fuji'`, Spanish
+  fallback when the file is missing or not https. No tunnel URL anywhere in the repo.
+- `next.config.mjs` honors `NEXT_BASE_PATH` (basePath + assetPrefix + `NEXT_PUBLIC_BASE_PATH`); `<img>` and OG paths use it.
+- Gate: chain ids are allowed when present in `config/` (T4), `probar/` is a utility page (disclaimer required, hardcoded URL
+  forbidden), relative links must resolve, the asset check strips the base path. Probe: `--height`. Skill §5a Learn and remember.
+- Lesson: the T4 rule was written as "config/ has no chain params yet, so no chainId at all". When config gained a Fuji chain the
+  rule became wrong, not just strict. Gate rules should compare against the source of truth (config), never encode today's state.
+- Lesson: the first render put the economics table in a scroll wrapper with `min-width: 560px`; the probe flagged 38 elements at
+  390 px. A table that scrolls sideways is still bad on a phone, so rows now stack under 640 px instead of loosening the probe.
+- Lesson: the first sub-path build printed the OG image as `https://arepapay.site/arepapay-site/brand/…`, a URL that exists on
+  neither host. A base path changes the origin question too: canonical/OG now come from `NEXT_PUBLIC_SITE_URL` + base path.
+- Lesson: the public MVP is not encrypted yet, while ARCHITECTURE §3a says testers see addresses "never amounts". Check every
+  privacy sentence against what is actually deployed, not the design; the page now says test amounts are visible.
+
 ## 1.4 · 2026-11-15 · D-017 — static-export playbook (§7) + session context doc
 - Added §7 to the skill: build, **preview via a static server (not `next dev`)**, and the gate internals, so the next session
   doesn't rediscover them. Wrote `docs/SESSION_CONTEXT.md` (next session = main brain for the loop) and pointed START_HERE at it.

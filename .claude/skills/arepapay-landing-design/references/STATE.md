@@ -1,33 +1,45 @@
 # Landing STATE (live facts, page map, open tasks)
 
-Updated 2026-11-14 by BRAIN (initial). LANDING owns this file from now on.
+Updated 2026-11-15 (D-024, LANDING via BRAIN's delegated agent). LANDING owns this file.
 
 ## 1. Live status
-The landing **v0 is built** (D-013, 2026-11-15) as a **Next.js (App Router) static export** in `landing/`; `npm --prefix landing
-run build` emits `landing/out/`. Not deployed yet — deploy target is BRAIN's call (board B4), a static host serving `out/`.
-Domain = **arepapay.site** (canonical/OG/metadataBase). Social = **X `@ArepaPay`** (footer + Twitter card). All 3 gates green
-(truth gate 0 problems, V9 negative test passes, 390/360 px overflow clean). Pre-launch cleanup still open (see §4): a cleaned
-transparent logo + crisp wordmark + a real 1200×630 OG image + `favicon.ico` (today `app/icon.png` is the watermarked brand PNG).
+**D-024 (2026-11-15): the page is now the announcement + pitch** (board L4, L5, L6). Next.js static export in `landing/`.
+Hosting: GitHub Pages under a sub-path (`https://pangapangadkf.github.io/arepapay-site/`) built with
+`NEXT_BASE_PATH=/arepapay-site`; the canonical/OG domain stays `arepapay.site`. BRAIN deploys and publishes `mvp-url.json` next
+to the site. Pre-launch cleanup still open (§4): cleaned transparent logo, crisp wordmark, real 1200×630 OG image, favicon.
 
-## 2. Page map (target for v0; each section lists its truth source)
-| Section | Content | Truth source | Status label |
+## 2. Page map (D-024; truth source per section)
+| Section (#id) | Content | Truth source | data-status |
 |---|---|---|---|
-| Header | logo wordmark, ≤ 6 nav links | — | — |
-| Hero | one sentence of what ArepaPay is, testnet disclaimer, one CTA (anchor to "Cómo funciona" until a real pilot contact exists) | charter role line | In development |
-| El problema | paying small amounts with USDT in Venezuela; Bs vs USDT friction | v1 research §2 (concept) | — |
-| Cómo funciona | pay a merchant by QR with the amount in Bs; merchant receives USDT | PLAN Phase 5 | In development |
-| Cuenta verificada (KYC) | why KYC: a permissioned network where only verified people transact; no personal data on chain | PLAN S3, charter R2 | Planned |
-| Saldos cifrados | private balances with an auditor key for compliance; being evaluated | PLAN S2 | Planned (in evaluation) |
-| Red propia (L1) | ArepaPay's own Avalanche L1 on testnet, permissioned, multisig admin | PLAN S1, charter R3/R5 | In development |
-| Comercios | merchants as cash ↔ USDT bridges with escrow | PLAN Phase 3 OTCEscrow | Planned |
-| Recompensas | raffles and WiFi minutes funded only by fees | PLAN Phase 3, N0 | Planned |
-| Seguridad y transparencia | what we commit to: open contracts once deployed, audits before launch, testnet only | charter R1/R3/R4 | — |
-| Hoja de ruta | Phases 0–8 in plain words, with status | PLAN §1 | per phase |
-| FAQ | testnet, no real money, KYC data handling, who controls the network | charter | — |
-| Footer | disclaimer, link to source repo only if public | T7/T8 | — |
+| Header | logo, 5 anchors (Solución, Probar, Economía, Plan, FAQ) | — | — |
+| Hero | announcement H1 "ArepaPay: la cadena bancaria privada para micro y pequeños comercios", CTA "Probar el MVP" → `probar/`, "Ver el plan" → #plan, disclaimer | PITCH title, BRAIN facts | testnet |
+| #problema | 3 cards | PITCH §1 | — |
+| #solucion | 6 lines, each with its own status | PITCH §2 + BRAIN status list | testnet ×2, in-development ×2, planned ×2 |
+| #probar | 4 steps in MetaMask, chainId 77078, ARPB no value, PC-must-be-on note, e2e 19/19 + 18/18 | config/l1/arepapaybank.fuji.json, BRAIN 2026-11-15 | testnet |
+| #comercios | merchants as exchange houses: band rate, every sale recorded, no resale (R12); FxLedger built, not deployed | MERCHANT_FX §1–2, D-020 | in-development |
+| #reservas | 1:1 lock, invariant, no admin drain, bridge not built, issuer-freeze risk | PITCH §4 | planned |
+| #privacidad | who-sees-what table, freeze yes / reverse no, multisig 2-of-3 proposal; note: public MVP is NOT encrypted | PITCH §5, ARCH §3a | in-development |
+| #economia | "sin token para invertir" + PITCH §6 table, SUPUESTO tags, pilot is a measured cost; testnet Split Pay fee = 0.5 % test money | PITCH §6, ECONOMICS §7, config/l1/mvp.fuji.json feeBps 50 | planned |
+| #plan | stages A/B/C + 4 known risks | PITCH §7–8 | in-development / testnet / planned |
+| #pedimos | asks to a bank (5) and merchants (3), CTA X @ArepaPay | PITCH §9 | — |
+| #faq | 6 questions (no token; MVP not encrypted; why the link may be off) | charter, PITCH | — |
+| Footer | disclaimer, sections, X | T7/T8 | — |
+| `probar/` | utility page: fetches `../mvp-url.json`, redirects to `url + '/?net=fuji'`, Spanish fallback "El entorno de prueba está apagado…" | D-024 | (utility) |
+
+Removed in D-024: Recompensas (raffles/WiFi, D-014), old "Cómo funciona", features grid, Seguridad section (folded into
+#reservas, #privacidad, #plan).
 
 ## 3. Verified facts you may use (re-verify if you change them)
-- v2 status: Phase 1 (rails). No contracts, no app, no chain config in `config/`. (BRAIN, 2026-11-14)
+- **Superseded 2026-11-15 (D-024):** the old line "no chain config in config/" is false now.
+- Fuji L1 (TRACED for LANDING; PROVEN by BRAIN 2026-11-15): chainId **77078** and token **ARPB** in
+  `config/l1/arepapaybank.fuji.json`; ARPB is gas only, no value; KYC gate (txAllowList) + freeze 15/15 on Fuji.
+- MVP on testnet (BRAIN PROVEN): request access (test stand-in for bank KYC, auto-approved during the public test), tUSD (no
+  value), Split Pay QR (funds held until fully covered, then captured; expired → each payer withdraws). e2e 19/19 scripted +
+  18/18 through the real UI. MetaMask mobile in-app browser or desktop MetaMask; the page adds the network itself.
+- Testnet Split Pay fee is **50 bps** (`config/l1/mvp.fuji.json` feeBps), test money; the pilot recommendation is 0 % (ECONOMICS §7).
+- Status: eERC = in development (local only, not in the public MVP: **public MVP balances/amounts are NOT encrypted**); FxLedger =
+  in development (99 tests, not deployed); bridge = planned; multisig councils = planned. Testnet can be reset; the test
+  environment runs on the team PC and can be offline.
 - v1 history: a Fuji testnet MVP with merchant payments, raffle tickets and WiFi minutes existed in 2026-03 (FACT in
   `docs/research/arepapay_ground_truth.md` §2). Its Vercel URL is **not verified live**; don't link it.
 - v1 did NOT have working KYC, encryption, fees or banking features (ground truth §4). Never claim them.
@@ -59,12 +71,12 @@ transparent logo + crisp wordmark + a real 1200×630 OG image + `favicon.ico` (t
   (Bs→USDT via a trusted local merchant, rewards from fees) is a Planned/In-dev truth source only via `docs/PLAN.md`, not their words.
 
 ## 4. Open tasks
-L1–L3 are **done** (D-013): v0 built, gates green, renders read. Remaining:
-- **Pre-launch cleanup (LANDING):** a cleaned transparent logo + a crisp pixel/SVG wordmark; a real 1200×630 OG image;
-  `favicon.ico`. Today `app/icon.png` and the OG image both point to the 1024 px watermarked brand PNG — fine for v0, not launch.
-- **BRAIN:** repoint `tests/check.sh` landing step to `npm --prefix landing ci && npm --prefix landing run build && node
-  scripts/landing-check.mjs && node scripts/landing-probe.mjs` (it still skips, looking for `landing/index.html`); confirm the
-  deploy target (B4) = a static host serving `landing/out/`, domain `arepapay.site`.
-- **Keep copy honest as phases land:** the page is all Planned / In development, so it is not blocked; when a phase status
-  changes, flip the matching `data-status` label (T6) and re-run the gates. Custody is settled (D-007: bank-run bridge, KYC for all).
-- Build + probe recipes: RUNBOOK §3 and §6.
+L1–L6 done (L4/L5/L6 in D-024). Remaining:
+- **Pre-launch cleanup (LANDING):** cleaned transparent logo + crisp wordmark; real 1200×630 OG image; `favicon.ico`.
+- **BRAIN:** publish `mvp-url.json` (`{"url":"https://…","updated":"…"}`) at the site root next to `index.html` on every tunnel
+  restart; build Pages with `NEXT_BASE_PATH=/arepapay-site`.
+- **Flip labels as things land (T6):** eERC in the MVP → #solucion line 3 + FAQ; FxLedger deployed → #comercios + line 4; bridge
+  → #reservas; multisigs → #privacidad. Re-run the gates after each flip.
+- **For BRAIN's docs:** ARCHITECTURE §3a says testers can read addresses "never amounts"; with the current unencrypted MVP they
+  can read test amounts too. The page states it honestly; the doc line needs the same caveat.
+- Build + probe recipes: RUNBOOK §3–§6.

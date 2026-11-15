@@ -9,15 +9,23 @@ const inter = Inter({
   display: 'swap',
 });
 
-const SITE = 'https://arepapay.site';
+// Canonical origin. Default = the user's domain. A sub-path host (GitHub Pages) sets
+// NEXT_PUBLIC_SITE_URL=https://<user>.github.io together with NEXT_BASE_PATH=/<repo> (D-024),
+// so OG/Twitter/canonical URLs point at the host that actually serves the files.
+const ORIGIN = (process.env.NEXT_PUBLIC_SITE_URL || 'https://arepapay.site').replace(/\/+$/, '');
+const BP = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const SITE = ORIGIN + BP + '/';
+const OG_IMG = 'brand/arepapay-logo.png'; // relative to SITE (metadataBase), which already carries BP
+const TITLE = 'ArepaPay — la cadena bancaria privada para micro y pequeños comercios';
 const DESC =
-  'ArepaPay es una app de pagos y banca para Venezuela sobre su propia red Avalanche permisada (red de pruebas). ' +
-  'En desarrollo: pagos a comercios con precios en bolívares, saldos cifrados, KYC y una banca con respaldo real.';
+  'ArepaPay: una red Avalanche privada, operada por un banco, para micro y pequeños comercios en Venezuela. ' +
+  'MVP en la red de pruebas Fuji con dinero de prueba: acceso con verificación y cobro con QR entre varios pagadores. ' +
+  'Sin token especulativo.';
 
 export const metadata = {
   metadataBase: new URL(SITE),
   title: {
-    default: 'ArepaPay — pagos y banca sobre una red propia',
+    default: TITLE,
     template: '%s · ArepaPay',
   },
   description: DESC,
@@ -29,17 +37,17 @@ export const metadata = {
     locale: 'es_VE',
     url: SITE,
     siteName: 'ArepaPay',
-    title: 'ArepaPay — pagos y banca sobre una red propia',
+    title: TITLE,
     description: DESC,
-    images: [{ url: '/brand/arepapay-logo.png', width: 1024, height: 1024, alt: 'ArepaPay' }],
+    images: [{ url: OG_IMG, width: 1024, height: 1024, alt: 'ArepaPay' }],
   },
   twitter: {
     card: 'summary_large_image',
     site: '@ArepaPay',
     creator: '@ArepaPay',
-    title: 'ArepaPay — pagos y banca sobre una red propia',
+    title: TITLE,
     description: DESC,
-    images: ['/brand/arepapay-logo.png'],
+    images: [OG_IMG],
   },
   robots: { index: true, follow: true },
   category: 'finance',

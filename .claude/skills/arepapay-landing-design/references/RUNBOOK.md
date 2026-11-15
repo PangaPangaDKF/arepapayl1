@@ -38,3 +38,14 @@ Write them as bare command lines in a code block, never "run `cmd`" in prose.
 
 ## 7. Two-agent rules
 `git status --short` before every write; commit with `git commit -m "..." -- <your paths>`; never `git add -A`.
+
+## 8. Sub-path build for GitHub Pages + the test link (D-024)
+```bash
+NEXT_PUBLIC_SITE_URL=https://pangapangadkf.github.io NEXT_BASE_PATH=/arepapay-site npm --prefix landing run build
+#   links/assets under /arepapay-site/; canonical + OG image on the Pages host (without SITE_URL they point at arepapay.site)
+grep -o 'src="/arepapay-site/[^"]*"' landing/out/index.html | head  # spot-check the prefix
+npm --prefix landing run build                                      # rebuild at root before running the gates/probe
+```
+BRAIN publishes `mvp-url.json` at the site root: `{"url":"https://<tunnel>","updated":"<iso>"}`. `probar/` reads it at runtime
+and redirects to `url + '/?net=fuji'`. Test the fallback by opening `out/probar/` with no `mvp-url.json` present.
+Tall sections: `node scripts/landing-probe.mjs --shot '#economia' --out shot.png --width 1280 --height 1400`.
