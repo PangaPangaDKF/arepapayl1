@@ -1,0 +1,16 @@
+# secrets (C8)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*keystore*
+mnemonic*
+*.secret
+# build
+node_modules/
+dist/
+out/
+cache/
+broadcast/
+.DS_Store
