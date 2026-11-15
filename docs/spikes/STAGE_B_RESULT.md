@@ -1,22 +1,55 @@
 # Stage B result: ArepaPay L1 on Fuji (D-019)
 
-Version 0.1 · 2026-11-15 · Status: **BLOCKED at step 4 (blockchain deploy)**. Steps 1–3 are done. Steps 5–9 were not started
-because they need the deployed L1.
+Version 1.0 · 2026-11-15 · Status: **DONE.** The L1 runs on Fuji, the MVP is deployed on it, a public HTTPS endpoint serves the
+dApp + RPC, and the end-to-end tests pass (scripted 19/19, real UI in a browser 18/18).
 
 ## 0. Summary
 | Step | Result |
 |---|---|
-| 1. Import the pending C→P funds, verify on our node | **PASS**: 3.609992904 AVAX on the P-Chain (`platform.getBalance` via 127.0.0.1:9750) |
-| 2. Gas-station key `arepapay-fuji-gas` | **PASS**: `0x9769D591AA88558BB812Cc95908dc4c87a5cF2fF` / `P-fuji1870fywuac54xadmkwx24zgsy02hhx9z9jpn9jd` |
-| 3. `config/l1/genesis.arepapaybank.fuji.json` | **PASS** (written; not yet live on chain) |
-| 4. Create and deploy on Fuji | **BLOCKED**: no installable subnet-evm matches the Fuji node's plugin version (§2) |
-| 5–8. Verify, MVP deploy, single-origin and tunnel, e2e-fuji | not started (they need step 4) |
-| Public URL | none yet: no tunnel was opened, because there is no chain to expose |
+| 1. Import the pending C→P funds, verify on our node | **PASS**: 3.609992904 AVAX on the P-Chain |
+| 2. Gas-station key `arepapay-fuji-gas` | **PASS**: `0x9769D591AA88558BB812Cc95908dc4c87a5cF2fF` |
+| 3. `config/l1/genesis.arepapaybank.fuji.json` | **PASS** |
+| 4a. Install the plugin-47 subnet-evm | **PASS** (user granted permission 2026-11-15): official avalanchego v1.15.3 asset, sha256 `192898ff…9c14`, `Subnet-EVM/v1.15.3 [rpcchainvm=47]`, at `~/.avalanche-cli/bin/subnet-evm/subnet-evm-v1.15.3/subnet-evm` |
+| 4b. Create + deploy + convert to L1 | **PASS**: subnet `2sntWm2wSdFMJe5XdGTr1bAtt2gaB8fhvF1MUioC7XMtP1x5rr`, blockchain `pyHdg4sk3U1PB7k3dKcyvnurYi5ByGeqrGDGXKDKU6SCEhujg`, ConvertSubnetToL1Tx `2JF48vbUd2smzkSX2zHh6UXjWbiYiv9f5myiWp4QGKv57ZJX2x`, validator `NodeID-AXhDwqfJ7EVyxELXH2adqDPq9isNBqibY`, balance 1 AVAX |
+| 4c. Node tracks the L1; PoA Validator Manager initialized | **PASS** (`node local track`, `contract initValidatorManager`) |
+| 5. Verify (`NET=fuji scripts/l1/s1-verify.sh`) | **PASS 15/15** (KYC gate, freeze, deployer allowlist, no native mint) |
+| 6. MVP deploy (`scripts/mvp/deploy.sh fuji`) | **PASS**: tUSD `0xbC50105e68197bC6462bf2482746808bAFdb3c1F`, SplitPayEscrow `0xdfD84A83440453232d249afB53c338763Fa8F19D` → `config/l1/mvp.fuji.json` |
+| 7. E2E scripted (`NET=fuji SKIP_DEPLOY=1 scripts/mvp/e2e.sh`) | **PASS 19/19** |
+| 8. Public endpoint (`scripts/mvp/serve-public.sh start`) | **PASS**: single-origin service (dApp, restricted `/rpc`, `/config`, KYC stand-in with auto-approve) behind a cloudflared quick tunnel; URL in `backend/onboarding/data/public-url.fuji.txt` (changes on restart) |
+| 9. E2E through the real UI (`node scripts/browser/wallet-e2e.mjs <public URL>`) | **PASS 18/18** over HTTPS (D-025) |
 
-- Chain id: **77078**. It is free on chainlist (`chainid.network/chains_mini.json`, 2,879 chains). 77077, used by our local S1
-  chain, is taken there by "Autyon Testnet"; that is harmless for a local-only chain.
-- Blockchain id: none yet.
+### Extra problems solved on the way (step 4)
+1. **avalanche-cli's wallet needs X and C endpoints**; our node is P-only (partial sync) → 404. Fix:
+   `scripts/l1/fuji-split-proxy.mjs` on 127.0.0.1:9760: P-Chain and info go to our node, X/C and P-calls that ask about atomic
+   memory (`sourceChain` X/C) go to the public API. Deploy with `--endpoint http://127.0.0.1:9760`.
+2. **The first deploy stopped at an interactive question** ("deploy the Validator Manager into an external blockchain?"); the
+   CLI had already created subnet `29JmWm8p…` + a chain but saved nothing. That subnet is orphaned (no validators, no cost).
+   Fix: `--vmc-L1` on a fresh deploy.
+3. `blockchain describe` prints stored private keys (L-008). Use it only filtered.
 
+### Exact deploy command that worked
+```bash
+A=~/.avalanche-cli-latest/bin/avalanche      # v1.9.7
+node scripts/l1/fuji-split-proxy.mjs &      # 127.0.0.1:9760
+$A blockchain deploy arepapaybankfuji --fuji --endpoint http://127.0.0.1:9760 --key arepapay-fuji \
+  --bootstrap-endpoints http://127.0.0.1:9750 --balance 1 --change-owner-address P-fuji1rg4s98axcsj6wewqhmwxeqf3larw8rjamg8lq4 \
+  --same-control-key --vmc-L1
+$A node local track arepapay-fuji arepapaybankfuji
+$A contract initValidatorManager arepapaybankfuji --fuji --endpoint http://127.0.0.1:9760 --key arepapay-fuji \
+  --rpc http://127.0.0.1:9750/ext/bc/pyHdg4sk3U1PB7k3dKcyvnurYi5ByGeqrGDGXKDKU6SCEhujg/rpc
+```
+Costs: CreateSubnetTx 0.000010278 ×2, CreateChainTx 0.0001353 ×2, ConvertSubnetToL1Tx 0.000036992 AVAX, + 1 AVAX validator
+balance; then topped up by 2 AVAX (IncreaseL1ValidatorBalanceTx `duuS2bWy45HwNzXefGsNZFQ7mx2NPMAQ6LKrAcUoyhAgH4i4G`) →
+**2.99948 AVAX ≈ 67 days** at 1.33 AVAX/month. Top up again with
+`avalanche validator increaseBalance --fuji --endpoint http://127.0.0.1:9760 --key arepapay-fuji --l1 arepapaybankfuji --node-id NodeID-AXhDwqfJ7EVyxELXH2adqDPq9isNBqibY --balance <AVAX>`.
+
+### Restart after a reboot (everything public stops when the PC sleeps)
+```bash
+~/.avalanche-cli-latest/bin/avalanche node local start arepapay-fuji     # the L1 validator + RPC on 127.0.0.1:9750
+bash scripts/mvp/serve-public.sh start                                   # prints the new public URL
+```
+
+## Historical record (v0.1 text, kept for the reasoning)
 ## 1. What was done (commands and outputs)
 CLI: `A=~/.avalanche-cli-latest/bin/avalanche` (v1.9.7). Our Fuji node is avalanchego v1.15.3 (`rpcchainvm=47`), on
 127.0.0.1:9750, with partial sync. P bootstrapped at 03:50:17 (`info.isBootstrapped P → true`).

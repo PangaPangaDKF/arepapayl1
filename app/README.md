@@ -40,6 +40,17 @@ The local RPC is `127.0.0.1` inside this machine, so a phone can't reach it. For
 service on the LAN and start the service with `HOST=0.0.0.0 PUBLIC_RPC_URL=http://<lan-ip>:9654/ext/bc/<id>/rpc
 CORS_ORIGINS=http://<lan-ip>:8080`. MetaMask mobile may refuse plain-HTTP RPCs; that is why "testable by anyone" needs Fuji.
 
+## Public test on Fuji (stage B, D-019 / D-026) — live
+```bash
+~/.avalanche-cli-latest/bin/avalanche node local start arepapay-fuji   # after a reboot: the L1 validator + RPC
+bash scripts/mvp/serve-public.sh start     # service + cloudflared tunnel; prints https://<random>.trycloudflare.com
+bash scripts/mvp/serve-public.sh status    # supervisor / server / tunnel up?  url
+```
+- `https://<url>/` is the landing, `https://<url>/app/` the dApp, `https://<url>/rpc` the restricted RPC (MetaMask adds it).
+- Testers are auto-approved (`AUTO_APPROVE=1`: allowlisted, 1 ARPB gas, 50 tUSD once). Test money only.
+- Tests: `NET=fuji SKIP_DEPLOY=1 bash scripts/mvp/e2e.sh` (19 steps) and
+  `node scripts/browser/wallet-e2e.mjs https://<url>/app/` (18 steps through the real UI).
+
 ## What changes for Fuji
 - Deploy the Fuji L1 (S1 Fuji path) → `config/l1/arepapaybank.fuji.json`, then deploy the MVP stack with the **user's own
   keystore** (not the CLI local keys) → `config/l1/mvp.fuji.json`. `deploy.sh` refuses non-local networks on purpose.

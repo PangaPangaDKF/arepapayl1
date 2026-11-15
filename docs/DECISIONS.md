@@ -2,13 +2,37 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-024 · 2026-11-15 · LANDING: announcement + pitch landing, merchants as exchange houses, Learn and remember, probar/ link (Claude Opus 5.5, LANDING lane run by a BRAIN subagent; the LANDING session was not running)
+- What: rewrote the landing as the announcement (6 status-labeled solution lines, "Cómo probar" on testnet, merchants as exchange houses, 1:1 reserves, privacy, economics with SUPUESTO tags, A/B/C plan, the ask); removed raffles/WiFi; added `probar/` (reads `../mvp-url.json` and redirects); `NEXT_BASE_PATH` + `NEXT_PUBLIC_SITE_URL`; gate: chain ids checked against `config/`, `probar/` rules, relative links checked; lane skill v1.5 §5a (L5).
+- Why: user goal L6 ("a normal and basic landing page to show what the project is about and to pitch it"), D-014, D-023, BRAIN's verified testnet facts (D-019).
+- Alternatives rejected: hardcoding the tunnel URL (T5, dies on restart); a sideways-scrolling table on phones (rows stack instead).
+- Verify: build 0, landing-check 0, landing-probe 0 (390/360), sub-path build 0, three V9 negatives exit 1, 1280 px renders read by the subagent; BRAIN re-ran the full gate (ALL CHECKS PASSED) and read the full-page render served from the public origin; `probar/` → `/app/?net=fuji` PASS in Chrome.
+
+### D-026 · 2026-11-15 · One public origin: landing at /, dApp at /app/, served by the onboarding service through the tunnel (Claude Opus 5.5, BRAIN lane)
+- What: `backend/onboarding/server.mjs` in SINGLE_ORIGIN mode serves `landing/out` at `/` when it exists, the dApp at `/app/`, `/mvp-url.json` (own origin), a restricted `/rpc` and `/config`. `scripts/mvp/serve-public.sh` supervises service + cloudflared quick tunnel (PID files, auto-restart, URL in `backend/onboarding/data/public-url.fuji.txt`).
+- Why: the user wants a basic landing to show and pitch the project plus a testable MVP, finished autonomously. A stable external host was not available: the stored Vercel login was expired (and the CLI removed it, L-009) and creating a public GitHub Pages repo was refused by the session's permission classifier. One origin is the lightest path that needs no new account and keeps landing and app consistent.
+- Alternatives rejected: Vercel `--temporary` (new URL per deploy, expiry unclear); GitHub Pages (blocked, needs the user); hardcoding a trycloudflare URL in the landing (dies on restart, T5).
+- Limits: the URL changes when the tunnel restarts and everything stops when this PC sleeps. Stable domain `arepapay.site` needs the user: either a Cloudflare named tunnel (`cloudflared tunnel login`, one browser click) or a host login.
+- Verify: public origin serves `/` (landing), `/probar/`, `/mvp-url.json`, `/app/`, `/config/fuji` (all 200); browser e2e at `<url>/app/` 18/18; `probar/` redirect PASS in headless Chrome.
+
+### D-025 · 2026-11-15 · Browser test tool + `arepapay-browser` skill (Claude Opus 5.5, BRAIN lane; built by a subagent, re-run by BRAIN)
+- What: `scripts/browser/cdp.mjs` (zero-dep Chrome DevTools helper) and `scripts/browser/wallet-e2e.mjs` (three injected EIP-1193 wallets drive the real dApp UI: add network, request access, split-pay 5 = 3 + 2, assert UI + chain); skill `.claude/skills/arepapay-browser/`.
+- Why: user: "add a skill or a tool to manage the browser and everything you need to make it possible"; scripted e2e alone does not prove the UI a MetaMask user clicks.
+- Verify: 18/18 on local (subagent) and 18/18 over the public HTTPS Fuji URL (BRAIN re-run). Limit: not real MetaMask; mobile check stays human.
+
+### D-019 · 2026-11-15 · Stage B: ArepaPay L1 on Fuji + MVP + public endpoint — DONE (Claude Opus 5.5, BRAIN lane)
+- What: subnet-evm v1.15.3 (plugin 47) installed with the user's permission; L1 created, deployed, converted (subnet `2sntWm2…`, blockchain `pyHdg4sk…`, chain 77078), node tracking, PoA manager initialized, validator balance 2.99948 AVAX (~67 days). `NET=fuji s1-verify` 15/15; MVP deployed (`config/l1/mvp.fuji.json`); `NET=fuji e2e.sh` 19/19; public HTTPS endpoint up; browser e2e 18/18. New: `scripts/l1/fuji-split-proxy.mjs`, `config/l1/arepapaybank.fuji.json`, NET-aware `s1-verify.sh` / `deploy.sh` / `e2e.sh` (renamed from e2e-local.sh), `scripts/mvp/serve-public.sh`.
+- Why: user: "quiero la b" (Fuji) and "finish the loop … without my intervention".
+- Decision taken alone: AUTO_APPROVE=1 on the public test service so anyone can test while the admin sleeps; it is the testnet stand-in for bank KYC (R11 stays the rule for anything real; admin approval is the default everywhere else).
+- Details and exact commands: `docs/spikes/STAGE_B_RESULT.md` v1.0. Lessons L-008..L-010.
+
 ### D-023 · 2026-11-15 · Learning + memory loop in master-method and lane skills (Claude Opus 5.5, BRAIN lane)
 - What: master-method v1.3 §5.7 (three memory layers, PROVEN/TRACED/SUSPECTED labels, immediate LESSONS entries, promotion of general rules, auto-memory for user corrections, 5-line retro, subagent lessons verified) + checklist item 11; `arepapay-brain` §7b; LANDING task L5 for its own skill; auto-memory updated (project state, test keys).
 - Why: user: "improve the skills we are using with learning and memories features to enhance it with the best llm practices and with the style we are creating".
 - Verify: docs/skills only; `bash tests/check.sh` → ALL CHECKS PASSED (exit code).
 - Commit: this commit.
 
-### D-019 · 2026-11-15 · Stage B execution, part 1: test keys, funds on the Fuji P-Chain, own Fuji node, Fuji genesis (Claude Opus 5.5, BRAIN lane + subagent) — IN PROGRESS
+### D-019 · 2026-11-15 · Stage B execution, part 1: test keys, funds on the Fuji P-Chain, own Fuji node, Fuji genesis (Claude Opus 5.5, BRAIN lane + subagent) — part 1, completed in the D-019 DONE entry above
 - What: CLI test keys `arepapay-fuji` (C 0x3A7e…5Fc8) and `arepapay-fuji-gas` (0x9769…F2fF); 4.19 Fuji AVAX swept once from the burned v1 `deployer` key (it gets no role anywhere); own Fuji node (CLI cluster `arepapay-fuji`, avalanchego v1.15.3, :9750/:9751, partial sync, bootstrapped); `scripts/l1/fuji-import-p.sh` (avalanchejs ImportTx, because the public API dropped `avax.getAtomicTxStatus`); `config/l1/genesis.arepapaybank.fuji.json` (chain 77078, admins = arepapay-fuji, allowlist = gas key, minter off, warp at genesis time, 20M gas, no ewoq/deployer); `docs/spikes/STAGE_B_RESULT.md`.
 - Why: user: "you can create and save the keys just for test … just continue the loop and do what you need to do to at least have something testable".
 - Verify (BRAIN): our node's `platform.getBalance` for P-fuji1rg4s98axcsj6wewqhmwxeqf3larw8rjamg8lq4 → 3609992904 nAVAX; genesis grep for the burned/ewoq addresses → 0; key scan clean.

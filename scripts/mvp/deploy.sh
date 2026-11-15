@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Deploy the MVP test stack (ArepaPayTestUSD + SplitPayEscrow) and generate config/l1/mvp.<net>.json.
-# Usage: scripts/mvp/deploy.sh [local]      (LOCAL ONLY for now; Fuji deploys use the user's own keystore, see app/README.md)
+# Usage: scripts/mvp/deploy.sh [local|fuji]   (fuji = stage B L1, TESTNET-ONLY keys in the avalanche-cli key store)
 # Keys: read from avalanche-cli's local key store (LOCAL-TEST-ONLY, never hold value). Never printed, never written to the repo.
 set -euo pipefail
 set +x   # never trace: commands carry private keys
 
 export PATH="$HOME/.foundry/bin:$PATH"
 NET="${1:-local}"
-[ "$NET" = "local" ] || { echo "deploy.sh only deploys to the LOCAL L1 (got: $NET)"; exit 2; }
+[[ "$NET" =~ ^(local|fuji)$ ]] || { echo "deploy.sh deploys to local or fuji (got: $NET)"; exit 2; }
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CFG_REL="config/l1/arepapaybank.$NET.json"
 CFG="$REPO/$CFG_REL"

@@ -4,8 +4,10 @@
 'use strict';
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
-const NET = /^(local|fuji)$/.test(Q.get('net') || '') ? Q.get('net') : 'local';
-const API = (Q.get('api') || `${location.protocol}//${location.hostname || '127.0.0.1'}:8787`).replace(/\/$/, '');
+// Served by the onboarding service itself (single origin, stage B) -> same origin; else the dev layout (page :8080, API :8787).
+const SAME_ORIGIN = location.protocol === 'https:' || (location.port !== '' && location.port !== '8080');
+const API = (Q.get('api') || (SAME_ORIGIN ? location.origin : `${location.protocol}//${location.hostname || '127.0.0.1'}:8787`)).replace(/\/$/, '');
+let NET = /^(local|fuji)$/.test(Q.get('net') || '') ? Q.get('net') : null;   // null -> the service's own network (/health)
 const STATES = ['-', 'Abierto', 'Listo (falta confirmar)', 'Cobrado', 'Anulado'];
 const ROLES = ['sin acceso', 'habilitado', 'admin', 'manager'];
 
@@ -279,6 +281,8 @@ async function boot() {
   $('btnCancel').onclick = simple('cancel', 'Cobro cancelado.');
 
   try {
+    if (!NET) { try { NET = (await (await fetch(`${API}/health`)).json()).net; } catch {} }
+    if (!/^(local|fuji)$/.test(NET || '')) NET = 'local';
     const r = await fetch(`${API}/config/${NET}`);
     if (!r.ok) throw new Error(`config ${NET}: HTTP ${r.status}`);
     S.cfg = await r.json();

@@ -145,8 +145,9 @@ Facts for stage C:
 - **Outside the chain:** nobody, as long as the RPC is private (production: authenticated gateway).
 - **The bank (node operator):** sees every address pair. That is how R12 is enforced (unexplained or customer → customer
   transfers are flagged). It never sees amounts, only the auditor key does.
-- **Public test phase:** testers' MetaMask needs a reachable RPC, so **anyone with the test RPC can read addresses** (never
-  amounts). Acceptable for testnet; production uses the private gateway, where the RPC answers each user only about their own
+- **Public test phase:** testers' MetaMask needs a reachable RPC, so **anyone with the test RPC can read addresses**. Amounts
+  stay hidden only once balances are encrypted (eERC); **the current public MVP (D-019) uses a plain test token (tUSD), so its
+  test amounts are readable too**. Acceptable for testnet; production uses the private gateway, where the RPC answers each user only about their own
   wallet.
 - Hiding addresses from the bank too would need fresh addresses per payment, which breaks the KYC allowlist. Not compatible with
   R11.

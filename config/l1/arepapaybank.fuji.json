@@ -1,0 +1,37 @@
+{
+  "_note": "Single source of truth (R7) for the FUJI arepapaybank L1 (stage B, D-019). No keys here. Keys named below are TESTNET-ONLY (avalanche-cli key store) and hold no real value.",
+  "network": "fuji",
+  "name": "arepapaybankfuji",
+  "chainId": 77078,
+  "tokenSymbol": "ARPB",
+  "rpcUrl": "http://127.0.0.1:9750/ext/bc/pyHdg4sk3U1PB7k3dKcyvnurYi5ByGeqrGDGXKDKU6SCEhujg/rpc",
+  "blockchainId": "pyHdg4sk3U1PB7k3dKcyvnurYi5ByGeqrGDGXKDKU6SCEhujg",
+  "blockchainIdHex": "0x6cec3cb11e8ea7c864035c3d592082813f70a2600661f0cefacac53c1043a72a",
+  "subnetId": "2sntWm2wSdFMJe5XdGTr1bAtt2gaB8fhvF1MUioC7XMtP1x5rr",
+  "vmId": "jv9f7NYx4CMWokVdwqS5UJjfvXpz79m4eB7MdCE9CeHo8X4bE",
+  "subnetEvmVersion": "v1.15.3",
+  "avalanchegoVersion": "v1.15.3",
+  "l1ValidatorNodeId": "NodeID-AXhDwqfJ7EVyxELXH2adqDPq9isNBqibY",
+  "convertTxId": "2JF48vbUd2smzkSX2zHh6UXjWbiYiv9f5myiWp4QGKv57ZJX2x",
+  "pChainOwner": "P-fuji1rg4s98axcsj6wewqhmwxeqf3larw8rjamg8lq4",
+  "genesisFile": "config/l1/genesis.arepapaybank.fuji.json",
+  "precompiles": {
+    "contractDeployerAllowList": { "address": "0x0200000000000000000000000000000000000000", "enabled": true },
+    "contractNativeMinter": { "address": "0x0200000000000000000000000000000000000001", "enabled": false },
+    "txAllowList": { "address": "0x0200000000000000000000000000000000000002", "enabled": true },
+    "feeManager": { "address": "0x0200000000000000000000000000000000000003", "enabled": true },
+    "rewardManager": { "address": "0x0200000000000000000000000000000000000004", "enabled": false },
+    "warpMessenger": { "address": "0x0200000000000000000000000000000000000005", "enabled": true }
+  },
+  "validatorManager": {
+    "type": "PoA, ValidatorManager v2 (genesis-deployed, initialized 2026-11-15)",
+    "proxy": "0x0Feedc0de0000000000000000000000000000000",
+    "implementation": "0x0C0DEbA5E0000000000000000000000000000000",
+    "proxyAdmin": "0xa0AffE1234567890ABcDef1234567890ABCdEF34",
+    "owner": "0x3A7e0054821395ca11bA6c403B7DC1fB99235Fc8"
+  },
+  "accounts": {
+    "admin": { "cliKeyName": "arepapay-fuji", "address": "0x3A7e0054821395ca11bA6c403B7DC1fB99235Fc8", "roles": ["txAllowList admin", "contractDeployerAllowList admin", "feeManager admin", "validator-manager owner", "proxy-admin owner", "P-Chain subnet owner"] },
+    "gasStation": { "cliKeyName": "arepapay-fuji-gas", "address": "0x9769D591AA88558BB812Cc95908dc4c87a5cF2fF", "roles": ["txAllowList enabled", "genesis-funded 100,000 ARPB"] }
+  }
+}

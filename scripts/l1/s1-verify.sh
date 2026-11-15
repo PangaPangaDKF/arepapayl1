@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # S1 — prove the arepapaybank LOCAL L1 properties with `cast`. Prints PASS/FAIL per check; exits non-zero on any FAIL.
 #
-# Reads everything from config/l1/arepapaybank.local.json (R7). LOCAL ONLY.
+# Reads everything from config/l1/arepapaybank.$NET.json (R7). NET=local (default) or NET=fuji (stage B, D-019).
 # Keys: the admin key is read from avalanche-cli's local key store (arepapay-local-admin, LOCAL-TEST-ONLY, never holds value).
 # Fresh test wallets are made with `cast wallet new` in memory and never written anywhere. No key is ever printed.
 #
@@ -11,7 +11,8 @@ set +x   # never trace: commands carry private keys
 
 export PATH="$HOME/.foundry/bin:$PATH"
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-CFG="$REPO/config/l1/arepapaybank.local.json"
+NET="${NET:-local}"; [[ "$NET" =~ ^(local|fuji)$ ]] || { echo "NET must be local or fuji"; exit 2; }
+CFG="$REPO/config/l1/arepapaybank.$NET.json"
 cfg() { python3 -c "import json,functools,sys; d=json.load(open('$CFG')); print(functools.reduce(lambda a,k: a[k], sys.argv[1].split('.'), d))" "$1"; }
 
 RPC="$(cfg rpcUrl)"
@@ -32,7 +33,7 @@ check() { if [ "$2" = "1" ]; then pass "$1"; else fail "$1"; fi; }
 lc() { tr '[:upper:]' '[:lower:]'; }
 
 # --- secrets in memory only ---
-[ -r "$ADMIN_KEY_FILE" ] || { echo "admin key arepapay-local-admin not found in avalanche-cli key store"; exit 2; }
+[ -r "$ADMIN_KEY_FILE" ] || { echo "admin key $(cfg accounts.admin.cliKeyName) not found in avalanche-cli key store"; exit 2; }
 ADMIN_PK="$(tr -d '[:space:]' < "$ADMIN_KEY_FILE")"; ADMIN_PK="0x${ADMIN_PK#0x}"
 [ "$(cast wallet address --private-key "$ADMIN_PK" | lc)" = "$(echo "$ADMIN_ADDR" | lc)" ] \
   || { echo "admin key does not match config admin address"; exit 2; }
@@ -59,7 +60,7 @@ try_send() {
 }
 admin_send() { cast send --private-key "$ADMIN_PK" -r "$RPC" "$@" >/dev/null 2>&1; }
 
-echo "== S1 verify: arepapaybank @ $RPC"
+echo "== S1 verify ($NET): $(cfg name) @ $RPC"
 echo "   admin=$ADMIN_ADDR  fresh test address=$F_ADDR (key in memory only)"
 
 # 1. chain id

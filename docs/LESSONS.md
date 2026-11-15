@@ -44,3 +44,20 @@ Inherited general lessons: master-method KNOWLEDGE §9 (C1–C15).
 - Root cause: tool versions were assumed compatible with the live network.
 - RULE: before any public-network deploy, check (1) the network's required node version and active upgrades, (2) the VM plugin version that node needs, (3) that every API method the tool calls still exists. Run your own node and use `--endpoint` when the public API is trimmed.
 - Enforced by: STAGE_B_FUJI runbook preflight + this lesson (promoted to master-method G6 note).
+
+### L-008 · 2026-11-15 · BRAIN · security · a CLI "describe" printed private keys
+- What happened: `avalanche blockchain describe arepapaybankfuji` prints a key table that includes the stored keys' private keys. The two Fuji test keys (`arepapay-fuji`, `arepapay-fuji-gas`, testnet-only, user-approved test keys) appeared in BRAIN's tool output.
+- Root cause: assumed a read-only "describe" command shows only public data.
+- RULE: treat every unfamiliar CLI read command as able to print secrets: first run it once piped through a filter that drops 64-hex strings (`| grep -vE '[0-9a-f]{64}'`), and never paste its raw output into docs. Keys that leak are rotated before they ever hold value.
+- Enforced by: this lesson; STAGE_B_RESULT §1 uses the filtered form; master-method S-rule note (V-section).
+
+### L-009 · 2026-11-15 · BRAIN · tooling · a status command deleted a stored login
+- What happened: `vercel whoami` (CLI 65.11.0) found the stored Vercel token expired, printed "Logged out" and deleted `~/.local/share/com.vercel.cli/auth.json`. The token already did not work, so nothing usable was lost, but a "read" command changed the user's machine.
+- Root cause: ran an account CLI's status command without knowing its side effects on an expired session.
+- RULE: before running a third-party account CLI, copy its credential file aside (permissions kept) or use `--token`/env auth; report any side effect to the user.
+- Enforced by: this lesson; `arepapay-brain` RUNBOOK note.
+
+### L-010 · 2026-11-15 · BRAIN · tooling · `pkill -f <script>` killed its own shell
+- What happened: `pkill -f fuji-split-proxy.mjs; node scripts/l1/fuji-split-proxy.mjs …` in one command line matched the running bash (its command line contains the pattern) and killed the whole command (exit 144).
+- RULE: stop your own processes by PID files (`kill "$(cat x.pid)"`), never `pkill -f` with a pattern that appears in the same command line.
+- Enforced by: `scripts/mvp/serve-public.sh` uses PID files.

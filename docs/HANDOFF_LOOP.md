@@ -1,5 +1,11 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-15 · BRAIN (+ LANDING via subagent) · Stage B done, MVP public, landing announcement
+- Done: Fuji L1 (D-019), browser tool + skill (D-025), landing announcement (D-024), one public origin (D-026). Public URL at closeout: https://enhanced-donors-wider-stack.trycloudflare.com (landing), https://enhanced-donors-wider-stack.trycloudflare.com/app/ (dApp).
+- Verified: check.sh ALL CHECKS PASSED (rc 0); `NET=fuji s1-verify` 15/15; `NET=fuji e2e.sh` 19/19; `wallet-e2e.mjs <url>/app/` 18/18; `probar/` redirect PASS; renders read.
+- Retro: three tooling lessons (L-008 describe prints keys, L-009 CLI deleted an expired login, L-010 pkill -f) promoted to master-method G13.
+- Next: user — stable domain (named tunnel) and phone check in MetaMask mobile; BRAIN — eERC on Fuji (encrypted balances in the public MVP), FxLedger deploy, B5/B6.
+
 ## 2026-11-15 · LANDING turn 3 (→ main-brain handoff)
 - Done: ran the v0 preview, hit and diagnosed the `next dev` vs `check.sh`-build collision, switched to serving `landing/out/`
   via `python3 -m http.server`. Wrote **`docs/SESSION_CONTEXT.md`** — per the user, the next session acts as the **main brain**

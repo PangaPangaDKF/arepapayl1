@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MVP end-to-end on the LOCAL arepapaybank L1: deploy -> onboard 3 fresh wallets through the onboarding service ->
+# MVP end-to-end on the arepapaybank L1 (NET=local default, NET=fuji for stage B): deploy -> onboard 3 fresh wallets through the onboarding service ->
 # split pay $5 (alice 3 + bob 2, auto-capture) -> second intent covered only 3 -> expire -> withdraw.
 # Prints PASS/FAIL per step; exits non-zero on any FAIL.
 #   SKIP_DEPLOY=1   reuse config/l1/mvp.local.json
@@ -11,8 +11,11 @@ set +x   # never trace: commands carry private keys
 
 export PATH="$HOME/.foundry/bin:$PATH"
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-CFG="$REPO/config/l1/arepapaybank.local.json"
-MVP="$REPO/config/l1/mvp.local.json"
+NET="${NET:-local}"; [[ "$NET" =~ ^(local|fuji)$ ]] || { echo "NET must be local or fuji"; exit 2; }
+CFG="$REPO/config/l1/arepapaybank.$NET.json"
+MVP="$REPO/config/l1/mvp.$NET.json"
+KEYDIR="$HOME/.avalanche-cli/key"
+if [ "$NET" = fuji ]; then export ADMIN_KEY_FILE="${ADMIN_KEY_FILE:-$KEYDIR/arepapay-fuji.pk}" GAS_KEY_FILE="${GAS_KEY_FILE:-$KEYDIR/arepapay-fuji-gas.pk}"; fi
 jget() { python3 -c "import json,functools,sys; d=json.load(open(sys.argv[2])); print(functools.reduce(lambda a,k: a[k], sys.argv[1].split('.'), d))" "$1" "$2"; }
 RPC="$(jget rpcUrl "$CFG")"
 TX_AL="$(jget precompiles.txAllowList.address "$CFG")"
@@ -28,23 +31,23 @@ call() { cast call "$@" -r "$RPC" | num; }
 send() { local pk="$1"; shift; cast send --private-key "$pk" -r "$RPC" "$@" >/dev/null 2>&1; }
 eq() { [ "$1" = "$2" ] && echo 1 || echo 0; }
 
-echo "== MVP e2e (LOCAL) @ $RPC"
+echo "== MVP e2e ($NET) @ $RPC"
 # 1 deploy
-if [ "${SKIP_DEPLOY:-0}" = "1" ]; then [ -f "$MVP" ] && pass "deploy skipped, using existing mvp.local.json" || fail "no mvp.local.json"
+if [ "${SKIP_DEPLOY:-0}" = "1" ]; then [ -f "$MVP" ] && pass "deploy skipped, using existing mvp.$NET.json" || fail "no mvp.$NET.json"
 else
-  if out="$(bash "$REPO/scripts/mvp/deploy.sh" local 2>&1)"; then pass "deploy: ${out##*$'\n'}"; else echo "$out" | tail -5; fail "deploy"; finish; fi
+  if out="$(bash "$REPO/scripts/mvp/deploy.sh" "$NET" 2>&1)"; then pass "deploy: ${out##*$'\n'}"; else echo "$out" | tail -5; fail "deploy"; finish; fi
 fi
 USD="$(jget testUsd "$MVP")"; ESC="$(jget splitPayEscrow "$MVP")"; FEE_ROUTER="$(jget feeRouter "$MVP")"
 check "escrow points at test USD, fee 50 bps" "$( [ "$(cast call "$ESC" 'token()(address)' -r "$RPC" | tr A-F a-f)" = "$(echo "$USD" | tr A-F a-f)" ] && [ "$(call "$ESC" 'feeBps()(uint16)')" = "50" ] && echo 1 || echo 0)"
 
 # 2 onboarding service (own temp store, manual approval through the admin CLI)
 DATA="$(mktemp -d)"
-NET=local PORT=$PORT DATA_DIR="$DATA" AUTO_APPROVE=0 node "$REPO/backend/onboarding/server.mjs" >"$DATA/server.log" 2>&1 &
+NET=$NET PORT=$PORT DATA_DIR="$DATA" AUTO_APPROVE=0 node "$REPO/backend/onboarding/server.mjs" >"$DATA/server.log" 2>&1 &
 SRV=$!
 trap 'kill $SRV 2>/dev/null; rm -rf "$DATA"' EXIT
 for _ in $(seq 1 180); do curl -sf "$API/health" >/dev/null && break; sleep 0.5; done   # viem import is slow on /mnt/c
 if curl -sf "$API/health" >/dev/null; then pass "onboarding service up"; else fail "onboarding service up"; tail -5 "$DATA/server.log"; finish; fi
-check "service serves generated config" "$(curl -sf "$API/config/local" | python3 -c "import json,sys; d=json.load(sys.stdin); print(1 if d['splitPayEscrow']=='$ESC' and d['chainId']==$(jget chainId "$CFG") else 0)")"
+check "service serves generated config" "$(curl -sf "$API/config/$NET" | python3 -c "import json,sys; d=json.load(sys.stdin); print(1 if d['splitPayEscrow']=='$ESC' and d['chainId']==$(jget chainId "$CFG") else 0)")"
 
 declare -A ADDR PK
 for who in merchant alice bob; do
@@ -62,7 +65,7 @@ for who in merchant alice bob; do
   [ "$(call "$TX_AL" 'readAllowList(address)(uint256)' "$a")" = "0" ] || ok=0
 done
 check "3 requests pending, none allowlisted yet" "$ok"
-if out="$(cd "$REPO" && NET=local DATA_DIR="$DATA" node backend/onboarding/admin.mjs approve "${ADDR[merchant]}" "${ADDR[alice]}" "${ADDR[bob]}" 2>&1)"; then ok=1; else ok=0; fi
+if out="$(cd "$REPO" && NET=$NET DATA_DIR="$DATA" node backend/onboarding/admin.mjs approve "${ADDR[merchant]}" "${ADDR[alice]}" "${ADDR[bob]}" 2>&1)"; then ok=1; else ok=0; fi
 echo "$out" | sed 's/^/     /'
 check "admin CLI approved all 3" "$ok"
 ok=1
