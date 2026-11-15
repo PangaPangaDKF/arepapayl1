@@ -20,6 +20,7 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
   (`landing/out/`), so the target is a static host (Vercel static / `out/`). Confirm.
 
 ## Tasks for LANDING
+- [ ] **L6 · (user goal, D-021) Announcement + pitch on the landing.** The user: "improve the landing page to make an announcement … a normal and basic landing page to show what the project is about and to pitch it with a strong plan [and] tokenomics for centralized banking system people or clients to understand it". Build from `docs/PITCH.md` and `docs/ECONOMICS.md` (truth sources; keep every SUPUESTO marked as an example, never a promise; no yield words): (1) announcement hero ("ArepaPay: la cadena bancaria privada para micro y pequeños comercios", testnet MVP coming); (2) the 5-line solution; (3) "Cómo el dinero sigue siendo real" (1:1 reserves); (4) privacy + oversight; (5) the economics table; (6) honest roadmap A/B/C with status labels; (7) the ask. Also do L4 (remove raffles/WiFi; merchants as exchange houses). Keep it minimal and Spanish-first. Do NOT link the test dApp until BRAIN posts its public URL on the board (T5). Verify: 3 gates + 1280 px renders of each new section. Reserve your D-number first.
 > **New from the user (D-014, 2026-11-15), applies to all copy:** ArepaPay is **a light payments app and nothing more**, as minimal as possible. **Raffles and WiFi vouchers are removed**: delete any rewards/raffle/WiFi section or mention. **Merchants are also exchange houses**: they provide the liquidity and sell USDT/USDC to customers at the bank's band rate; every sale is recorded (FX ledger); reselling or black-market exchange is forbidden (R12). Testing will be in the **MetaMask mobile in-app browser** (and PC) once a public test network exists (Q18). Until then any "Cómo probar" content is **Planned**, with no links (T5). Truth sources: `docs/features/MERCHANT_FX.md`, charter v1.3, ARCHITECTURE §3a.
 - [ ] L5 · (D-023) Add a "Learn and remember" section to `arepapay-landing-design` mirroring master-method §5.7 (evidence labels PROVEN/TRACED, LESSONS entry on every incident, retro line in HANDOFF_LOOP). Your lane, your wording.
 - [ ] L4 · Apply D-014 to `landing/`: remove rewards/raffles/WiFi; add a short "Comercios como casas de cambio" section (status Planned) with the FX-ledger idea in plain Spanish (every sale recorded, official band rate, no resale); keep the page minimal. Verify: 3 gates green + 1280 px render of the new section read. Reserve your D-number first.
@@ -56,7 +57,7 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-018 | BRAIN | Two-brain protocol (P-NNN proposals) + duplicate landing session closed | done |
 | D-019 | BRAIN | Stage B execution: test keys, sweep of burned-key Fuji AVAX, this PC as Fuji node/validator, HTTPS tunnel RPC | reserved |
 | D-020 | BRAIN | FxLedger contract (MERCHANT_FX) test-first | done |
-| D-021 | BRAIN | Economics ("tokenomics") of the bank chain + pitch plan (decision memo) | reserved |
+| D-021 | BRAIN | Economics ("tokenomics") of the bank chain + pitch plan (decision memo) | done |
 | D-022 | BRAIN | MVP test dApp for MetaMask mobile browser + onboarding (test-KYC) | reserved |
 | D-023 | BRAIN | Learning + memory upgrade to master-method and lane skills | done |
 | D-024+ | | | Next free: reserve here first |

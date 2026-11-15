@@ -8,6 +8,15 @@ Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD
 - Verify: docs/skills only; `bash tests/check.sh` → ALL CHECKS PASSED (exit code).
 - Commit: this commit.
 
+### D-021 · 2026-11-15 · Economics ("tokenomics") of the bank chain + pitch (Claude Opus 5.5, BRAIN lane; decision memo by a subagent, reviewed by BRAIN)
+- What: `docs/ECONOMICS.md` (every unit: ARPB gas coin from genesis, bridged USDT/USDC 1:1 with reserves on C-Chain, eERC 1:1; money flows; fee options with worked examples marked ASSUMPTION; costs; risks; recommendation F2) and `docs/PITCH.md` (Spanish, English summary; honest roadmap A built/B in preparation/C planned; disclaimer; no yield promises).
+- Why: user: "a strong plan [and] tokenomics for centralized banking system people or clients to understand it"; "use the sub agents for decisions".
+- Recommendation (F2, pending the user): 0 % payment fee during the pilot (fee kept in code, multisig + timelock to change, 1 % cap); merchants keep the FX band markup; the bank charges a flat bridge-exit fee and runs its USD↔Bs desk; gas free for users; payment fee only after stage C data.
+- Key findings: the ~$1,000 is the bank's FX float, not the backing (the 1:1 lock backs withdrawals); fees exist in code only where money leaves encryption (SplitPayEscrow); the pilot doesn't pay for itself at stage C caps (costs rest on ASSUMED prices); the biggest economic risk is which reference rate anchors the band.
+- Verify (BRAIN): grep of PITCH for unsupported claims (audited/live/guaranteed/yield) → none; assumptions labeled SUPUESTO; `bash tests/check.sh` → ALL CHECKS PASSED.
+- Open (needs the user): Q19–Q29 (ECONOMICS §7).
+- Commit: this commit.
+
 ### D-020 · 2026-11-15 · FxLedger contract (Claude Opus 5.5, BRAIN lane; built by a subagent, verified and amended by BRAIN)
 - What: `contracts/src/FxLedger.sol` (no value moved, N0; merchant registry; rate signer with ±20 % per-update bound; spread cap 3 %; band check in exact integers; orders Open→Accepted→Sent→Settled / Disputed / Expired / Cancelled; unique commitments and eERC tx hashes with `orderIdOfTx`; reconciler result stored separately); tests `FxLedger.t.sol` (62) + `FxLedger.invariant.t.sol` (3).
 - Why: user: "un registro que muestre que se realizó para que el comerciante no mueva fondos y no los declare" (D-014, R12).
