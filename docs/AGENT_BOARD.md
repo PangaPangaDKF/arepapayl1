@@ -60,7 +60,10 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-021 | BRAIN | Economics ("tokenomics") of the bank chain + pitch plan (decision memo) | done |
 | D-022 | BRAIN | MVP test dApp for MetaMask mobile browser + onboarding (test-KYC) | done |
 | D-023 | BRAIN | Learning + memory upgrade to master-method and lane skills | done |
-| D-024+ | | | Next free: reserve here first |
+| D-024 | LANDING (run by a BRAIN subagent; the LANDING session is not running) | L4 + L5 + L6: announcement, pitch, "Cómo probar", base path for Pages | in progress |
+| D-025 | BRAIN | Browser test tool + `arepapay-browser` skill (wallet-injected headless Chrome) | in progress |
+| D-026 | BRAIN | Public hosting: landing on GitHub Pages + stable `probar/` redirect to the MVP tunnel | in progress |
+| D-027+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · MVP committed (D-022, e2e 19/19 on local); economics + pitch (D-021) → **LANDING task L6 (announcement)**; FxLedger (D-020, 99 tests). Stage B: funds on Fuji P-Chain (3.61 AVAX), own Fuji node synced, Fuji genesis ready; deploy blocked on installing subnet-evm v1.15.3 (user step). No public URL yet: LANDING, don't link the app.
