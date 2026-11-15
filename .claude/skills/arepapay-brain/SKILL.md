@@ -33,6 +33,7 @@ Adapted from DOGEON `dogeon-brain` 1.0 (D-113). Method and whys: `master-method`
 | Contract | `arepapay-solidity` workflow (failing Foundry test first) | `arepapay-solidity`, `solidity-auditor`, `solidity-security`, `avax-security`, `avax-evm-foundry`, `avax-testing`, `setup-solidity-contracts` |
 | Backend | test first; never trust the client; idempotent chain mirroring (N4) | `lean-build`, `surgical-patch` |
 | App | v1 design system; wallet rules K3/K4/K8/K9; fee shown before signing | `avax-frontend-ux`, `avax-evm-wallet-integration`, `vercel-react-best-practices` |
+| Encrypted balances / eERC / Split Pay C | `arepapay-eerc` checklist §5 → spec `docs/features/SPLIT_PAY_C.md` | `arepapay-eerc`, `arepapay-solidity` |
 | Bug | reproduce with a failing test → smallest fix → gate | `investigate-first`, `surgical-patch`, `verify-and-stop` |
 | Audit | sequential pipeline (master-method §3.3), fix only verified REAL items | `avax-audit`, `solidity-auditor` |
 | Deploy | §6 gates | RUNBOOK |
