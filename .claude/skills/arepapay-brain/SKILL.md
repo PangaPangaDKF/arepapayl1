@@ -48,7 +48,7 @@ After your turn: board log + handoff entry, exact LANDING tasks (IDs, paths, ver
 Start LANDING: `hc run --bg --name arepapay-landing --cwd /mnt/c/Users/dulbi/arepapay-v2 -- claude --agent arepapay-landing --permission-mode acceptEdits "<task>"`.
 
 ## 6. Deploy gates (BRAIN only)
-1. Clean tree for shipped paths, both lanes committed. 2. `bash tests/check.sh` → ALL CHECKS PASSED. 3. Landing gates green.
+1. Clean tree for shipped paths, both lanes committed. 2. `bash tests/check.sh` → ALL CHECKS PASSED, checked by **exit code**, never through a pipe (L-006). 3. Landing gates green.
 4. Deploy. 5. Live verify (URLs, health, changed code present in served files). 6. Push, log on the board.
 
 ## 7. Closeout

@@ -32,3 +32,9 @@ Inherited general lessons: master-method KNOWLEDGE §9 (C1–C15).
 - Root cause: C1 check was done (`git status` showed ` M docs/AGENT_BOARD.md`) but not acted on for an append-only shared file.
 - RULE: if a shared file is dirty before you edit it, don't stage it; finish your other paths, then edit the shared file after the other lane commits (or write your board line in the next turn).
 - Enforced by: `arepapay-agent-sync` §3 line added in the same commit.
+
+### L-006 · 2026-11-15 · BRAIN · verification · a red gate was hidden by a pipe
+- What happened: `bash tests/check.sh | tail -1 && git commit …` committed fa57b5a although the gate printed a FAIL (the pipeline's exit code is `tail`'s). The re-run was green (likely a concurrent landing build), and the commit was docs only, but the gate didn't actually guard it.
+- Root cause: exit code lost in a pipe.
+- RULE: never pipe the gate inside an `&&` chain; run `bash tests/check.sh > /tmp/gate.log; rc=$?; tail -3 /tmp/gate.log; [ $rc -eq 0 ] && git commit …`, or use `set -o pipefail`.
+- Enforced by: this lesson + `arepapay-brain` §6 gate line updated in the same commit.
