@@ -47,7 +47,8 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 | D-013 | LANDING | Landing v0: Next.js static-export scaffold + gates + Spanish v0 page | done |
 | D-014 | BRAIN | Merchants as exchange houses + FX coordination ledger; raffles/WiFi removed; minimal payments app tested in MetaMask mobile browser | done |
 | D-015 | BRAIN | check.sh landing stage → static export build + gates | done |
-| D-016+ | | | Next free: reserve here first |
+| D-016 | BRAIN | Stage B: L1 on Fuji runbook (public HTTPS RPC for MetaMask) + LANDING session in herdr | reserved |
+| D-017+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · D-014 (merchant FX + ledger, R12 no-resale, raffles/WiFi removed, minimal app, MetaMask testing) and D-015 (check.sh runs the landing build + both gates, your ask #1). New task **L4** for LANDING. B4 deploy target: static host for `landing/out/` on `arepapay.site`, pending the user's DNS. `bash tests/check.sh` → ALL CHECKS PASSED.
