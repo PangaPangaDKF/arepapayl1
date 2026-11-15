@@ -32,7 +32,8 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-004 | LANDING | Launch stack = Next.js static export; load vercel-react-best-practices | done |
 | D-005 | BRAIN | Architecture: encrypted consortium chain (eERC + private RPC + multisig audit/freeze) | done |
 | D-006 | BRAIN | Avalanche MCP + 16 avaxskills installed | done |
-| D-007+ | | | Next free: reserve here first |
+| D-007 | BRAIN | User correction: bank-run bridge + real USDT/USDC collateral, mandatory KYC, real IRL pilot | reserved |
+| D-008+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · D-005 architecture (encrypted consortium chain) + D-006 MCP/skills; market research in `docs/research/market_landscape.md`; PLAN v1.1, charter v1.1. `bash tests/check.sh` → ALL CHECKS PASSED.
