@@ -38,6 +38,7 @@ Exit: `bash tests/check.sh` green; START_HERE + both agents launchable; board ha
 | S3 | **Audit Council view key** | Shamir t-of-n split of the auditor key in a ceremony + on-chain `AuditRequest` flow; research threshold ElGamal decryption so the key is never rebuilt | View-power design |
 | S4 | **Freeze Council** | Safe multisig as `txAllowList` admin, `FreezeRegistry` with expiring holds | Freeze-power design |
 | S5 | **Bank KYC → onboarding** | bank approval (mock bank API) → `Onboarding` contract enables wallet with tier/expiry/hash | Identity flow (KYC mandatory, D-007) |
+| S7 | **Split Pay escrow** (`docs/features/SPLIT_PAY.md`) | option A (hold on the private chain's public layer) then C (bank-held eERC escrow key); invariants + demo $3 + $2 = $5 | Escrow option (Q15) |
 | S6 | **Bank-run ICTT bridge** | Fuji C-Chain USDC home → L1 remote ERC-20, bank relayer; invariant L1 supply == locked; no admin drain | Ramp + provable liquidity (D-007) |
 
 ### Phase 3 — Contracts v2 (BRAIN; tests first; nerves N0–N7; v1 is a spec, not code)
@@ -116,6 +117,9 @@ Gates: `node scripts/landing-check.mjs`, `node scripts/landing-probe.mjs`, `bash
 | Q9 | Multisig signers (audit + freeze) | Proposal 2-of-3: bank, bank, ArepaPay. User decides. |
 | Q10 | Legal wrapper | Operate under a licensed bank or SUNACRIP licensee + written OFAC opinion before any real money (market §5). |
 | Q12 | USDT, USDC or both on the bridge | USDC first on Fuji (Circle testnet faucet exists); both on mainnet if the bank wants. |
+| Q13 | Split Pay capture | Automatic at 100% or a final confirm from each payer (SPLIT_PAY §2). |
+| Q14 | Split Pay share changes | Can a payer change/withdraw a share before capture? |
+| Q15 | Split Pay escrow | A, B or C after spike S7. |
 | Q11 | Recovery/reversal power | Default no (freeze yes, reverse no); possible only with a custom design. User decides. |
 
 ## 3. Risks

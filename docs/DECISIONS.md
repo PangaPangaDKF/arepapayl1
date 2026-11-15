@@ -2,6 +2,14 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-009 · 2026-11-15 · Split Pay QR feature: design + reusable prompt (Claude Opus 5.5, BRAIN lane)
+- What: `docs/features/SPLIT_PAY.md` (user's spec, names, step mapping, eERC escrow options A/B/C, contract rules), `prompts/SPLIT_PAY_PROMPT.md`; PLAN spike S7, Q13–Q15.
+- Why: user: "si el cliente quiere pagar 5$ pero un cliente tiene 3$ y el otro el resto … el contrato del qr será una transacción abierta … es como cuando el cliente hace lo mismo pero con diferentes tarjetas"; "ayúdame a descifrar cómo promptear".
+- Tool: web research (split tender + authorization/capture in card gateways, Algorand atomic group payments, EIP-3009/Circle batched settlement); eERC `Registrar.sol:82-89` (a contract can't hold an eERC balance without an off-chain proving key).
+- Alternatives rejected: balance check without a lock (stale between check and pay); an AI agent triggering payments (money flows must be deterministic, N4).
+- Verify: docs only; `bash tests/check.sh` → ALL CHECKS PASSED.
+- Commit: this commit.
+
 ### D-007 · 2026-11-15 · User correction: bank-run bridge, real USDT/USDC collateral, mandatory KYC, real IRL pilot (user decision, recorded by BRAIN)
 - What: ARCHITECTURE v1.1 (bridge + liquidity on chain, eERC converter over bridged USDT/USDC, auditor/freeze multisigs bank-led, KYC for everyone, staged pilot A/B/C with ~$1,000 initial liquidity and ~$100 real collateral per merchant); charter v1.2 (R1 staged money, R9 one bank-run bridge, R10 bank-led logged oversight, R11 KYC mandatory); PLAN v1.2 (S6 bridge spike, Q2/Q4/Q8/Q9/Q11/Q12).
 - Why: user: "la parte centralizada y que el banco controla o es la rampa significa que sí existirá un puente y una liquidez inicial, los micro negocios colocarán el colateral de usdt o usdc"; "el testing a nivel de prueba en IRL es real, 100$ por micro negocio"; "si se cierra la cadena la liquidez está allí dentro y no en el banco"; "no quiero que los balances de las personas o las transacciones sean trazadas"; "quiero que el kyc sea obligatorio"; "estás para analizar, no para inclinar lo que estoy pensando".

@@ -35,10 +35,11 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-006 | BRAIN | Avalanche MCP + 16 avaxskills installed | done |
 | D-007 | BRAIN | User correction: bank-run bridge + real USDT/USDC collateral, mandatory KYC, real IRL pilot | done |
 | D-008 | BRAIN | Spike S1: bank's private L1 on local network | reserved |
-| D-009 | BRAIN | Split-payment QR feature (multi-payer intent) design + prompt | reserved |
+| D-009 | BRAIN | Split-payment QR feature (multi-payer intent) design + prompt | done |
 | D-010+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-15 · BRAIN · D-009 Split Pay design + prompt (docs/features/SPLIT_PAY.md, prompts/SPLIT_PAY_PROMPT.md); spike S1 (D-008) running.
 - 2026-11-15 · BRAIN · D-007 user correction applied: ARCHITECTURE v1.1, charter v1.2, PLAN v1.2, L-003, master-method S8. `bash tests/check.sh` → ALL CHECKS PASSED.
 - 2026-11-15 · BRAIN · D-005 architecture (encrypted consortium chain) + D-006 MCP/skills; market research in `docs/research/market_landscape.md`; PLAN v1.1, charter v1.1. `bash tests/check.sh` → ALL CHECKS PASSED.
 - 2026-11-14 · BRAIN · rails committed (D-001..D-003); `bash tests/check.sh` → ALL CHECKS PASSED; LANDING tasks L1–L3 opened.
