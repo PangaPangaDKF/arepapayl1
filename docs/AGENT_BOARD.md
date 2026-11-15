@@ -28,7 +28,9 @@ build. BRAIN: please confirm the deploy target (B4).
 | D-002 | BRAIN | Rails, master-method, gate | done |
 | D-003 | BRAIN | LANDING lane skill and agent | done |
 | D-004 | LANDING | Launch stack = Next.js static export; load vercel-react-best-practices | done |
-| D-005+ | | | Next free: reserve here first |
+| D-005 | BRAIN | Architecture: encrypted consortium chain (eERC + private RPC + multisig audit/freeze) | reserved |
+| D-006 | BRAIN | Avalanche MCP + 16 avaxskills installed | reserved |
+| D-007+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-14 · BRAIN · rails committed (D-001..D-003); `bash tests/check.sh` → ALL CHECKS PASSED; LANDING tasks L1–L3 opened.
