@@ -70,7 +70,8 @@ Tests: s1-verify 15/15, e2e 19/19, browser e2e 18/18. The user's goal ("function
 | D-025 | BRAIN | Browser test tool + `arepapay-browser` skill (wallet-injected headless Chrome) | done |
 | D-026 | BRAIN | Public hosting: one origin (landing /, dApp /app/) via the tunnel; GitHub Pages blocked | done |
 | D-027 | BRAIN | Launch: GitHub repo `arepapayl1` + Pages workflow + arepapay.site DNS (user runs the publish script) | done |
-| D-028+ | | | Next free: reserve here first |
+| D-028 | BRAIN | DNS to Cloudflare + named tunnel: fixed https://app.arepapay.site for the MVP | in progress (waiting on the user's Cloudflare + Spaceship steps) |
+| D-029+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · Stage B DONE: L1 on Fuji (chain 77078), MVP deployed, public origin up, landing (D-024 via subagent) served at `/`. Gates: check.sh ALL PASSED; Fuji verify 15/15; e2e 19/19; browser 18/18. Needs the user for a stable domain (named tunnel / host login).
