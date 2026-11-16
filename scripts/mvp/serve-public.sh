@@ -2,7 +2,7 @@
 # Stage B public test endpoint (D-019): onboarding service in SINGLE_ORIGIN mode (dApp + /rpc + /config + KYC stand-in)
 # behind a cloudflared quick tunnel (HTTPS, no account). A supervisor loop restarts either one if it dies and writes the
 # current public URL to backend/onboarding/data/public-url.fuji.txt (gitignored; quick-tunnel URLs change on restart).
-#   scripts/mvp/serve-public.sh start|stop|status|url|publish-url
+#   scripts/mvp/serve-public.sh start|stop|status|url|publish-url|setup-named
 #   start also boots the Fuji L1 node if its RPC is down. publish-url writes config/public/mvp-url.json (read by
 #   https://arepapay.site/probar/) and, if the repo has an 'origin' remote, commits that one file and pushes (Pages redeploys).
 # TESTNET ONLY. AUTO_APPROVE=1: anyone who asks is allowlisted (stand-in for bank KYC during the public test).
@@ -14,6 +14,10 @@ RUN="$DATA/public.$NET"; mkdir -p "$RUN"
 URLF="$DATA/public-url.$NET.txt"
 CF="${CLOUDFLARED:-/home/panga/cloudflared}"
 KEYDIR="$HOME/.avalanche-cli/key"
+# Fixed address (D-028): once ~/.cloudflared/cert.pem exists (cloudflared tunnel login) and `setup-named` has run, the
+# supervisor runs the named tunnel TUNNEL_NAME and the URL is https://$TUNNEL_HOST forever. Otherwise: quick tunnel.
+TUNNEL_NAME="${TUNNEL_NAME:-arepapay-mvp}"; TUNNEL_HOST="${TUNNEL_HOST:-app.arepapay.site}"
+named_ready() { [ -f "$HOME/.cloudflared/cert.pem" ] && [ -f "$DATA/named-tunnel.$NET" ]; }
 
 supervise() {
   export NET PORT HOST=127.0.0.1 SINGLE_ORIGIN=1 AUTO_APPROVE="${AUTO_APPROVE:-1}" CORS_ORIGINS='*' DATA_DIR="$DATA"
@@ -26,8 +30,14 @@ supervise() {
     fi
     if [ "$tun" = 0 ] || ! kill -0 "$tun" 2>/dev/null; then
       : >"$RUN/tunnel.log"
-      "$CF" tunnel --no-autoupdate --url "http://127.0.0.1:$PORT" >>"$RUN/tunnel.log" 2>&1 & tun=$!; echo "$tun" >"$RUN/tunnel.pid"
-      for _ in $(seq 1 60); do u="$(grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' "$RUN/tunnel.log" | head -1)"; [ -n "$u" ] && break; sleep 1; done
+      if named_ready; then
+        "$CF" tunnel --no-autoupdate run --url "http://127.0.0.1:$PORT" "$TUNNEL_NAME" >>"$RUN/tunnel.log" 2>&1 & tun=$!
+        u="https://$TUNNEL_HOST"
+      else
+        "$CF" tunnel --no-autoupdate --url "http://127.0.0.1:$PORT" >>"$RUN/tunnel.log" 2>&1 & tun=$!
+        for _ in $(seq 1 60); do u="$(grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' "$RUN/tunnel.log" | head -1)"; [ -n "$u" ] && break; sleep 1; done
+      fi
+      echo "$tun" >"$RUN/tunnel.pid"
       [ -n "${u:-}" ] && echo "$u" >"$URLF"
       echo "$(date -Is) tunnel started pid $tun url ${u:-none}" >>"$RUN/supervisor.log"
     fi
@@ -71,6 +81,12 @@ case "${1:-status}" in
     for f in supervisor tunnel server; do [ -f "$RUN/$f.pid" ] && kill "$(cat "$RUN/$f.pid")" 2>/dev/null; rm -f "$RUN/$f.pid"; done; echo stopped;;
   url) cat "$URLF";;
   publish-url) publish_url;;
+  setup-named)   # one time, after `cloudflared tunnel login` authorized arepapay.site
+    [ -f "$HOME/.cloudflared/cert.pem" ] || { echo "run first: $CF tunnel login   (authorize arepapay.site in the browser)"; exit 1; }
+    "$CF" tunnel info "$TUNNEL_NAME" >/dev/null 2>&1 || "$CF" tunnel create "$TUNNEL_NAME" | grep -v -i 'secret' || exit 1
+    "$CF" tunnel route dns --overwrite-dns "$TUNNEL_NAME" "$TUNNEL_HOST" || exit 1
+    echo "$TUNNEL_NAME $TUNNEL_HOST" >"$DATA/named-tunnel.$NET"
+    echo "named tunnel $TUNNEL_NAME -> https://$TUNNEL_HOST ready; restart: $0 stop && $0 start && $0 publish-url";;
   status)
     for f in supervisor server tunnel; do p="$(cat "$RUN/$f.pid" 2>/dev/null)"; printf '%-10s %s\n' "$f" "$([ -n "$p" ] && kill -0 "$p" 2>/dev/null && echo "up ($p)" || echo down)"; done
     echo "url        $(cat "$URLF" 2>/dev/null || echo none)"
