@@ -94,6 +94,7 @@ async function waitTx(hash) {
 
 // ---------------------------------------------------------------- refresh
 async function refreshAccount() {
+  document.body.classList.toggle('is-connected', !!S.account);   // presentational: hero vs balance card
   $('addr').textContent = S.account || '-';
   $('chain').textContent = S.chainId == null ? '-' : (onChain() ? `ArepaPay L1 (${S.chainId})` : `otra red (${S.chainId}): cambia a ArepaPay`);
   if (!S.account || !S.cfg) return;
@@ -123,6 +124,7 @@ async function refreshIntent() {
     S.intent = it;
     if (S.account) { [S.mine, S.myConfirmed] = await Promise.all([esc.holdOf(S.intentId, S.account), esc.confirmed(S.intentId, S.account)]); }
     const state = Number(it.state);
+    $('iState').dataset.s = state;   // presentational: badge color
     $('intentBox').classList.remove('hidden');
     $('iId').textContent = S.intentId;
     if (state === 0) { $('iState').textContent = 'No existe'; return; }
@@ -259,6 +261,10 @@ function simple(fn, okText, gas) {
 function showTab(which) {
   $('merchant').classList.toggle('hidden', which !== 'merchant');
   $('customer').classList.toggle('hidden', which !== 'customer');
+  document.body.dataset.tab = which;   // presentational: active bottom tab
+  for (const [id, w] of [['tabMerchant', 'merchant'], ['tabCustomer', 'customer']]) {
+    $(id).classList.toggle('active', which === w); $(id).setAttribute('aria-pressed', String(which === w));
+  }
 }
 
 // ---------------------------------------------------------------- boot

@@ -2,6 +2,12 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-029 · 2026-11-16 · MVP app restyled with the original ArepaPay design (Claude Opus 5.5, BRAIN lane; built by a subagent, re-verified by BRAIN)
+- What: `app/index.html` restyled, new `app/styles.css` and `app/assets/arepa.svg`, `app/app.js` +6 display-only lines. v1 design (`arepapay-clean/DESIGN_SYSTEM.md` + the L1 React frontend): cream background, navy brand, gold-bordered cards with offset shadow, 3D pill buttons, navy header with the arepa logo, red/white checkered stripe, navy bottom tab bar (Cobrar / Pagar), navy balance panel, state badges, framed QR. Inter via Google Fonts. No raffle/rewards/NFT/WiFi/savings/credit/OTC brought back.
+- Why: user: "why the app dont have the same ui from the main arepapay project? the buttons and the style?" — D-022 built a bare test screen; the brand only reached the landing.
+- Alternatives rejected: port the React app (build step + features the user removed); landing tokens only (user asked for v1's buttons and style).
+- Verify: browser e2e 18/18 (subagent, local service on Fuji) and 18/18 by BRAIN on the public `/app/`; 390/1280 px renders read; gate rc 0. All element ids kept; click handlers unchanged (K8).
+
 ### D-027 · 2026-11-16 · Launch: repo `arepapayl1`, landing on GitHub Pages at arepapay.site (Claude Opus 5.5, BRAIN lane)
 - What: `.github/workflows/pages.yml` (Next static export with `NEXT_PUBLIC_SITE_URL=https://arepapay.site`, truth gate in CI, CNAME, `mvp-url.json` copied from `config/public/`), `scripts/site/publish-github.sh` (gate → create/use the repo → push → enable Pages + custom domain → print Spaceship DNS records), `serve-public.sh` now boots the Fuji node when its RPC is down and `publish-url` updates the pointer (commit + push of that one file when a remote exists).
 - Why: user: "create or use a arepapayl1 git hub repo and launching the landing page with arepapay.site". The site stays static and stable; only the MVP pointer changes when the test tunnel restarts.
