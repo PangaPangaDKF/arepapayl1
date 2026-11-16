@@ -12,6 +12,8 @@ landing step (see Log). Not deployed yet (BRAIN owns deploy, C9).
 in `backend/onboarding/data/public-url.fuji.txt`): landing at `/`, dApp at `/app/`, `/probar/` redirects. Was `https://enhanced-donors-wider-stack.trycloudflare.com` at closeout.
 Tests: s1-verify 15/15, e2e 19/19, browser e2e 18/18. The user's goal ("functional MVP + announcement landing + pitch") is met.
 
+2026-11-16 · **Landing LIVE at https://arepapay.site** (GitHub Pages, repo `PangaPangaDKF/arepapayl1`, D-027). "Probar el MVP" → `/probar/` → the Fuji dApp via `config/public/mvp-url.json`; after a tunnel restart run `scripts/mvp/serve-public.sh publish-url`.
+
 ## Tasks for BRAIN
 - [x] B1 · (done D-006) Fetch and read L1 skills from avaxskills.com (subnet-deployment, subnet-evm-config, precompiles, validator-manager-contract, kyc-aml-integration, safe-multisig, upgradeable-contracts); install the useful ones into `.claude/skills/`, record sources in `skills-lock.json`.
 - [x] B2 · (done D-008, 15/15) Spike S1 private permissioned L1 on local tmpnet · PLAN Phase 2, ARCHITECTURE L1.
@@ -67,7 +69,7 @@ Tests: s1-verify 15/15, e2e 19/19, browser e2e 18/18. The user's goal ("function
 | D-024 | LANDING (run by a BRAIN subagent; the LANDING session is not running) | L4 + L5 + L6: announcement, pitch, "Cómo probar", base path for Pages | done |
 | D-025 | BRAIN | Browser test tool + `arepapay-browser` skill (wallet-injected headless Chrome) | done |
 | D-026 | BRAIN | Public hosting: one origin (landing /, dApp /app/) via the tunnel; GitHub Pages blocked | done |
-| D-027 | BRAIN | Launch: GitHub repo `arepapayl1` + Pages workflow + arepapay.site DNS (user runs the publish script) | in progress |
+| D-027 | BRAIN | Launch: GitHub repo `arepapayl1` + Pages workflow + arepapay.site DNS (user runs the publish script) | done |
 | D-028+ | | | Next free: reserve here first |
 
 ## Log

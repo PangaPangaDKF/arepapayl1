@@ -65,3 +65,7 @@ is forwarded to that RPC. Authorization and chain survive navigation, so the sha
 - Never print, log, screenshot or write private keys. Test keys exist only in Node memory for one run; only addresses
   are printed. Do not add key material to wallet call logs or error messages.
 - Testnet only. Kill only the service PID you started.
+
+
+## Live site check (D-027)
+`node scripts/browser/site-check.mjs [https://arepapay.site]`: landing renders, links to `probar/`, `probar/` lands on the dApp and its Fuji config loads. Run it after every Pages deploy and after `serve-public.sh publish-url`. Keep check scripts in the repo, not the scratchpad (a reboot wipes it).
