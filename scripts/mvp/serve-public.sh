@@ -2,7 +2,9 @@
 # Stage B public test endpoint (D-019): onboarding service in SINGLE_ORIGIN mode (dApp + /rpc + /config + KYC stand-in)
 # behind a cloudflared quick tunnel (HTTPS, no account). A supervisor loop restarts either one if it dies and writes the
 # current public URL to backend/onboarding/data/public-url.fuji.txt (gitignored; quick-tunnel URLs change on restart).
-#   scripts/mvp/serve-public.sh start|stop|status|url
+#   scripts/mvp/serve-public.sh start|stop|status|url|publish-url
+#   start also boots the Fuji L1 node if its RPC is down. publish-url writes config/public/mvp-url.json (read by
+#   https://arepapay.site/probar/) and, if the repo has an 'origin' remote, commits that one file and pushes (Pages redeploys).
 # TESTNET ONLY. AUTO_APPROVE=1: anyone who asks is allowlisted (stand-in for bank KYC during the public test).
 set -uo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -33,8 +35,33 @@ supervise() {
   done
 }
 
+node_up() { python3 - "$REPO/config/l1/arepapaybank.$NET.json" <<'PY'
+import json,sys,urllib.request
+c=json.load(open(sys.argv[1]))
+try:
+    r=urllib.request.urlopen(urllib.request.Request(c['rpcUrl'],data=b'{"jsonrpc":"2.0","id":1,"method":"eth_chainId"}',headers={'content-type':'application/json'}),timeout=5)
+    sys.exit(0 if int(json.load(r)['result'],16)==c['chainId'] else 1)
+except Exception: sys.exit(1)
+PY
+}
+publish_url() {
+  local u; u="$(cat "$URLF" 2>/dev/null)"; [ -n "$u" ] || { echo "no public URL yet"; return 1; }
+  local f="$REPO/config/public/mvp-url.json"; mkdir -p "$(dirname "$f")"
+  printf '{\n  "_note": "Pointer read by https://arepapay.site/probar/. Updated by scripts/mvp/serve-public.sh publish-url when the test tunnel changes. TESTNET ONLY.",\n  "url": "%s/app",\n  "network": "%s",\n  "updated": "%s"\n}\n' "$u" "$NET" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$f"
+  echo "pointer -> $u/app"
+  if git -C "$REPO" remote get-url origin >/dev/null 2>&1 && ! git -C "$REPO" diff --quiet -- config/public/mvp-url.json; then
+    git -C "$REPO" commit -q -m "chore(site): MVP test URL -> $u" -- config/public/mvp-url.json && git -C "$REPO" push -q origin HEAD && echo "pushed; Pages redeploys in ~1 min"
+  fi
+}
+
 case "${1:-status}" in
   start)
+    if [ "$NET" = fuji ] && ! node_up; then
+      echo "L1 RPC down: starting the Fuji node (arepapay-fuji)…"
+      "${AVALANCHE:-$HOME/.avalanche-cli-latest/bin/avalanche}" node local start arepapay-fuji --skip-update-check </dev/null >/dev/null 2>&1
+      for _ in $(seq 1 60); do node_up && break; sleep 5; done
+      node_up && echo "L1 RPC up" || echo "WARNING: L1 RPC still down; check: avalanche node local status"
+    fi
     if [ -f "$RUN/supervisor.pid" ] && kill -0 "$(cat "$RUN/supervisor.pid")" 2>/dev/null; then echo "already running"; exit 0; fi
     setsid nohup "$0" _supervise >/dev/null 2>&1 < /dev/null & echo $! >"$RUN/supervisor.pid"
     for _ in $(seq 1 90); do [ -s "$URLF" ] && [ "$(stat -c %Y "$URLF")" -ge "$(stat -c %Y "$RUN/supervisor.pid")" ] && break; sleep 1; done
@@ -43,7 +70,9 @@ case "${1:-status}" in
   stop)
     for f in supervisor tunnel server; do [ -f "$RUN/$f.pid" ] && kill "$(cat "$RUN/$f.pid")" 2>/dev/null; rm -f "$RUN/$f.pid"; done; echo stopped;;
   url) cat "$URLF";;
+  publish-url) publish_url;;
   status)
     for f in supervisor server tunnel; do p="$(cat "$RUN/$f.pid" 2>/dev/null)"; printf '%-10s %s\n' "$f" "$([ -n "$p" ] && kill -0 "$p" 2>/dev/null && echo "up ($p)" || echo down)"; done
-    echo "url        $(cat "$URLF" 2>/dev/null || echo none)";;
+    echo "url        $(cat "$URLF" 2>/dev/null || echo none)"
+    printf 'l1 rpc     %s\n' "$(node_up && echo up || echo down)";;
 esac

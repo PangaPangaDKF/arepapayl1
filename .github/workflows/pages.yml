@@ -1,0 +1,51 @@
+# Landing -> GitHub Pages at https://arepapay.site (D-027). Builds the Next static export, runs the truth gate, adds the
+# custom-domain CNAME and the MVP pointer (config/public/mvp-url.json, read by /probar/), then deploys.
+name: landing-pages
+on:
+  push:
+    branches: [main]
+    paths: ['landing/**', 'config/**', 'scripts/landing-check.mjs', '.github/workflows/pages.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: landing/package-lock.json
+      - run: npm ci
+        working-directory: landing
+      - run: npm run build
+        working-directory: landing
+        env:
+          NEXT_PUBLIC_SITE_URL: https://arepapay.site
+      - name: Truth gate (T1-T8)
+        run: node scripts/landing-check.mjs
+      - name: Domain + MVP pointer
+        run: |
+          echo arepapay.site > landing/out/CNAME
+          touch landing/out/.nojekyll
+          cp config/public/mvp-url.json landing/out/mvp-url.json
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: landing/out
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
