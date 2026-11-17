@@ -43,7 +43,7 @@ function serveStatic(res, root, pathname) {
   if (file.startsWith(root) && existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
   if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile()) return false;
   // eERC circuit files (D-032) are big (transfer.zkey 15 MB) and pinned by sha256: let phones keep them for a day.
-  const big = /[\\/]circuits[\\/][a-z]+\.(wasm|zkey|js)$/.test(file);
+  const big = /[\\/]circuits[\\/][a-z.]+\.(wasm|zkey|js)$/.test(file);
   res.writeHead(200, { 'content-type': MIME[extname(file)] || 'application/octet-stream', 'cache-control': big ? 'public, max-age=86400' : 'no-cache',
     'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer' });
   res.end(readFileSync(file));

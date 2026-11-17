@@ -27,7 +27,8 @@ Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD
   e2e on Fuji **24/24** through the real UI (register x2, deposit 10, private send 3, receiver auto-refresh 3.00, withdraw 1;
   plain tUSD moved only on deposit/withdraw; transfer proof 8.6 s in headless Chrome); `audit-view --expect-transfer 300` PASS
   (auditor reads 3.00, a random key reads 0 of 2 PCTs), `--expect-transfer 301` exits 1; gate V9: a stale bundle turns stage 5
-  red; `bash tests/check.sh` rc=0.
+  red; `bash tests/check.sh` rc=0. **Live** (public tunnel, after restarting the service): `/config/fuji` carries eERC; wallet
+  e2e 24/24 against the public HTTPS URL (transfer proof 10.4 s); audit-view PASS over both runs; circuit files cached 1 day.
 - Limits: 1.5 MB JS bundle + 15 MB transfer zkey on the first private send (cached a day); phone proof time unmeasured
   (expected 25-60 s, S2 §7); the read key is derivable by anyone who obtains that signature (the page warns); one auditor key
   held by one account (S3 splits it).
