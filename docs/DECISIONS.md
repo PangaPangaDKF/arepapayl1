@@ -2,6 +2,23 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-031 · 2026-11-16 · Merchant payment alerts over Telegram, also with the app closed (Claude Opus 5.5, BRAIN lane)
+- What: `backend/onboarding/telegram.mjs` (bot long-poll + escrow log watcher, started by `server.mjs`), routes `GET /tg/info`, `POST /tg/link` (rate-limited), `GET /tg/message`; app button "Avisos por Telegram" in Cobrar; `scripts/browser/telegram-mock.mjs` + optional e2e steps (`TG_MOCK=…`).
+- Flow: merchant signs a dated message (personal_sign) -> server verifies (<=10 min) -> one-time `t.me/<bot>?start=<token>` -> Start binds that chat. Alerts: every `Authorized` ("Te pagaron X en el cobro #N (van a de b)") and `Captured` ("Cobrado: recibiste net"). `/stop` unlinks. First run starts at the chain head (no old alerts).
+- Why: user (relayed by the D-029 subagent, then confirmed by their repeated "brain trabaja"): the merchant must get the payment notice even with the app closed; suggested a Telegram bot.
+- Security: off unless `~/.arepapay-telegram.token` (TELEGRAM_TOKEN_FILE) exists; token only in memory, never logged/returned; links need a wallet signature so nobody can subscribe to someone else's payments; store `backend/onboarding/data/telegram.<net>.json` is gitignored.
+- Alternatives rejected: web push (needs a service worker + VAPID, unreliable inside the MetaMask in-app browser); `/start <address>` without a signature (anyone could watch any merchant).
+- Verify: mocked-Telegram unit run (forged sig 401, other address 401, stale 400, link + /start binds); wallet e2e with `TG_MOCK` 20/20 incl. both alerts; `bash tests/check.sh` rc=0.
+- Pending (user): create the bot with @BotFather and save the token file; then restart `serve-public.sh`.
+- Commit: this commit.
+
+### D-030 · 2026-11-16 · Minimal connected screen, v1 camera QR scanner, in-app "¡Pago recibido!" alert (Claude Opus 5.5, BRAIN lane; built by a subagent, re-verified by BRAIN)
+- What: after connecting only balance + big actions show; address/network/access in a collapsed "Detalles" (ids kept for the e2e); Cobrar/Pagar tiles; customer "Escanear QR" (v1 `QRScanner.jsx` port: getUserMedia + canvas + jsQR 1.4.0 from jsDelivr with SRI) with manual number/link fallback; merchant overlay + beep + vibrate when its charge turns Cobrado; thinner 1.5px gold-tinted borders, soft shadows.
+- Why: user: hide technical data, minimal comfortable screen, reuse v1's camera reader, live payment notice "that banks don't have".
+- Verify: wallet e2e 18/18 (subagent) and 20/20 with the D-031 steps (BRAIN); 390 px screenshots read; `bash tests/check.sh` rc=0.
+- Limits: camera, beep and vibration need a real phone check in MetaMask mobile (headless has no camera; iOS has no vibrate).
+- Commit: this commit.
+
 ### D-029 · 2026-11-16 · MVP app restyled with the original ArepaPay design (Claude Opus 5.5, BRAIN lane; built by a subagent, re-verified by BRAIN)
 - What: `app/index.html` restyled, new `app/styles.css` and `app/assets/arepa.svg`, `app/app.js` +6 display-only lines. v1 design (`arepapay-clean/DESIGN_SYSTEM.md` + the L1 React frontend): cream background, navy brand, gold-bordered cards with offset shadow, 3D pill buttons, navy header with the arepa logo, red/white checkered stripe, navy bottom tab bar (Cobrar / Pagar), navy balance panel, state badges, framed QR. Inter via Google Fonts. No raffle/rewards/NFT/WiFi/savings/credit/OTC brought back.
 - Why: user: "why the app dont have the same ui from the main arepapay project? the buttons and the style?" — D-022 built a bare test screen; the brand only reached the landing.

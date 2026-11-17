@@ -10,6 +10,7 @@ import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join, normalize, extname } from 'node:path';
 import { NET, REPO, addRequest, approve, loadConfig, normAddress, publicConfig, readStore, roleOf } from './lib.mjs';
+import { startTelegram, createLink, telegramInfo, linkMessage } from './telegram.mjs';
 
 const SINGLE = process.env.SINGLE_ORIGIN === '1';
 const APP_DIR = join(REPO, 'app');
@@ -113,6 +114,19 @@ createServer(async (req, res) => {
       return proxyRpc(req, res, body);
     }
 
+    if (req.method === 'GET' && url.pathname === '/tg/info') return send(req, res, 200, telegramInfo());
+    if (req.method === 'GET' && url.pathname === '/tg/message') {
+      const a = normAddress(url.searchParams.get('address') || ''); const at = url.searchParams.get('issuedAt') || '';
+      if (!a || at.length > 40) return send(req, res, 400, { error: 'bad request' });
+      return send(req, res, 200, { message: linkMessage(a, at) });
+    }
+    if (req.method === 'POST' && url.pathname === '/tg/link') {
+      if (!rateOk(clientIp(req))) return send(req, res, 429, { error: 'rate limited' });
+      try {
+        return send(req, res, 200, await createLink(JSON.parse(await readBody(req, 2048))));
+      } catch (e) { return send(req, res, e.code || 400, { error: e.code ? e.message : 'bad request' }); }
+    }
+
     let m;
     if (req.method === 'GET' && (m = url.pathname.match(/^\/config\/(local|fuji)$/))) {
       const cfg = publicConfig(m[1]);
@@ -152,4 +166,4 @@ createServer(async (req, res) => {
     console.error(`error: ${errMsg(e)}`);
     send(req, res, 500, { error: 'internal error' });
   }
-}).listen(PORT, HOST, () => console.log(`onboarding (TEST ONLY) net=${NET} on http://${HOST}:${PORT} autoApprove=${AUTO} singleOrigin=${SINGLE} cors=${ORIGINS.join(',')}`));
+}).listen(PORT, HOST, () => { startTelegram(); console.log(`onboarding (TEST ONLY) net=${NET} on http://${HOST}:${PORT} autoApprove=${AUTO} singleOrigin=${SINGLE} cors=${ORIGINS.join(',')}`); });

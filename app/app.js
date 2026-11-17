@@ -36,7 +36,8 @@ const AL_ABI = ['function readAllowList(address) view returns (uint256)'];
 const iEscrow = new ethers.Interface(ESCROW_ABI);
 const iErc20 = new ethers.Interface(ERC20_ABI);
 
-const S = { cfg: null, eth: null, account: null, chainId: null, intentId: null, intent: null, mine: 0n, myConfirmed: false, allowance: 0n, timer: null };
+const S = { cfg: null, eth: null, account: null, chainId: null, intentId: null, intent: null, mine: 0n, myConfirmed: false, allowance: 0n, timer: null,
+  lastState: {}, alerted: new Set() };   // per-charge last seen state + charges already announced (payment alert fires once)
 
 // ---------------------------------------------------------------- helpers
 const msg = (t) => { $('msg').textContent = t || ''; };
@@ -95,6 +96,8 @@ async function waitTx(hash) {
 // ---------------------------------------------------------------- refresh
 async function refreshAccount() {
   document.body.classList.toggle('is-connected', !!S.account);   // presentational: hero vs balance card
+  document.body.classList.toggle('on-chain', !!onChain());         // presentational: hide the network button
+  if (!S.account) document.body.classList.remove('has-access');
   $('addr').textContent = S.account || '-';
   $('chain').textContent = S.chainId == null ? '-' : (onChain() ? `ArepaPay L1 (${S.chainId})` : `otra red (${S.chainId}): cambia a ArepaPay`);
   if (!S.account || !S.cfg) return;
@@ -113,6 +116,7 @@ async function refreshAccount() {
     const stEs = { none: 'sin solicitud', pending: 'pendiente', approved: 'aprobada' }[st] || st;
     $('access').textContent = `${ROLES[Number(role)] || role} (solicitud: ${stEs})`;
     $('access').className = Number(role) > 0 ? 'ok' : '';
+    document.body.classList.toggle('has-access', Number(role) > 0);   // presentational: hide "Solicitar acceso"
   } catch (e) { err(e); }
 }
 
@@ -124,6 +128,14 @@ async function refreshIntent() {
     S.intent = it;
     if (S.account) { [S.mine, S.myConfirmed] = await Promise.all([esc.holdOf(S.intentId, S.account), esc.confirmed(S.intentId, S.account)]); }
     const state = Number(it.state);
+    const isMerchant = !!S.account && it.merchant.toLowerCase() === S.account.toLowerCase();
+    const prev = S.lastState[S.intentId];
+    S.lastState[S.intentId] = state;
+    // Payment alert: only on a live transition to Cobrado that this page saw, for the merchant, once per charge.
+    if (isMerchant && state === 3 && prev !== undefined && prev !== 3 && !S.alerted.has(S.intentId)) {
+      S.alerted.add(S.intentId);
+      paidAlert(S.intentId, it.total - (it.total * BigInt(it.feeBps)) / 10000n, it.total);
+    }
     $('iState').dataset.s = state;   // presentational: badge color
     $('intentBox').classList.remove('hidden');
     $('iId').textContent = S.intentId;
@@ -141,7 +153,6 @@ async function refreshIntent() {
     $('iPayers').textContent = `${it.payerCount}/${it.maxPayers}${it.requireConfirm ? `, confirmados ${it.confirmedCount}` : ''}`;
     $('iExpiry').textContent = new Date(Number(it.expiry) * 1000).toLocaleTimeString();
     $('iMine').textContent = usd(S.mine);
-    const isMerchant = S.account && it.merchant.toLowerCase() === S.account.toLowerCase();
     const canPay = state === 1 && !expired && !isMerchant;
     $('payBox').classList.toggle('hidden', !canPay);
     if (canPay && !$('share').value) $('share').value = ethers.formatUnits(remaining, S.cfg.testUsdDecimals);
@@ -187,6 +198,26 @@ async function addNetwork() {
   refreshAccount();
 }
 
+// Telegram payment alerts (D-031). The text must match backend/onboarding/telegram.mjs linkMessage().
+const tgMessage = (address, issuedAt) => `ArepaPay (testnet): activar avisos de pago por Telegram para ${address}. Emitido: ${issuedAt}`;
+async function linkTelegram() {
+  err('');
+  if (!S.eth || !S.account) return err('Conecta la billetera primero.');
+  const issuedAt = new Date().toISOString();
+  try {
+    const signature = await S.eth.request({ method: 'personal_sign', params: [ethers.hexlify(ethers.toUtf8Bytes(tgMessage(S.account, issuedAt))), S.account] });
+    const r = await fetch(`${API}/tg/link`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address: S.account, issuedAt, signature }) });
+    const j = await r.json();
+    if (!r.ok || !j.url) throw new Error(j.error || `error ${r.status}`);
+    const a = $('tgLink'); a.href = j.url; a.classList.remove('hidden');
+    $('tgHint').textContent = 'Abre Telegram y toca "Iniciar" para activar los avisos.';
+    try { window.open(j.url, '_blank'); } catch {}   // blocked popup -> the visible link above still works
+  } catch (e) { err(e); }
+}
+async function initTelegram() {
+  try { const j = await (await fetch(`${API}/tg/info`)).json(); $('tgBox').classList.toggle('hidden', !j.enabled); } catch {}
+}
+
 async function requestAccess() {
   err('');
   if (!S.account) return err('Conecta la billetera primero.');
@@ -207,6 +238,7 @@ function parseUsd(v) {
 
 function createIntent() {
   err('');
+  audioCtx();   // unlock WebAudio inside this tap so the payment beep can play later
   let total, data;
   try {
     total = parseUsd($('amount').value);
@@ -228,6 +260,7 @@ function createIntent() {
       $('qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
       $('link').href = link; $('link').textContent = link;
       $('created').classList.remove('hidden');
+      $('newCharge').classList.add('hidden');
       msg(`Cobro #${id} creado.`);
       S.intentId = id; refreshIntent(); startPolling();
     })
@@ -258,6 +291,157 @@ function simple(fn, okText, gas) {
   };
 }
 
+function newCharge() {
+  clearInterval(S.timer);
+  S.intentId = null; S.intent = null;
+  $('created').classList.add('hidden'); $('newCharge').classList.remove('hidden');
+  $('intentBox').classList.add('hidden'); $('qr').innerHTML = ''; $('amount').value = ''; $('amountBs').textContent = '';
+  msg(''); err('');
+  $('amount').focus();
+}
+
+// ---------------------------------------------------------------- load a charge (deep link, manual entry, scanned QR)
+// A v2 QR / share link is <origin>/app/?intent=<id>&net=<net>; a bare number (optionally "#12") is accepted too.
+function parseIntentRef(raw) {
+  const s = String(raw || '').trim();
+  if (/^#?\d+$/.test(s)) return { id: s.replace('#', ''), net: null };
+  let u;
+  try { u = new URL(s, location.href); } catch { return null; }
+  const id = u.searchParams.get('intent');
+  return id && /^\d+$/.test(id) ? { id, net: u.searchParams.get('net') } : null;
+}
+
+// Same path as the ?intent= deep link: set the id, switch to Pagar, refresh now and keep polling.
+function loadIntent(id) {
+  S.intentId = id; $('intentId').value = id; $('share').value = '';
+  showTab('customer');
+  refreshIntent().then(() => { if (!$('intentBox').classList.contains('hidden')) $('intentBox').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  startPolling();
+}
+
+function loadRef(raw) {
+  err(''); $('scanMsg').textContent = '';
+  const r = parseIntentRef(raw);
+  if (!r) { $('scanMsg').textContent = 'No reconozco ese cobro. Escribe el número (ej. 12) o pega el enlace.'; return false; }
+  if (r.net && /^(local|fuji)$/.test(r.net) && r.net !== NET) { $('scanMsg').textContent = `Ese cobro es de otra red (${r.net}).`; return false; }
+  loadIntent(r.id);
+  return true;
+}
+
+// ---------------------------------------------------------------- QR scanner (port of v1 QRScanner.jsx)
+// getUserMedia (rear camera) -> <video> -> canvas -> jsQR in a requestAnimationFrame loop; tracks stop on success/close.
+// jsQR is loaded on demand from jsDelivr, pinned + SRI (sha384 of jsqr@1.4.0/dist/jsQR.js, computed from the file).
+const JSQR_SRC = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+const JSQR_SRI = 'sha384-b5Ya4Bq3qCyz39m2ISh+4DxjAIljdeFwK/BsXLuj9gugaNwAcj/ia15fxNZL9Nlx';
+let jsqrP = null;
+function loadJsQR() {
+  if (typeof window.jsQR === 'function') return Promise.resolve(window.jsQR);
+  jsqrP = jsqrP || new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = JSQR_SRC; sc.integrity = JSQR_SRI; sc.crossOrigin = 'anonymous';
+    sc.onload = () => (typeof window.jsQR === 'function' ? res(window.jsQR) : rej(new Error('jsQR')));
+    sc.onerror = () => { jsqrP = null; sc.remove(); rej(new Error('No se pudo cargar el lector de QR. Revisa tu conexión.')); };
+    document.head.appendChild(sc);
+  });
+  return jsqrP;
+}
+
+const SCAN = { active: false, stream: null, raf: 0 };
+function camError(e) {
+  const n = e?.name || '';
+  if (n === 'NotAllowedError' || n === 'SecurityError') return 'Permiso de cámara denegado. Actívalo en el navegador o escribe el número del cobro.';
+  if (n === 'NotFoundError' || n === 'OverconstrainedError') return 'No se encontró una cámara. Escribe el número o pega el enlace del cobro.';
+  if (n === 'NotReadableError') return 'La cámara está en uso por otra app. Ciérrala o escribe el número del cobro.';
+  return e?.message && !n ? e.message : `No se pudo abrir la cámara${n ? ' (' + n + ')' : ''}. Escribe el número del cobro.`;
+}
+function scanFail(text) {
+  closeScanner();
+  $('scanMsg').textContent = text;
+  $('intentId').focus();
+}
+async function openScanner() {
+  err(''); $('scanMsg').textContent = '';
+  if (!navigator.mediaDevices?.getUserMedia) {
+    return scanFail(window.isSecureContext ? 'Este navegador no permite usar la cámara. Escribe el número o pega el enlace.'
+      : 'La cámara necesita una conexión segura (https). Escribe el número o pega el enlace.');
+  }
+  SCAN.active = true;
+  $('scanHint').textContent = 'Apunta la cámara al QR del comercio'; $('scanHint').classList.remove('warn');
+  $('scanner').classList.remove('hidden'); document.body.classList.add('no-scroll');
+  const video = $('scanVideo');
+  let decode;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    if (!SCAN.active) { stream.getTracks().forEach((t) => t.stop()); return; }
+    SCAN.stream = stream;
+    video.srcObject = stream;
+    await video.play().catch(() => {});
+    decode = await loadJsQR();
+  } catch (e) { return scanFail(camError(e)); }
+  if (!SCAN.active) return;
+  const canvas = $('scanCanvas');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  let lastBad = '';
+  const tick = () => {
+    if (!SCAN.active) return;
+    if (video.readyState >= video.HAVE_ENOUGH_DATA && video.videoWidth) {
+      const k = Math.min(1, 640 / video.videoWidth);   // downscale big frames: faster decode on phones
+      canvas.width = Math.round(video.videoWidth * k); canvas.height = Math.round(video.videoHeight * k);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = decode(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+      if (code && code.data) {
+        if (parseIntentRef(code.data)) { closeScanner(); if (navigator.vibrate) try { navigator.vibrate(60); } catch {} loadRef(code.data); return; }
+        if (code.data !== lastBad) { lastBad = code.data; $('scanHint').textContent = 'Ese QR no es un cobro de ArepaPay.'; $('scanHint').classList.add('warn'); }
+      }
+    }
+    SCAN.raf = requestAnimationFrame(tick);
+  };
+  tick();
+}
+function closeScanner() {
+  SCAN.active = false;
+  cancelAnimationFrame(SCAN.raf);
+  if (SCAN.stream) SCAN.stream.getTracks().forEach((t) => t.stop());
+  SCAN.stream = null;
+  $('scanVideo').srcObject = null;
+  $('scanner').classList.add('hidden'); document.body.classList.remove('no-scroll');
+}
+
+// ---------------------------------------------------------------- payment received alert (merchant)
+let actx = null;
+function audioCtx() {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume().catch(() => {});
+  } catch { actx = null; }
+  return actx;
+}
+function beep() {
+  const c = audioCtx();
+  if (!c) return;
+  const t0 = c.currentTime + 0.02;
+  [[880, 0], [1320, 0.18]].forEach(([f, d]) => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t0 + d);
+    g.gain.exponentialRampToValueAtTime(0.35, t0 + d + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + d + 0.16);
+    o.connect(g).connect(c.destination);
+    o.start(t0 + d); o.stop(t0 + d + 0.18);
+  });
+}
+function paidAlert(id, net, total) {
+  $('paidAmount').textContent = usd(total);
+  $('paidSub').textContent = `Cobro #${id} · recibes ${usd(net)}${bs(total)}`;
+  $('paidAlert').classList.remove('hidden');
+  try { beep(); } catch {}
+  try { if (navigator.vibrate && navigator.userActivation?.hasBeenActive !== false) navigator.vibrate([200, 100, 200]); } catch {}
+  refreshAccount();   // the balance just changed
+  $('btnPaidOk').focus();
+}
+function closePaid() { $('paidAlert').classList.add('hidden'); }
+
 function showTab(which) {
   $('merchant').classList.toggle('hidden', which !== 'merchant');
   $('customer').classList.toggle('hidden', which !== 'customer');
@@ -277,10 +461,20 @@ async function boot() {
   $('btnNet').onclick = addNetwork;
   $('btnConnect').onclick = connect;
   $('btnRequest').onclick = requestAccess;
-  $('tabMerchant').onclick = () => showTab('merchant');
-  $('tabCustomer').onclick = () => showTab('customer');
+  $('tabMerchant').onclick = $('chooseMerchant').onclick = () => { audioCtx(); showTab('merchant'); };
+  $('tabCustomer').onclick = $('chooseCustomer').onclick = () => { showTab('customer'); loadJsQR().catch(() => {}); };   // prefetch the QR reader
   $('btnCreate').onclick = createIntent;
-  $('btnLoad').onclick = () => { S.intentId = $('intentId').value || null; $('share').value = ''; refreshIntent(); startPolling(); };
+  $('btnNewCharge').onclick = newCharge;
+  $('btnTelegram').onclick = linkTelegram;
+  initTelegram();
+  $('btnLoad').onclick = () => loadRef($('intentId').value);
+  $('intentId').onkeydown = (e) => { if (e.key === 'Enter') loadRef($('intentId').value); };
+  $('btnScan').onclick = openScanner;
+  $('btnScanClose').onclick = closeScanner;
+  $('btnPaidOk').onclick = closePaid;
+  $('paidAlert').onclick = (e) => { if (e.target === $('paidAlert')) closePaid(); };
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; closePaid(); if (SCAN.active) closeScanner(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && SCAN.active) closeScanner(); });   // release the camera
   $('btnPay').onclick = pay;
   $('btnConfirm').onclick = simple('confirm', 'Pago confirmado.');
   $('btnWithdraw').onclick = simple('withdraw', 'Tu parte fue devuelta.', '0x30d40');

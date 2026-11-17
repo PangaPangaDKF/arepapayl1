@@ -32,8 +32,20 @@ End-to-end check: `bash scripts/mvp/e2e-local.sh` (`E2E_BREAK=1` proves it can f
 1. "Agregar / cambiar a ArepaPay L1" → "Conectar" → "Solicitar acceso" (wait for approval).
 2. **Comercio:** amount in USD (Bs shown with your rate) → "Crear cobro (QR)". Single payer = auto-capture; "Pago dividido"
    sets the number of payers and optional final confirmation. Show the QR / link.
-3. **Cliente:** open the link (`?intent=<id>`) → see total, covered, remaining, fee → "Pagar" (approve + authorize).
+3. **Cliente:** "Escanear QR" (camera) or type the charge number / paste the link (`?intent=<id>`) → see total, state
+   ("Detalles del cobro" for covered, remaining, fee) → "Pagar" (approve + authorize).
    Confirm if required. If the intent is cancelled or expires, "Retirar mi parte".
+
+Screen (D-030): once connected the main view is only the balance and the big actions; address, network, access and gas
+live in the collapsed "Detalles" panel (element ids unchanged, `scripts/browser/wallet-e2e.mjs` reads them).
+The network button shows only on the wrong chain, "Solicitar acceso" only while not allowlisted.
+- **QR scanner:** port of v1 `QRScanner.jsx` (getUserMedia rear camera → canvas → jsQR per animation frame, tracks
+  stopped on success/close/tab hidden). jsQR 1.4.0 is loaded on demand from jsDelivr, pinned with SRI. It accepts the
+  v2 link (`intent` param; a different `net` is refused) or a bare number. No camera / denied / plain http → an inline
+  error and the manual field. Camera access needs HTTPS (the public tunnel) or localhost.
+- **Payment alert:** when the merchant's own charge goes to "Cobrado" while the page is watching it (3 s poll), a
+  "¡Pago recibido!" overlay with the amount, a WebAudio beep (unlocked by the merchant's earlier tap) and
+  `navigator.vibrate`; once per charge, dismiss with "Listo", the backdrop or Escape.
 
 ## Phone on the local L1
 The local RPC is `127.0.0.1` inside this machine, so a phone can't reach it. For a LAN test, expose the node RPC and the

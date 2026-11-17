@@ -12,15 +12,12 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="testnet" role="note"><span class="testnet-tag">TESTNET</span> Dinero de prueba, sin valor real. No envíes fondos reales.</div>
+<div class="testnet" role="note"><span class="testnet-tag">TESTNET</span> Dinero de prueba, sin valor real.</div>
 
 <header class="topbar">
   <div class="brand">
-    <span class="logo-dot"><img src="assets/arepa.svg" alt="" width="34" height="34"></span>
-    <span class="brand-text">
-      <span class="brand-name">AREPAPAY</span>
-      <span class="brand-sub">Pagos rápidos · red de prueba</span>
-    </span>
+    <span class="logo-dot"><img src="assets/arepa.svg" alt="" width="30" height="30"></span>
+    <span class="brand-name">AREPAPAY</span>
   </div>
   <span class="pill">PRUEBA</span>
 </header>
@@ -31,74 +28,88 @@
   <!-- Billetera / cuenta -->
   <section class="card account">
     <div class="hero">
-      <span class="logo-big"><img src="assets/arepa.svg" alt="Logotipo de ArepaPay: una arepa" width="80" height="80"></span>
+      <span class="logo-big"><img src="assets/arepa.svg" alt="Logotipo de ArepaPay: una arepa" width="72" height="72"></span>
       <h1>AREPAPAY</h1>
       <p class="tagline">La arepa es venezolana <span class="flag" role="img" aria-label="bandera de Venezuela"></span></p>
-      <p class="body">Cobra y paga con dólares de prueba desde tu billetera. Abre esta página en el navegador de MetaMask.</p>
+      <p class="body">Cobra y paga con dólares de prueba. Abre esta página en el navegador de MetaMask.</p>
     </div>
 
     <div class="balance" aria-live="polite">
-      <div class="label label-light">Tu saldo</div>
+      <span class="label label-light">Tu saldo</span>
       <div class="balance-amount" id="usd">-</div>
-      <div class="balance-gas">Gas: <span id="native">-</span></div>
     </div>
 
-    <dl class="info acct-info">
-      <div><dt>Dirección</dt><dd class="mono" id="addr">-</dd></div>
-      <div><dt>Red</dt><dd id="chain">-</dd></div>
-      <div><dt>Acceso</dt><dd id="access">-</dd></div>
-    </dl>
-
-    <div class="actions">
-      <button id="btnConnect" class="btn btn-blue" type="button"><span class="when-off">Conectar billetera</span><span class="when-on">Actualizar saldo</span></button>
-      <button id="btnNet" class="btn btn-dark" type="button"><span class="when-off">Agregar / cambiar a ArepaPay L1</span><span class="when-on">Red ArepaPay L1</span></button>
+    <div class="actions acct-actions">
+      <button id="btnConnect" class="btn btn-big" type="button"><span class="when-off">Conectar billetera</span><span class="when-on"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg> Actualizar saldo</span></button>
+      <button id="btnNet" class="btn btn-dark" type="button">Agregar / cambiar a ArepaPay L1</button>
       <button id="btnRequest" class="btn btn-ghost" type="button">Solicitar acceso</button>
     </div>
 
-    <label class="field inline rate">
-      <span class="label">Tasa Bs/USD</span>
-      <input id="rate" class="input input-sm" type="number" inputmode="decimal" min="0" step="0.01" value="0">
-    </label>
+    <details class="more acct-more">
+      <summary>Detalles</summary>
+      <dl class="info">
+        <div><dt>Dirección</dt><dd class="mono" id="addr">-</dd></div>
+        <div><dt>Red</dt><dd id="chain">-</dd></div>
+        <div><dt>Acceso</dt><dd id="access">-</dd></div>
+        <div><dt>Gas</dt><dd id="native">-</dd></div>
+      </dl>
+      <label class="field inline rate">
+        <span class="label">Tasa Bs/USD</span>
+        <input id="rate" class="input input-sm" type="number" inputmode="decimal" min="0" step="0.01" value="0">
+      </label>
+    </details>
   </section>
 
   <!-- Aún sin modo elegido -->
-  <section class="card choose">
-    <h2>¿Qué quieres hacer?</h2>
-    <p class="body">Toca <b>Cobrar</b> abajo si eres comercio, o <b>Pagar</b> si eres cliente.</p>
+  <section class="choose" aria-label="¿Qué quieres hacer?">
+    <button id="chooseMerchant" class="tile" type="button"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v7h14v-7"/><path d="M10 20v-4h4v4"/></svg><b>Cobrar</b><span>Soy comercio</span></button>
+    <button id="chooseCustomer" class="tile" type="button"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><path d="M6 15h4"/></svg><b>Pagar</b><span>Soy cliente</span></button>
   </section>
 
   <!-- Comercio -->
   <section id="merchant" class="card hidden">
-    <h2>Cobrar</h2>
-    <p class="subtitle">Crea un QR para tu cliente</p>
-    <label class="field">
-      <span class="label">Monto</span>
-      <span class="money">
-        <input id="amount" class="input input-big" type="number" inputmode="decimal" min="0" step="0.01" placeholder="5.00">
-        <span class="money-unit">USD</span>
-      </span>
-      <span class="hint" id="amountBs"></span>
-    </label>
-    <label class="check"><input id="split" type="checkbox"> Pago dividido (varias personas)</label>
-    <div id="splitOpts" class="hidden split-opts">
-      <label class="field inline"><span class="label">Nº de pagadores</span><input id="maxPayers" class="input input-sm" type="number" inputmode="numeric" min="2" max="10" value="2"></label>
-      <label class="check"><input id="needConfirm" type="checkbox"> Cada pagador confirma al final</label>
+    <div id="newCharge">
+      <h2>Cobrar</h2>
+      <label class="field">
+        <span class="label">Monto</span>
+        <span class="money">
+          <input id="amount" class="input input-big" type="number" inputmode="decimal" min="0" step="0.01" placeholder="5.00">
+          <span class="money-unit">USD</span>
+        </span>
+        <span class="hint" id="amountBs"></span>
+      </label>
+      <label class="check"><input id="split" type="checkbox"> Dividir entre varias personas</label>
+      <div id="splitOpts" class="hidden split-opts">
+        <label class="field inline"><span class="label">Nº de pagadores</span><input id="maxPayers" class="input input-sm" type="number" inputmode="numeric" min="2" max="10" value="2"></label>
+        <label class="check"><input id="needConfirm" type="checkbox"> Cada pagador confirma al final</label>
+      </div>
+      <details class="more">
+        <summary>Más opciones</summary>
+        <label class="field inline"><span class="label">Vence en (min)</span><input id="ttl" class="input input-sm" type="number" inputmode="numeric" min="2" max="1440" value="10"></label>
+      </details>
+      <button id="btnCreate" class="btn btn-big" type="button"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M14 21h3M21 18v3"/></svg> Crear cobro</button>
     </div>
-    <label class="field inline"><span class="label">Vence en (min)</span><input id="ttl" class="input input-sm" type="number" inputmode="numeric" min="2" max="1440" value="10"></label>
-    <button id="btnCreate" class="btn btn-blue" type="button">Crear cobro (QR)</button>
     <div id="created" class="hidden qr-block">
       <p class="label">Muestra este QR al cliente</p>
       <div id="qr" class="qr"></div>
       <a id="link" class="mono link" href="#"></a>
+      <button id="btnNewCharge" class="btn btn-ghost" type="button">Nuevo cobro</button>
+    </div>
+    <div id="tgBox" class="hidden tg-box">
+      <button id="btnTelegram" class="btn btn-ghost" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4 3 11l6 2 2 6 3-4 5 4z"/><path d="m9 13 8-6"/></svg> Avisos por Telegram</button>
+      <span class="hint" id="tgHint">Te avisamos en Telegram cuando te paguen, aunque la app esté cerrada.</span>
+      <a id="tgLink" class="link hidden" href="#" target="_blank" rel="noopener">Abrir Telegram</a>
     </div>
   </section>
 
   <!-- Cliente -->
   <section id="customer" class="card hidden">
     <h2>Pagar</h2>
-    <p class="subtitle">Escanea el QR o escribe el número de cobro</p>
+    <button id="btnScan" class="btn btn-big" type="button"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M7 12h10"/></svg> Escanear QR</button>
+    <p id="scanMsg" class="inline-err" role="alert"></p>
+    <p class="divider"><span>o escribe el número o pega el enlace</span></p>
     <div class="row-input">
-      <label class="field grow"><span class="label">Cobro #</span><input id="intentId" class="input" type="number" inputmode="numeric" min="1"></label>
+      <label class="field grow"><span class="sr-only">Número o enlace del cobro</span><input id="intentId" class="input" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ej. 12 o https://…"></label>
       <button id="btnLoad" class="btn btn-dark btn-auto" type="button">Ver</button>
     </div>
   </section>
@@ -113,15 +124,18 @@
       <div class="label">Total</div>
       <div class="intent-amount" id="iTotal"></div>
     </div>
-    <dl class="info">
-      <div><dt>Cubierto</dt><dd id="iCovered"></dd></div>
-      <div><dt>Falta</dt><dd id="iRemaining"></dd></div>
-      <div><dt>Comisión</dt><dd id="iFee"></dd></div>
-      <div><dt>Comercio recibe</dt><dd id="iNet"></dd></div>
-      <div><dt>Pagadores</dt><dd id="iPayers"></dd></div>
-      <div><dt>Vence</dt><dd id="iExpiry"></dd></div>
-      <div><dt>Mi parte</dt><dd id="iMine"></dd></div>
-    </dl>
+    <details class="more">
+      <summary>Detalles del cobro</summary>
+      <dl class="info">
+        <div><dt>Cubierto</dt><dd id="iCovered"></dd></div>
+        <div><dt>Falta</dt><dd id="iRemaining"></dd></div>
+        <div><dt>Comisión</dt><dd id="iFee"></dd></div>
+        <div><dt>Comercio recibe</dt><dd id="iNet"></dd></div>
+        <div><dt>Pagadores</dt><dd id="iPayers"></dd></div>
+        <div><dt>Vence</dt><dd id="iExpiry"></dd></div>
+        <div><dt>Mi parte</dt><dd id="iMine"></dd></div>
+      </dl>
+    </details>
     <div id="payBox" class="pay-box">
       <label class="field">
         <span class="label">Tu pago</span>
@@ -130,10 +144,10 @@
           <span class="money-unit">USD</span>
         </span>
       </label>
-      <button id="btnPay" class="btn btn-blue" type="button">Pagar</button>
+      <button id="btnPay" class="btn btn-big" type="button">Pagar</button>
     </div>
     <div class="actions">
-      <button id="btnConfirm" class="btn btn-blue hidden" type="button">Confirmar pago</button>
+      <button id="btnConfirm" class="btn hidden" type="button">Confirmar pago</button>
       <button id="btnWithdraw" class="btn btn-ghost hidden" type="button">Retirar mi parte</button>
       <button id="btnCancel" class="btn btn-red hidden" type="button">Cancelar cobro</button>
     </div>
@@ -144,14 +158,36 @@
 
   <footer class="foot">
     <div id="netinfo" class="netinfo">Cargando configuración…</div>
-    <p>Prueba mínima de ArepaPay sobre una L1 Avalanche de prueba. Acceso solo con aprobación (KYC de prueba).</p>
+    <p>Prueba de ArepaPay sobre una L1 Avalanche de prueba. Acceso con aprobación (KYC de prueba).</p>
   </footer>
 </main>
 
 <nav class="tabs" aria-label="Modo">
-  <button id="tabMerchant" class="tab" type="button" aria-pressed="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v7h14v-7"/><path d="M10 20v-4h4v4"/></svg></span><span class="tab-label">Cobrar</span><span class="tab-sub">Comercio</span></button>
-  <button id="tabCustomer" class="tab" type="button" aria-pressed="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><path d="M6 15h4"/></svg></span><span class="tab-label">Pagar</span><span class="tab-sub">Cliente</span></button>
+  <button id="tabMerchant" class="tab" type="button" aria-pressed="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v7h14v-7"/><path d="M10 20v-4h4v4"/></svg></span><span class="tab-label">Cobrar</span></button>
+  <button id="tabCustomer" class="tab" type="button" aria-pressed="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><path d="M6 15h4"/></svg></span><span class="tab-label">Pagar</span></button>
 </nav>
+
+<!-- Escáner de QR (cámara) -->
+<div id="scanner" class="scanner hidden" role="dialog" aria-modal="true" aria-label="Escanear QR">
+  <div class="scan-view">
+    <video id="scanVideo" playsinline muted></video>
+    <div class="scan-frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  </div>
+  <canvas id="scanCanvas" hidden></canvas>
+  <p id="scanHint" class="scan-hint">Apunta la cámara al QR del comercio</p>
+  <button id="btnScanClose" class="btn btn-light" type="button">Cancelar</button>
+</div>
+
+<!-- Aviso de pago recibido (comercio) -->
+<div id="paidAlert" class="paid hidden" role="alertdialog" aria-modal="true" aria-labelledby="paidTitle">
+  <div class="paid-card">
+    <span class="paid-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+    <h2 id="paidTitle">¡Pago recibido!</h2>
+    <div id="paidAmount" class="paid-amount"></div>
+    <p id="paidSub" class="paid-sub"></p>
+    <button id="btnPaidOk" class="btn btn-big" type="button">Listo</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.16.0/dist/ethers.umd.min.js" integrity="sha384-id0TslbJZjX9r2IGNL8B1MyE0pjkF0h8S+5bc8YV+VE+AQ7N1aOlGKYy+Dy3CD0V" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>

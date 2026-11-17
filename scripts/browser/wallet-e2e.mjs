@@ -223,6 +223,27 @@ for (const w of all) {
   }, [w]);
 }
 
+// Optional (D-031): with TG_MOCK=<telegram-mock url> and the service started with TG_API_BASE pointing at it,
+// the merchant links Telegram from the UI and the test later expects the paid + captured alerts in that chat.
+const TG_MOCK = process.env.TG_MOCK;
+const TG_CHAT = 7000 + Math.floor(Math.random() * 1000);
+const tgSent = async () => (await getJson(`${TG_MOCK}/_sent`)).filter((m) => m.chatId === TG_CHAT).map((m) => m.text);
+const tgWait = async (re, ms) => {
+  const end = Date.now() + ms;
+  for (;;) { const t = await tgSent(); if (t.some((x) => re.test(x))) return t; if (Date.now() > end) throw new Error(`no ${re} in ${JSON.stringify(t)}`); await new Promise((r) => setTimeout(r, 1000)); }
+};
+if (TG_MOCK) await step('merchant: link Telegram alerts (sign -> t.me link -> /start)', async () => {
+  const p = merchant.page;
+  await p.click('#tabMerchant');
+  await p.waitFor(`!document.getElementById('tgBox').classList.contains('hidden')`, 15000);
+  await p.click('#btnTelegram');
+  await p.waitFor(`/start=[0-9a-f]{32}$/.test(document.getElementById('tgLink').href)`, 30000);
+  if (!merchant.calls.includes('personal_sign')) throw new Error('expected a personal_sign');
+  const tok = (await p.evaluate(`document.getElementById('tgLink').href`)).split('start=')[1];
+  await fetch(`${TG_MOCK}/_inject`, { method: 'POST', body: JSON.stringify({ chatId: TG_CHAT, text: `/start ${tok}` }) });
+  return (await tgWait(/^Listo/, 20000)).at(-1).slice(0, 40);
+}, [merchant]);
+
 let link = null;
 await step('merchant: create 5 tUSD split intent for 2 payers', async () => {
   const p = merchant.page;
@@ -277,6 +298,12 @@ await step('UI: merchant balance shows 54.975 tUSD', async () => {
   await shot(merchant, 'final');
   return await $text(merchant, 'usd');
 }, [merchant]);
+
+if (TG_MOCK) await step('telegram: merchant got "Te pagaron" and "Cobrado" alerts', async () => {
+  await tgWait(/^Te pagaron/, 30000);
+  const t = await tgWait(/^Cobrado/, 30000);
+  return t.filter((x) => !/^Listo/.test(x)).map((x) => x.slice(0, 48)).join(' | ');
+});
 
 const warn = all.filter((w) => w.page).flatMap((w) => w.page.logs.filter((l) => !/favicon/.test(l)).map((l) => `[${w.name}] ${l}`));
 if (warn.length) console.log('browser log (info):\n  ' + warn.slice(0, 10).join('\n  '));
