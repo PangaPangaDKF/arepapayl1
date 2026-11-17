@@ -10,7 +10,8 @@
   At runtime this page reads ../mvp-url.json, which BRAIN publishes next to the site:
     {"url":"https://<tunnel>","updated":"<iso date>"}
   and redirects to url + "/?net=fuji". No tunnel URL is ever hardcoded (T5): the tunnel changes on every restart.
-  If the file is missing, unreachable or not https, it shows the Spanish fallback below.
+  If the file is missing, unreachable or not https, or the service's /health does not answer {ok:true} within 8 s
+  (PC off, dead tunnel; D-036 fix), it shows the Spanish fallback below.
 -->
 <style>
   :root { --cream:#FFF8E0; --card:#FFFFFF; --navy:#1A2472; --navy-dark:#0D1040; --brown-dark:#2C1A0E;
@@ -53,16 +54,25 @@
     document.getElementById('wait').hidden = true;
     document.getElementById('off').hidden = false;
   };
-  var timer = setTimeout(showOff, 8000);
+  // D-036 fix: the pointer can outlive the tunnel (PC off), so redirect only after the service answers /health {ok:true}.
+  var done = false;
+  var off = function () { if (done) return; done = true; clearTimeout(timer); showOff(); };
+  var timer = setTimeout(off, 8000);
   fetch('../mvp-url.json?t=' + Date.now(), { cache: 'no-store' })
     .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
     .then(function (j) {
       var u = new URL(String(j && j.url || ''));
       if (u.protocol !== 'https:') throw new Error('not https');
-      clearTimeout(timer);
-      location.replace(u.origin + u.pathname.replace(/\/+$/, '') + '/?net=fuji');
+      return fetch(u.origin + '/health', { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('health http ' + r.status); return r.json(); })
+        .then(function (h) {
+          if (!h || h.ok !== true) throw new Error('health not ok');
+          if (done) return;
+          done = true; clearTimeout(timer);
+          location.replace(u.origin + u.pathname.replace(/\/+$/, '') + '/?net=fuji');
+        });
     })
-    .catch(function () { clearTimeout(timer); showOff(); });
+    .catch(off);
 })();
 </script>
 </body>

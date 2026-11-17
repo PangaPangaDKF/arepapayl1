@@ -1,5 +1,17 @@
 # arepapay-landing-design changelog (newest first)
 
+## 1.7.1 · 2026-11-17 · D-036 fix — `probar/` checks /health before redirecting (BRAIN review)
+- BRAIN found the new FAQ line "Si está apagada, la página te avisa" false: `probar/` only showed "apagado" when
+  `mvp-url.json` failed, but the pointer on GitHub Pages outlives the tunnel, so a PC-off visit redirected to a dead URL.
+  `landing/public/probar/index.html` now fetches `u.origin + '/health'` and redirects only on `{ok:true}`; else, or after 8 s,
+  it shows the fallback. Proven over the DevTools protocol: dead pointer (`https://127.0.0.1:9/app`) → "Entorno de prueba
+  apagado"; the same pointer with the old page → `chrome-error://chromewebdata/`; live pointer → redirect to `…/app/?net=fuji`.
+- Lesson: when I shortened the FAQ I kept a sentence about the redirect page's behavior without re-reading that page. A copy
+  line that describes code is a claim about code (T1): read the code path for the failure case before keeping it, and test
+  the failure, not only the happy path.
+- Lesson: `chrome --dump-dom` snapshots right after load, before async fetches settle (`--timeout` does not wait for them);
+  behavior checks need real time, so drive Chrome over CDP and read `location.href` after a wait.
+
 ## 1.7 · 2026-11-17 · D-036 — short page (L8): 2,150 → 250 visible words, word budget in the gate
 - User (2026-11-16): "the landing page should be more simple and less text". `landing/app/page.js` is now hero (one line, CTA,
   disclaimer), 3 status-labeled points (Cobra con QR, Paga a un comercio de la lista with the D-034 store types and 0,5 %,

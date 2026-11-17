@@ -28,7 +28,7 @@ to the site. Pre-launch cleanup still open (§4): cleaned transparent logo, cris
 | #probar | 3 steps (MetaMask, add network, request access → test dollars), CTA | app/README.md "Use", onboarding approve = 50 tUSD | testnet |
 | #faq | 3: dinero real (no; planned later with caps + audit), token (no; ARPB gas only), enlace no abre (team PC) | charter R1, D-024 | — |
 | Footer | brand, tagline, disclaimer, X @ArepaPay | T7/T8 | — |
-| `probar/` | unchanged utility redirect | D-024 | (utility) |
+| `probar/` | utility redirect; redirects only after the service `/health` answers `{ok:true}`, else "Entorno de prueba apagado" (D-036 fix) | D-024, D-036 | (utility) |
 
 ### D-024 map (superseded by D-036, history)
 | Section (#id) | Content | Truth source | data-status |

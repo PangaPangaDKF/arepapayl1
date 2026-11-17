@@ -20,7 +20,12 @@ Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD
 - Verify: build rc 0; `node scripts/landing-check.mjs` rc 0 (250 visible words, 6 features labeled, disclaimer 2x); the word rule
   failed first at 300 and 258 words (V9); `node scripts/landing-probe.mjs` rc 0 (390/360 clean); `bash tests/check.sh` ALL CHECKS
   PASSED; full-page 1280 px and 390 px (iframe) renders read.
-- Commit: this commit (landing-lane + shared-doc paths only; BRAIN deploys).
+- Commit: fba9105 (landing-lane + shared-doc paths only; BRAIN deploys).
+- Fix (BRAIN review, 2026-11-17): the kept FAQ line "Si está apagada, la página te avisa" was false while the PC is off,
+  because `mvp-url.json` on Pages outlives the tunnel and `probar/` redirected to a dead URL. `landing/public/probar/index.html`
+  now redirects only after `origin + '/health'` answers `{ok:true}` (CORS `*` verified on the live service); else, or after
+  8 s, it shows "Entorno de prueba apagado". Verify: dead pointer → "apagado" (old page → `chrome-error://`); live pointer →
+  redirect to `…/app/?net=fuji`; the 3 gates. Commit: the follow-up commit.
 
 ### D-033 · 2026-11-16 · LANDING: privacy copy flipped to live eERC in the testnet MVP (L7) (Claude Opus 4.8, LANDING lane)
 - What: `landing/app/page.js` — encrypted balances were out of date. The #solucion "Saldos y montos cifrados" line went from

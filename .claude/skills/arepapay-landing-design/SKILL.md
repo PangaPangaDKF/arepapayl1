@@ -5,7 +5,7 @@ description: Handoff skill for ArepaPay v2's landing page (landing/index.html) a
 
 # ArepaPay landing skill
 
-Version 1.7 · 2026-11-17 · D-036 (was 1.6, D-033) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
+Version 1.7.1 · 2026-11-17 · D-036 (was 1.7, D-036; 1.6, D-033) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
 DOGEON `dogeon-landing-design` 2.1 and master-method §4.6/§6.4. v0 built; gates `scripts/landing-{check,probe}.mjs` implemented and
 green; see §7 for the static-export playbook (build, preview, gate internals).
 
@@ -117,5 +117,6 @@ It also fails when the main page passes **250 visible words** (rule L8, user D-0
   Set `NEXT_PUBLIC_SITE_URL` to the host's origin too, or canonical/OG URLs point at `arepapay.site` (the default). Never
   write a bare `/brand/…` path in JSX. Default (empty) builds are what the gates and the probe check.
 - **Test link = relative `probar/` only (D-024).** `landing/public/probar/index.html` reads `../mvp-url.json` (published by BRAIN
-  next to the site) and redirects to `url + '/?net=fuji'`, with a Spanish fallback. The gate fails if that page hardcodes a URL,
+  next to the site) and redirects to `url + '/?net=fuji'` **only after `origin + '/health'` answers `{ok:true}`** (D-036 fix: the pointer outlives a
+  dead tunnel), with a Spanish fallback. The gate fails if that page hardcodes a URL,
   and checks that every relative link resolves in `out/`.

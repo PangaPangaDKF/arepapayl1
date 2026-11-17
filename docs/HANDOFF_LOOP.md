@@ -1,5 +1,16 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-17 · LANDING · probar/ checks /health before redirecting (D-036 fix)
+- Done: `landing/public/probar/index.html` fetches `u.origin + '/health'` after reading the pointer and redirects only on
+  `{ok:true}`; otherwise, or after 8 s, "Entorno de prueba apagado". Skill 1.7.1, CHANGELOG lesson, STATE, D-036 fix line.
+- Verified (headless Chrome over CDP, 12 s real wait): pointer `https://127.0.0.1:9/app` → title "Entorno de prueba apagado",
+  fallback shown; same pointer with the old page → `chrome-error://chromewebdata/`; live pointer → redirected to
+  `https://…trycloudflare.com/app/?net=fuji` (title "ArepaPay (testnet)"). Live `/health` GET: `{"ok":true,…}` with
+  `access-control-allow-origin: *` (note: HEAD `curl -sI` returns 404 there; GET is what the page uses). 3 gates green.
+- Next for BRAIN: deploy (landing + probar). LESSONS candidate: a copy line describing code behavior must be checked against
+  the code's failure path (T1); enforced by (note only).
+- Needs the user: nothing.
+
 ## 2026-11-17 · LANDING · Short landing page (D-036, L8)
 - Done: `landing/app/page.js` cut from 11 sections / 2,150 visible words to hero, 3 status-labeled points, one privacy line,
   Cómo probar (3 steps), 3 FAQ and footer: 250 visible words. New gate rule in `scripts/landing-check.mjs` (fails above 250);
