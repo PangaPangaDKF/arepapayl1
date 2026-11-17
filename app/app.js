@@ -258,7 +258,7 @@ function createIntent() {
       const link = `${location.origin}${location.pathname}?intent=${id}${NET !== 'local' ? '&net=' + NET : ''}${Q.get('api') ? '&api=' + encodeURIComponent(API) : ''}`;
       const qr = qrcode(0, 'M'); qr.addData(link); qr.make();
       $('qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
-      $('link').href = link; $('link').textContent = link;
+      $('link').href = link; $('link').textContent = 'Copiar enlace';   // the QR carries the link; the raw URL is not shown
       $('created').classList.remove('hidden');
       $('newCharge').classList.add('hidden');
       msg(`Cobro #${id} creado.`);
@@ -467,6 +467,11 @@ async function boot() {
   $('tabCustomer').onclick = $('chooseCustomer').onclick = () => { showTab('customer'); loadJsQR().catch(() => {}); };   // prefetch the QR reader
   $('btnCreate').onclick = createIntent;
   $('btnNewCharge').onclick = newCharge;
+  $('link').onclick = (e) => {   // copy instead of navigating; if the clipboard is blocked, the link just opens
+    if (!navigator.clipboard?.writeText) return;
+    e.preventDefault();
+    navigator.clipboard.writeText($('link').href).then(() => msg('Enlace copiado.'), () => { location.href = $('link').href; });
+  };
   $('btnTelegram').onclick = linkTelegram;
   initTelegram();
   $('btnLoad').onclick = () => loadRef($('intentId').value);
@@ -488,7 +493,7 @@ async function boot() {
     const r = await fetch(`${API}/config/${NET}`);
     if (!r.ok) throw new Error(`config ${NET}: HTTP ${r.status}`);
     S.cfg = await r.json();
-    $('netinfo').textContent = `Red: ${S.cfg.chainName} · chainId ${S.cfg.chainId} · comisión ${S.cfg.feeBps / 100}% · servicio ${API}`;
+    $('netinfo').textContent = `Red: ${S.cfg.chainName} · comisión ${S.cfg.feeBps / 100}%`;   // no host URL on screen (user, 2026-11-16)
     window.__arepapayConfigLoaded = true;
     if (typeof initPrivate === 'function') initPrivate();   // app/private.js (D-032)
   } catch (e) {
