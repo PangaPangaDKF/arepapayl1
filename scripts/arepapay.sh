@@ -32,14 +32,20 @@ up() {
   exec 9>"$RUN/up.lock"
   flock -n 9 || { echo "another 'up' is running"; return 0; }
   stamp "up: starting (node, service, tunnel)"
-  "$SERVE" start 2>&1 | tee -a "$LOG"
+  "$SERVE" start 9>&- 2>&1 | tee -a "$LOG"   # 9>&-: long-running children must not inherit the lock
   local u; u="$(url)"
   [ -n "$u" ] || { stamp "up: no public URL yet; see: $0 logs"; return 1; }
   # /probar/ on arepapay.site follows config/public/mvp-url.json: update it only when the address changed
   # (with the fixed address app.arepapay.site this happens once).
-  if [ "$(pointer)" != "$u/app" ]; then stamp "up: pointer changed -> publishing"; "$SERVE" publish-url 2>&1 | tee -a "$LOG"; fi
-  local code; code="$(curl -s -o /dev/null -m 20 -w '%{http_code}' "$u/app/")"
+  if [ "$(pointer)" != "$u/app" ]; then stamp "up: pointer changed -> publishing"; "$SERVE" publish-url 9>&- 2>&1 | tee -a "$LOG"; fi
+  # wait until the service really answers through the tunnel (the tunnel can be up a few seconds before the server)
+  local code=000 i
+  for i in $(seq 1 45); do
+    curl -s -m 5 "$u/health" | grep -q '"ok":true' && { code="$(curl -s -o /dev/null -m 20 -w '%{http_code}' "$u/app/")"; [ "$code" = 200 ] && break; }
+    sleep 2
+  done
   stamp "up: done. app $u/app/ -> HTTP $code"
+  [ "$code" = 200 ]
 }
 
 status() {

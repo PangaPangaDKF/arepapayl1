@@ -1,5 +1,12 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-17 · BRAIN · Short landing live, one-command start (D-036 deploy, D-037)
+- Shipped + proof: landing 250 words live (SITE PASS 4/4); `/probar/` warns when the test PC is off; `bash scripts/arepapay.sh up` cold start → HTTP 200; pointer-only publishing (throwaway-remote test).
+- Broke + rule: L-013 unattended push of HEAD (fixed before autostart existed); L-014 false FAQ claim caught in review; up's 502 and lock-fd bugs caught by the cold start.
+- Read first next time: `docs/HOSTING.md`; after any reboot just `bash scripts/arepapay.sh up` (or autostart once installed).
+- Waits on the user: Cloudflare + Spaceship + `cloudflared tunnel login`, then `arepapay.sh fixed-address`; `arepapay.sh install-autostart`; phone proof time; UI references.
+- Prompt/skill improvement: STATE "Live" now says `arepapay.sh up`; three lessons recorded.
+
 ## 2026-11-17 · LANDING · probar/ checks /health before redirecting (D-036 fix)
 - Done: `landing/public/probar/index.html` fetches `u.origin + '/health'` after reading the pointer and redirects only on
   `{ok:true}`; otherwise, or after 8 s, "Entorno de prueba apagado". Skill 1.7.1, CHANGELOG lesson, STATE, D-036 fix line.

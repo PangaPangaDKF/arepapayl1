@@ -15,7 +15,8 @@ try {
   const p = await b.newPage({ width: 1280, height: 900 });
   await p.goto(base + '/');
   const h1 = await p.text('h1');
-  step(/ArepaPay/.test(h1 || ''), 'landing renders', h1);
+  const title = await p.evaluate('document.title');   // D-036: the brand moved from the h1 to the header/title
+  step(/ArepaPay/.test(title || '') && (h1 || '').trim().length > 0, 'landing renders', `${title} | h1: ${h1}`);
   const links = await p.evaluate(`[...document.querySelectorAll('a')].map(a=>a.getAttribute('href')).filter(h=>h&&h.includes('probar')&&!h.startsWith('#')).length`);
   step(links > 0, 'landing links to probar/', `${links} link(s)`);
   await p.screenshot(join(shots, 'site-landing.png'));

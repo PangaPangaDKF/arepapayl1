@@ -14,7 +14,10 @@ Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD
   address needs the user's Cloudflare account, nameserver change at Spaceship and `cloudflared tunnel login` (D-028).
 - Verify: `up` from a clean environment (`env -i`) → HTTP 200 when already running; cold start (stop → up) below; pointer
   publishing tested on a throwaway bare remote (one commit, only `config/public/mvp-url.json`, planted local commit not pushed,
-  second run no-op); gate rc=0.
+  second run no-op); **cold start** (`down`, then `up` from `env -i`): node kept, service + tunnel restarted, new address,
+  pointer-only commit pushed, waits for `/health`, HTTP 200; second `up` is a no-op. Two bugs it caught and fixed: the final
+  check ran before the server listened (502 → now polls /health) and children inherited the lock fd (next `up` refused →
+  `9>&-`). Live: arepapay.site serves D-036, `/probar/` checks `/health`, `site-check.mjs` SITE PASS 4/4; gate rc=0.
 - Commit: this commit.
 
 ### D-036 · 2026-11-17 · LANDING: short page, 2,150 → 250 visible words, word budget in the gate (L8) (Claude Opus 5.5, LANDING lane run by a BRAIN subagent)
