@@ -210,12 +210,12 @@ for (const w of all) {
   }, [w]);
   await step(`${w.name}: request access (auto-approve -> allowlisted, gas, 50 tUSD)`, async () => {
     await w.page.click('#btnRequest');
-    await waitText(w, 'msg', '/Solicitud: approved/', ACCESS_TIMEOUT);
+    await waitText(w, 'msg', '/Acceso aprobado/', ACCESS_TIMEOUT);
     // the click triggers one refresh; poll by re-clicking Connect (cheap, no popup in MetaMask once authorized)
     const end = Date.now() + 60000;
     for (;;) {
       const a = await $text(w, 'access'), u = await $text(w, 'usd');
-      if (/^habilitado/.test(a) && /^50(\.0)? tUSD/.test(u)) { await shot(w, 'approved'); return `${a}; ${u}; gas ${await $text(w, 'native')}`; }
+      if (/^habilitado/.test(a) && /^\$50\.00/.test(u)) { await shot(w, 'approved'); return `${a}; ${u}; gas ${await $text(w, 'native')}`; }
       if (Date.now() > end) throw new Error(`access="${a}" usd="${u}"`);
       await new Promise((r) => setTimeout(r, 2000));
       await w.page.click('#btnConnect');
@@ -270,12 +270,12 @@ async function payFrom(w, amount, expectCovered) {
   await p.type('#share', String(amount));
   await p.click('#btnPay');
   await waitText(w, 'msg', '/Pago autorizado/', TX_TIMEOUT);
-  if (expectCovered) await waitText(w, 'iCovered', new RegExp('^' + expectCovered.replace('.', '\\.')), 15000);
+  if (expectCovered) await waitText(w, 'iCovered', new RegExp('^\\$' + expectCovered.replace('.', '\\.')), 15000);
   await shot(w, `paid-${amount}`);
   return `covered ${await $text(w, 'iCovered')}, state ${await $text(w, 'iState')}`;
 }
-await step('alice: open share link and pay 3 tUSD', () => payFrom(alice, 3, '3'), [alice]);
-await step('bob: open share link and pay 2 tUSD', () => payFrom(bob, 2, '5'), [bob]);
+await step('alice: open share link and pay 3 tUSD', () => payFrom(alice, 3, '3.00'), [alice]);
+await step('bob: open share link and pay 2 tUSD', () => payFrom(bob, 2, '5.00'), [bob]);
 
 await step('UI: intent shows Cobrado (merchant polls, bob refreshed)', async () => {
   await waitText(bob, 'iState', '/^Cobrado/', 30000);
@@ -294,7 +294,7 @@ await step('chain: merchant 54.975, alice 47, bob 48 tUSD (0.5% fee)', async () 
 
 await step('UI: merchant balance shows 54.975 tUSD', async () => {
   await merchant.page.click('#btnConnect');
-  await waitText(merchant, 'usd', '/^54\\.975 tUSD/', 20000);
+  await waitText(merchant, 'usd', '/^\\$54\\.975/', 20000);
   await shot(merchant, 'final');
   return await $text(merchant, 'usd');
 }, [merchant]);
@@ -341,9 +341,9 @@ if (cfg.merchantPay && process.env.STORES !== '0') {
     await p.evaluate(`[...document.querySelectorAll('#contacts .contact')].find((b) => b.querySelector('b').textContent === ${JSON.stringify(STORE)}).click()`);
     await p.waitFor(`!document.getElementById('cPay').classList.contains('hidden')`, 10000);
     await p.type('#cAmt', '2');
-    const fee = await waitText(alice, 'cFee', '/Comisión 0\\.01 tUSD \\(0\\.5%\\)/', 10000);
+    const fee = await waitText(alice, 'cFee', '/Comisión \\$0\\.01 \\(0\\.5%\\)/', 10000);
     await p.click('#btnCPay');
-    await waitText(alice, 'msg', '/Pagaste 2\\.0 tUSD/', TX_TIMEOUT);
+    await waitText(alice, 'msg', '/Pagaste \\$2\\.00/', TX_TIMEOUT);
     const [aA, mA, fA] = await Promise.all([usdBalance(alice.address), usdBalance(merchant.address), feeRouter ? usdBalance(feeRouter) : 0n]);
     if (aB - aA !== U(2) || mA - mB !== U(1.99) || (feeRouter && fA - fB !== U(0.01))) throw new Error(`alice -${fmt(aB - aA)} merchant +${fmt(mA - mB)} fee +${fmt(fA - fB)}`);
     await shot(alice, 'contact-paid');
@@ -362,7 +362,7 @@ if (cfg.merchantPay && process.env.STORES !== '0') {
     await p.evaluate(`[...document.querySelectorAll('#contacts .contact')].find((b) => b.querySelector('b').textContent === 'Recarga de agua').click()`);
     await p.type('#cAmt', '1');
     await p.click('#btnCPay');
-    await waitText(alice, 'msg', '/Pagaste 1\\.0 tUSD/', TX_TIMEOUT);
+    await waitText(alice, 'msg', '/Pagaste \\$1\\.00/', TX_TIMEOUT);
     if (before - (await usdBalance(alice.address)) !== U(1)) throw new Error('alice not charged 1');
     return 'paid';
   }, [alice]);
@@ -396,7 +396,7 @@ if (cfg.eerc && process.env.EERC !== '0') {
     await alice.page.type('#pDep', '10');
     await alice.page.click('#btnPDeposit');
     await waitText(alice, 'msg', '/pasaron a tu saldo privado/', TX_TIMEOUT);
-    await waitText(alice, 'pBal', '/^10\\.00 tUSD/', 30000);
+    await waitText(alice, 'pBal', '/^\\$10\\.00/', 30000);
     const after = await usdBalance(alice.address);
     if (before - after !== U(10)) throw new Error(`plain tUSD moved ${fmt(before - after)}, want 10`);
     await shot(alice, 'private-10');
@@ -408,7 +408,7 @@ if (cfg.eerc && process.env.EERC !== '0') {
     await alice.page.type('#pAmt', '3');
     await alice.page.click('#btnPSend');
     await waitText(alice, 'msg', '/Enviado en privado/', PROOF_TIMEOUT);
-    await waitText(alice, 'pBal', '/^7\\.00 tUSD/', 30000);
+    await waitText(alice, 'pBal', '/^\\$7\\.00/', 30000);
     const [aA, mA] = await Promise.all([usdBalance(alice.address), usdBalance(merchant.address)]);
     if (aA !== aB || mA !== mB) throw new Error('a private transfer moved plain tUSD');
     const ms = await alice.page.evaluate('window.__arepapayLastProofMs');
@@ -416,7 +416,7 @@ if (cfg.eerc && process.env.EERC !== '0') {
     return `alice private ${await privBal(alice)}; transfer proof ${Math.round(ms)} ms in headless Chrome`;
   }, [alice]);
   await step('merchant: private balance shows 3.00 by itself (auto-refresh)', async () => {
-    await waitText(merchant, 'pBal', '/^3\\.00 tUSD/', 30000);
+    await waitText(merchant, 'pBal', '/^\\$3\\.00/', 30000);
     await shot(merchant, 'private-received');
     return await privBal(merchant);
   }, [merchant]);
@@ -425,7 +425,7 @@ if (cfg.eerc && process.env.EERC !== '0') {
     await merchant.page.type('#pWd', '1');
     await merchant.page.click('#btnPWithdraw');
     await waitText(merchant, 'msg', '/volvieron a tu saldo normal/', PROOF_TIMEOUT);
-    await waitText(merchant, 'pBal', '/^2\\.00 tUSD/', 30000);
+    await waitText(merchant, 'pBal', '/^\\$2\\.00/', 30000);
     const after = await usdBalance(merchant.address);
     if (after - before !== U(1)) throw new Error(`plain tUSD grew ${fmt(after - before)}, want 1`);
     return `private ${await privBal(merchant)}; plain ${fmt(after)}`;

@@ -20,6 +20,17 @@ Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD
   ALL CHECKS PASSED; 1280 px renders of #solucion and #privacidad read.
 - Commit: this commit (landing-lane + shared-doc paths only; BRAIN owns deploy).
 
+### D-035 · 2026-11-16 · App design pass with the design-critique skill (Claude Opus 5.5, BRAIN lane)
+- What: amounts formatted as money ($50.00, $54.975: at least 2 decimals, never rounded away) with "Dólares de prueba" under the
+  balance; status messages in Spanish ("Acceso aprobado") that fade after 8 s (progress messages stay); Cobrar/Pagar chooser
+  tiles removed (the bottom bar does it; the app opens on Pagar); "PRUEBA" pill and the footer paragraph removed (the red
+  TESTNET bar stays); manual charge entry collapsed into "Escribir el número del cobro"; footer text in AA-contrast brown.
+- Why: user: "if you can find a skill to use it for a improve do it"; the installed `design:design-critique` skill was run on
+  the live screenshots; findings: money read like a token ("50.0 tUSD"), English raw status, triple test labelling, duplicate
+  navigation, footer contrast ~2.6:1.
+- Verify: wallet e2e 29/29 on a Fuji test instance (assertions moved to the $ format); 390 px screenshots read; gate rc=0.
+- Commit: this commit.
+
 ### D-034 · 2026-11-16 · Stores as payment contacts (MerchantPay, same 0.5 % fee) + store types + cleaner app (Claude Opus 5.5, BRAIN lane)
 - What: `contracts/src/MerchantPay.sol` (pay a store in one call: store gets amount − fee, fee router the fee; token, router and
   fee read from the live SplitPayEscrow; payer's `maxFeeBps` cap; MIN_AMOUNT 0.01; no owner, holds nothing) deployed on Fuji

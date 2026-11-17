@@ -40,9 +40,21 @@ const S = { cfg: null, eth: null, account: null, chainId: null, intentId: null, 
   lastState: {}, alerted: new Set() };   // per-charge last seen state + charges already announced (payment alert fires once)
 
 // ---------------------------------------------------------------- helpers
-const msg = (t) => { $('msg').textContent = t || ''; };
+// Status line: progress messages ("…") stay; results fade after 8 s so the screen stays clean (D-035).
+let msgTimer = 0;
+const msg = (t) => {
+  $('msg').textContent = t || '';
+  clearTimeout(msgTimer);
+  if (t && !/…\s*$/.test(t)) msgTimer = setTimeout(() => { if ($('msg').textContent === t) $('msg').textContent = ''; }, 8000);
+};
+// Money as money: $50.00, $54.975 (at least 2 decimals, never rounds away real value). Test dollars: the red bar says so.
+function money(str) {
+  const [i, f = ''] = String(str).split('.');
+  const sig = f.replace(/0+$/, '');
+  return `$${Number(i).toLocaleString('en-US')}.${(sig + '00').slice(0, Math.max(2, sig.length))}`;
+}
 const err = (e) => { $('err').textContent = e ? niceError(e) : ''; };
-const usd = (v) => (S.cfg ? `${ethers.formatUnits(v, S.cfg.testUsdDecimals)} ${S.cfg.testUsdSymbol}` : '-');
+const usd = (v) => (S.cfg ? money(ethers.formatUnits(v, S.cfg.testUsdDecimals)) : '-');
 const rate = () => Number($('rate').value) || 0;
 const bs = (v) => (rate() > 0 && S.cfg ? ` ≈ Bs ${(Number(ethers.formatUnits(v, S.cfg.testUsdDecimals)) * rate()).toFixed(2)}` : '');
 const onChain = () => S.cfg && S.chainId === S.cfg.chainId;
@@ -230,7 +242,7 @@ async function requestAccess() {
     msg('Enviando solicitud…');
     const r = await fetch(`${API}/request`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address: S.account }) });
     const j = await r.json();
-    msg(`Solicitud: ${j.status}${j.error ? ' (' + j.error + ')' : ''}`);
+    msg(j.status === 'approved' ? 'Acceso aprobado.' : j.error ? 'No se pudo aprobar ahora. Intenta de nuevo en un momento.' : 'Solicitud enviada. Espera la aprobación.');
     refreshAccount();
   } catch (e) { err(e); }
 }
@@ -361,6 +373,7 @@ function camError(e) {
 }
 function scanFail(text) {
   closeScanner();
+  $('manual').open = true;   // the manual entry is collapsed by default (D-035)
   $('scanMsg').textContent = text;
   $('intentId').focus();
 }
@@ -469,8 +482,8 @@ async function boot() {
   $('btnNet').onclick = addNetwork;
   $('btnConnect').onclick = connect;
   $('btnRequest').onclick = requestAccess;
-  $('tabMerchant').onclick = $('chooseMerchant').onclick = () => { audioCtx(); showTab('merchant'); };
-  $('tabCustomer').onclick = $('chooseCustomer').onclick = () => { showTab('customer'); loadJsQR().catch(() => {}); };   // prefetch the QR reader
+  $('tabMerchant').onclick = () => { audioCtx(); showTab('merchant'); };
+  $('tabCustomer').onclick = () => { showTab('customer'); loadJsQR().catch(() => {}); };   // prefetch the QR reader
   $('btnCreate').onclick = createIntent;
   $('btnNewCharge').onclick = newCharge;
   $('link').onclick = (e) => {   // copy instead of navigating; if the clipboard is blocked, the link just opens
@@ -522,6 +535,7 @@ async function boot() {
   }
 
   if (typeof loadPrivRef === 'function' && Q.get('pto')) loadPrivRef(location.href);   // private-pay link (D-032)
+  if (!document.body.dataset.tab) showTab('customer');   // open on Pagar; the bottom bar replaces the chooser tiles (D-035)
   const qi = Q.get('intent');
   if (qi && /^\d+$/.test(qi)) { S.intentId = qi; $('intentId').value = qi; showTab('customer'); startPolling(); }
   refreshAccount(); refreshIntent();

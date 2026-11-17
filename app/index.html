@@ -19,7 +19,6 @@
     <span class="logo-dot"><img src="assets/arepa.svg" alt="" width="30" height="30"></span>
     <span class="brand-name">AREPAPAY</span>
   </div>
-  <span class="pill">PRUEBA</span>
 </header>
 <div class="checker" aria-hidden="true"></div>
 
@@ -37,6 +36,7 @@
     <div class="balance" aria-live="polite">
       <span class="label label-light">Tu saldo</span>
       <div class="balance-amount" id="usd">-</div>
+      <span class="balance-note">Dólares de prueba</span>
     </div>
 
     <div class="actions acct-actions">
@@ -58,12 +58,6 @@
         <input id="rate" class="input input-sm" type="number" inputmode="decimal" min="0" step="0.01" value="0">
       </label>
     </div>
-  </section>
-
-  <!-- Aún sin modo elegido -->
-  <section class="choose" aria-label="¿Qué quieres hacer?">
-    <button id="chooseMerchant" class="tile" type="button"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v7h14v-7"/><path d="M10 20v-4h4v4"/></svg><b>Cobrar</b><span>Soy comercio</span></button>
-    <button id="chooseCustomer" class="tile" type="button"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><path d="M6 15h4"/></svg><b>Pagar</b><span>Soy cliente</span></button>
   </section>
 
   <!-- Comercio -->
@@ -140,11 +134,13 @@
     </div>
     <button id="btnScan" class="btn btn-big" type="button"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M7 12h10"/></svg> Escanear QR</button>
     <p id="scanMsg" class="inline-err" role="alert"></p>
-    <p class="divider"><span>o escribe el número o pega el enlace</span></p>
+    <details id="manual" class="manual">
+    <summary>Escribir el número del cobro</summary>
     <div class="row-input">
       <label class="field grow"><span class="sr-only">Número o enlace del cobro</span><input id="intentId" class="input" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ej. 12 o https://…"></label>
       <button id="btnLoad" class="btn btn-dark btn-auto" type="button">Ver</button>
     </div>
+    </details>
   </section>
 
   <!-- Detalle del cobro -->
@@ -245,7 +241,6 @@
 
   <footer class="foot">
     <div id="netinfo" class="netinfo">Cargando configuración…</div>
-    <p>Prueba de ArepaPay sobre una L1 Avalanche de prueba. Acceso con aprobación (KYC de prueba).</p>
   </footer>
 </main>
 

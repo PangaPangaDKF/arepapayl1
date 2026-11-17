@@ -33,7 +33,7 @@ const P = { key: null, keyFor: null, registered: false, cents: 0n, egct: null, v
 const deep = (r) => (r && typeof r === 'object' && typeof r.length === 'number' ? Array.from(r, deep) : r);
 const ecfg = () => S.cfg && S.cfg.eerc;
 const pBase = () => new URL(ecfg().circuits, location.href).href.replace(/\/$/, '');
-const centsText = (c) => { const n = BigInt(c); return `${n / 100n}.${(n % 100n).toString().padStart(2, '0')} ${S.cfg.testUsdSymbol}`; };
+const centsText = (c) => { const n = BigInt(c); return money(`${n / 100n}.${(n % 100n).toString().padStart(2, '0')}`); };
 function parseCents(v) {
   const s = String(v || '').trim();
   if (!/^\d+(\.\d{1,2})?$/.test(s)) throw new Error('Monto inválido (máximo 2 decimales).');

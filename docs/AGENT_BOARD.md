@@ -81,10 +81,11 @@ Tests: s1-verify 15/15, e2e 19/19, browser e2e 18/18. The user's goal ("function
 | D-032 | BRAIN | Encrypted balances (eERC converter) on the Fuji L1 + Privado screen in the MVP dApp | done |
 | D-033 | LANDING | L7: privacy copy flipped to live eERC in the testnet MVP (Privado tab, honest public-parts + one-bank-audit-key caveat) | done |
 | D-034 | BRAIN | Cleaner app (no Detalles, no host URL), store types (carrito de perros / panadería / recarga de agua), every store a payment contact, MerchantPay (direct pay, same 0.5% fee), 3 demo stores | done |
-| D-035 | BRAIN | App design pass (design-critique skill): money as $, Spanish fading messages, no chooser tiles/pill, manual entry collapsed, AA footer | in progress |
+| D-035 | BRAIN | App design pass (design-critique skill): money as $, Spanish fading messages, no chooser tiles/pill, manual entry collapsed, AA footer | done |
 | D-036+ | | | Next free: reserve here first |
 
 ## Log
+- 2026-11-16 · BRAIN · D-035 design pass (design-critique skill): $ money format, Spanish fading messages, no chooser tiles/pill, manual entry collapsed, AA footer. e2e 29/29, gate rc=0, live (static app files), pushed. LANDING: L8 open (simpler landing).
 - 2026-11-16 · BRAIN · D-034 LIVE: public service restarted, wallet e2e 23/23 on the public URL (stores + contact pay + direct alert); removed the e2e's test store from the live directory (a live e2e leaves one test store: delete it from `backend/onboarding/data/stores.fuji.json` after a run); pushed.
 - 2026-11-16 · BRAIN · D-034: MerchantPay on Fuji (contacts pay stores with the same 0.5% fee), store directory with types (carrito de perros / panadería / recarga de agua / otro) + 3 demo stores, cleaner app (no Detalles, no host URL). forge 117/117, independent review (L-1 fixed test-first), e2e 29/29, gate rc=0. LANDING: no copy change needed yet (stores are an app feature; mention when the user asks).
 - 2026-11-16 · BRAIN · Reviewed LANDING's D-033 (L7) diff against the L7 facts ("2 de 3" is ARCHITECTURE §92's proposal, labelled as planned): OK. Gate rc=0, pushed; Pages run 44006952675 success; arepapay.site serves the new privacy copy (old "todavía no hay cifrado" gone); `site-check.mjs` SITE PASS. Funded the user's test address 0x9C0b…DceeD (allowlist, 1 ARPB, 50 tUSD; checked on chain) for the phone test.
