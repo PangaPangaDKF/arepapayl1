@@ -1,5 +1,12 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-16 · BRAIN · Encrypted balances in the public MVP (D-032)
+- Shipped + proof: eERC converter on Fuji L1 + "Privado" tab; wallet e2e 24/24 on Fuji (registration, deposit, private send with a transfer proof in the page in 8.6 s, receiver auto-refresh, withdraw); `audit-view` PASS (bank key reads 3.00; a random key reads nothing); lib test 15/15 with snarkjs-verified proofs; gate rc=0 and V9 shown for the new stage.
+- Broke + rule: the S2 toolchain in /tmp died with the reboot (L-011, durable `~/.cache` + `deploy.sh prepare`); a hand-started test server lacked key env and wasted an e2e run (L-012, boot check).
+- Read first next time: `app/README.md` "Saldo privado", `config/l1/eerc.fuji.json`, STATE "Live".
+- Waits on the user: try the Privado tab on a phone in MetaMask and report the "prueba X s" time (S2 §8 measurement); D-028 Cloudflare steps; D-031 bot token; U1–U3.
+- Prompt/skill improvement: brain STATE now has a "Live" section with the reboot recovery steps; skill CHANGELOG 1.1.
+
 ## 2026-11-15 · BRAIN (+ LANDING via subagent) · Stage B done, MVP public, landing announcement
 - Done: Fuji L1 (D-019), browser tool + skill (D-025), landing announcement (D-024), one public origin (D-026). Public URL at closeout: https://enhanced-donors-wider-stack.trycloudflare.com (landing), https://enhanced-donors-wider-stack.trycloudflare.com/app/ (dApp).
 - Verified: check.sh ALL CHECKS PASSED (rc 0); `NET=fuji s1-verify` 15/15; `NET=fuji e2e.sh` 19/19; `wallet-e2e.mjs <url>/app/` 18/18; `probar/` redirect PASS; renders read.

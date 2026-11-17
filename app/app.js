@@ -391,6 +391,7 @@ async function openScanner() {
       const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const code = decode(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
       if (code && code.data) {
+        if (typeof parsePrivRef === 'function' && parsePrivRef(code.data)) { closeScanner(); loadPrivRef(code.data); return; }   // D-032
         if (parseIntentRef(code.data)) { closeScanner(); if (navigator.vibrate) try { navigator.vibrate(60); } catch {} loadRef(code.data); return; }
         if (code.data !== lastBad) { lastBad = code.data; $('scanHint').textContent = 'Ese QR no es un cobro de ArepaPay.'; $('scanHint').classList.add('warn'); }
       }
@@ -445,8 +446,9 @@ function closePaid() { $('paidAlert').classList.add('hidden'); }
 function showTab(which) {
   $('merchant').classList.toggle('hidden', which !== 'merchant');
   $('customer').classList.toggle('hidden', which !== 'customer');
+  $('private').classList.toggle('hidden', which !== 'private');
   document.body.dataset.tab = which;   // presentational: active bottom tab
-  for (const [id, w] of [['tabMerchant', 'merchant'], ['tabCustomer', 'customer']]) {
+  for (const [id, w] of [['tabMerchant', 'merchant'], ['tabCustomer', 'customer'], ['tabPrivate', 'private']]) {
     $(id).classList.toggle('active', which === w); $(id).setAttribute('aria-pressed', String(which === w));
   }
 }
@@ -488,6 +490,7 @@ async function boot() {
     S.cfg = await r.json();
     $('netinfo').textContent = `Red: ${S.cfg.chainName} · chainId ${S.cfg.chainId} · comisión ${S.cfg.feeBps / 100}% · servicio ${API}`;
     window.__arepapayConfigLoaded = true;
+    if (typeof initPrivate === 'function') initPrivate();   // app/private.js (D-032)
   } catch (e) {
     $('netinfo').textContent = 'No se pudo cargar la configuración.';
     return err(`No se pudo leer la configuración desde ${API}/config/${NET} (${e.message}). ¿Está corriendo el servicio de onboarding?`);
@@ -496,7 +499,7 @@ async function boot() {
   S.eth = pickProvider();
   if (S.eth) {
     S.eth.on?.('chainChanged', (c) => { S.chainId = Number(c); refreshAccount(); refreshIntent(); });
-    S.eth.on?.('accountsChanged', (a) => { S.account = a[0] ? ethers.getAddress(a[0]) : null; refreshAccount(); refreshIntent(); });
+    S.eth.on?.('accountsChanged', (a) => { S.account = a[0] ? ethers.getAddress(a[0]) : null; refreshAccount(); refreshIntent(); if (typeof privAccountChanged === 'function') privAccountChanged(); });
     try {   // silent: already-authorized accounts only, no popup (N7)
       const accs = await S.eth.request({ method: 'eth_accounts' });
       S.account = accs[0] ? ethers.getAddress(accs[0]) : null;
@@ -506,6 +509,7 @@ async function boot() {
     msg('Sin billetera: solo lectura. Abre en el navegador de MetaMask para pagar.');
   }
 
+  if (typeof loadPrivRef === 'function' && Q.get('pto')) loadPrivRef(location.href);   // private-pay link (D-032)
   const qi = Q.get('intent');
   if (qi && /^\d+$/.test(qi)) { S.intentId = qi; $('intentId').value = qi; showTab('customer'); startPolling(); }
   refreshAccount(); refreshIntent();

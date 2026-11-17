@@ -153,6 +153,60 @@
     </div>
   </section>
 
+  <!-- Saldo privado (eERC, D-032) -->
+  <section id="private" class="card hidden">
+    <h2>Saldo privado</h2>
+    <p class="hint">Cifrado en la cadena: solo tú y la auditoría del banco ven los montos. Quién paga a quién sigue siendo visible.</p>
+    <p id="pOff" class="hint hidden">El saldo privado no está disponible en esta red.</p>
+    <div id="pLocked">
+      <button id="btnPUnlock" class="btn btn-big" type="button">Ver mi saldo privado</button>
+      <span class="hint">Firmas un mensaje (no cuesta nada). Con esa firma la app calcula tu llave privada de lectura; no la compartas con nadie.</span>
+    </div>
+    <div id="pRegister" class="hidden">
+      <button id="btnPRegister" class="btn btn-big" type="button">Activar saldo privado</button>
+      <span class="hint">Una sola vez: registra tu llave pública en la cadena.</span>
+    </div>
+    <div id="pOpen" class="hidden">
+      <div class="p-balance">
+        <div class="label">Saldo privado</div>
+        <div id="pBal" class="intent-amount">-</div>
+        <span id="pBalNote" class="hint"></span>
+      </div>
+      <div class="p-block">
+        <h3>Pasar a privado</h3>
+        <div class="row-input">
+          <label class="field grow"><span class="sr-only">Monto a pasar a privado</span><span class="money"><input id="pDep" class="input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="5.00"><span class="money-unit">USD</span></span></label>
+          <button id="btnPDeposit" class="btn btn-dark btn-auto" type="button">Pasar</button>
+        </div>
+      </div>
+      <div class="p-block">
+        <h3>Enviar privado</h3>
+        <div class="row-input">
+          <label class="field grow"><span class="sr-only">Dirección de quien recibe</span><input id="pTo" class="input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="0x… (dirección de quien recibe)"></label>
+          <button id="btnPScan" class="btn btn-ghost btn-auto" type="button" aria-label="Escanear dirección">QR</button>
+        </div>
+        <div class="row-input">
+          <label class="field grow"><span class="sr-only">Monto a enviar</span><span class="money"><input id="pAmt" class="input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="2.00"><span class="money-unit">USD</span></span></label>
+          <button id="btnPSend" class="btn btn-auto" type="button">Enviar</button>
+        </div>
+        <span class="hint">Crear la prueba de privacidad puede tardar de segundos a un minuto en el teléfono.</span>
+      </div>
+      <div class="p-block">
+        <h3>Pasar a saldo normal</h3>
+        <div class="row-input">
+          <label class="field grow"><span class="sr-only">Monto a pasar a saldo normal</span><span class="money"><input id="pWd" class="input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="1.00"><span class="money-unit">USD</span></span></label>
+          <button id="btnPWithdraw" class="btn btn-ghost btn-auto" type="button">Pasar</button>
+        </div>
+      </div>
+      <details class="more">
+        <summary>Recibir privado</summary>
+        <p class="hint">Muestra este QR a quien te va a pagar.</p>
+        <div id="pQr" class="qr"></div>
+        <span id="pMe" class="mono link"></span>
+      </details>
+    </div>
+  </section>
+
   <div id="msg" class="note" role="status"></div>
   <div id="err" class="note note-err" role="alert"></div>
 
@@ -165,6 +219,7 @@
 <nav class="tabs" aria-label="Modo">
   <button id="tabMerchant" class="tab" type="button" aria-pressed="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 13v7h14v-7"/><path d="M10 20v-4h4v4"/></svg></span><span class="tab-label">Cobrar</span></button>
   <button id="tabCustomer" class="tab" type="button" aria-pressed="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><path d="M6 15h4"/></svg></span><span class="tab-label">Pagar</span></button>
+  <button id="tabPrivate" class="tab" type="button" aria-pressed="false"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></svg></span><span class="tab-label">Privado</span></button>
 </nav>
 
 <!-- Escáner de QR (cámara) -->
@@ -192,5 +247,6 @@
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.16.0/dist/ethers.umd.min.js" integrity="sha384-id0TslbJZjX9r2IGNL8B1MyE0pjkF0h8S+5bc8YV+VE+AQ7N1aOlGKYy+Dy3CD0V" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
 <script src="app.js"></script>
+<script src="private.js"></script>
 </body>
 </html>

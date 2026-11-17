@@ -1,9 +1,21 @@
 # BRAIN STATE (live facts, open items)
 
-Updated 2026-11-15 (D-005, D-006).
+Updated 2026-11-16 (D-032).
 
 ## Phase
-Phase 1 (rails) done; architecture decided (D-005); Phase 0 user actions U1–U3 pending; next: spike S1 (B2).
+Phase 5b test dApp live on the **Fuji L1** (chain 77078): Split Pay, QR scanner, payment alerts, and (D-032) encrypted
+balances. Landing live at https://arepapay.site (GitHub Pages, D-027). Next: merchant FX sale screen + FxLedger on Fuji,
+then B5 (S3 audit council / S4 freeze) and B6 bridge. User actions open: U1–U3, D-028 named tunnel, D-031 bot token,
+phone check of the Privado tab.
+
+## Live (2026-11-16, PROVEN by curl / e2e this session)
+- Fuji L1 node: `~/.avalanche-cli/bin/avalanchego/avalanchego-v1.15.3` with `local/arepapay-fuji` flags; RPC in `config/l1/arepapaybank.fuji.json`.
+- Public MVP: `scripts/mvp/serve-public.sh` (server :8788 + cloudflared quick tunnel); current URL in
+  `backend/onboarding/data/public-url.fuji.txt`; `https://arepapay.site/probar/` follows `config/public/mvp-url.json`.
+  After a reboot: node + `serve-public.sh start` + `publish-url` (the quick-tunnel URL changes).
+- eERC on Fuji (D-032): `config/l1/eerc.fuji.json`; auditor = gas station, key `~/.avalanche-cli/key/arepapay-fuji-auditor.bjj`
+  (0600, testnet). Toolchain: `scripts/eerc/deploy.sh prepare|circuits|fuji` (clone in `~/.cache/arepapay/EncryptedERC`;
+  `/tmp` scratch clones die on reboot). Circuit files in `app/circuits/` are gitignored: re-run `deploy.sh circuits` on a new machine.
 
 ## Verified facts (2026-11-14, BRAIN re-checked the research agent's claims)
 - Live v1 L1: chain 13370, Subnet-EVM v0.8.0, local only (`~/.avalanche-cli/subnets/ArepaPay/genesis.json`), genesis has only

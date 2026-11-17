@@ -47,6 +47,29 @@ The network button shows only on the wrong chain, "Solicitar acceso" only while 
   "¡Pago recibido!" overlay with the amount, a WebAudio beep (unlocked by the merchant's earlier tap) and
   `navigator.vibrate`; once per charge, dismiss with "Listo", the backdrop or Escape.
 
+## Saldo privado: encrypted balances (eERC, D-032)
+Third tab **Privado**. Uses Ava Labs' EncryptedERC (converter mode, `ava-labs/EncryptedERC@8dc98cd`) over the same tUSD.
+1. **Ver mi saldo privado**: the wallet signs a fixed message (the official eERC SDK message); the page derives the
+   BabyJubJub key from it, in memory only. The same wallet always gives the same key.
+2. **Activar saldo privado** (once): registration proof (~1-2 s) + `Registrar.register`.
+3. **Pasar a privado**: approve + `deposit` (the amount is public as it enters).
+4. **Enviar privado**: to a registered address (type it, scan the receiver's QR, or open their `?pto=<address>` link);
+   transfer proof in the page (desktop ~5-8 s, phone slower; the message shows the time) + `transfer`. The amount and both
+   balances are encrypted; **sender and receiver addresses stay public**. The bank's auditor key can read every amount.
+5. **Pasar a saldo normal**: withdraw proof + `withdraw` (the amount is public as it leaves).
+The balance is decrypted from the on-chain PCTs and checked against the ElGamal ciphertext; if they disagree the page
+says so and refuses to send. The tab re-reads the balance every 6 s, so a received payment appears by itself.
+
+Setup (once per machine / network):
+```bash
+bash scripts/eerc/deploy.sh prepare     # clone EncryptedERC@8dc98cd to ~/.cache/arepapay, npm --ignore-scripts, compile
+bash scripts/eerc/deploy.sh circuits    # app/circuits/ (gitignored, ~29 MB), checked against config/l1/eerc-circuits.sha256
+bash scripts/eerc/deploy.sh fuji        # only if config/l1/eerc.fuji.json is missing (idempotent)
+NET=fuji node scripts/eerc/audit-view.mjs   # the bank's view: decrypts every private amount with the auditor key
+```
+`vendor/eerc-lib.js` is built from `scripts/eerc/browser/eerc-lib.src.mjs` (`npm --prefix scripts/eerc/browser run build`);
+the gate checks the committed bundle equals a fresh build and runs its tests (real proofs verified by snarkjs).
+
 ## Phone on the local L1
 The local RPC is `127.0.0.1` inside this machine, so a phone can't reach it. For a LAN test, expose the node RPC and the
 service on the LAN and start the service with `HOST=0.0.0.0 PUBLIC_RPC_URL=http://<lan-ip>:9654/ext/bc/<id>/rpc

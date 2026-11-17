@@ -305,6 +305,70 @@ if (TG_MOCK) await step('telegram: merchant got "Te pagaron" and "Cobrado" alert
   return t.filter((x) => !/^Listo/.test(x)).map((x) => x.slice(0, 48)).join(' | ');
 });
 
+// ---------------------------------------------------------------- encrypted balances (D-032), when the net has eERC
+// alice + merchant unlock (personal_sign -> key) and register (registration proof); alice moves 10 tUSD to private, sends
+// 3 privately to the merchant (transfer proof in the page); the merchant sees 3.00 and moves 1 back to normal (withdraw
+// proof). Chain checks: plain tUSD moved exactly by the deposit/withdraw amounts; the transfer moved no plain tUSD.
+const PROOF_TIMEOUT = 300_000;
+const privBal = (w) => $text(w, 'pBal');
+async function privOpen(w) {
+  const p = w.page;
+  await p.click('#tabPrivate');
+  await p.waitFor(`!document.getElementById('private').classList.contains('hidden')`, 5000);
+  await p.click('#btnPUnlock');
+  await p.waitFor(`!document.getElementById('pRegister').classList.contains('hidden') || !document.getElementById('pOpen').classList.contains('hidden')`, 60000);
+  if (!w.calls.includes('personal_sign')) throw new Error('expected a personal_sign for the key');
+  if (await p.visible('#pRegister')) {
+    await p.click('#btnPRegister');
+    await waitText(w, 'msg', '/Saldo privado activado/', PROOF_TIMEOUT);
+  }
+  await p.waitFor(`!document.getElementById('pOpen').classList.contains('hidden')`, 30000);
+  return `registered; balance ${await privBal(w)}`;
+}
+if (cfg.eerc && process.env.EERC !== '0') {
+  await step('alice: unlock + activate private balance (registration proof)', () => privOpen(alice), [alice]);
+  await step('merchant: unlock + activate private balance', () => privOpen(merchant), [merchant]);
+  await step('alice: move 10 tUSD to private (approve + deposit)', async () => {
+    const before = await usdBalance(alice.address);
+    await alice.page.type('#pDep', '10');
+    await alice.page.click('#btnPDeposit');
+    await waitText(alice, 'msg', '/pasaron a tu saldo privado/', TX_TIMEOUT);
+    await waitText(alice, 'pBal', '/^10\\.00 tUSD/', 30000);
+    const after = await usdBalance(alice.address);
+    if (before - after !== U(10)) throw new Error(`plain tUSD moved ${fmt(before - after)}, want 10`);
+    await shot(alice, 'private-10');
+    return `private ${await privBal(alice)}; plain ${fmt(after)}`;
+  }, [alice]);
+  await step('alice: send 3 tUSD privately to the merchant (transfer proof)', async () => {
+    const [aB, mB] = await Promise.all([usdBalance(alice.address), usdBalance(merchant.address)]);
+    await alice.page.type('#pTo', merchant.address);
+    await alice.page.type('#pAmt', '3');
+    await alice.page.click('#btnPSend');
+    await waitText(alice, 'msg', '/Enviado en privado/', PROOF_TIMEOUT);
+    await waitText(alice, 'pBal', '/^7\\.00 tUSD/', 30000);
+    const [aA, mA] = await Promise.all([usdBalance(alice.address), usdBalance(merchant.address)]);
+    if (aA !== aB || mA !== mB) throw new Error('a private transfer moved plain tUSD');
+    const ms = await alice.page.evaluate('window.__arepapayLastProofMs');
+    await shot(alice, 'private-sent');
+    return `alice private ${await privBal(alice)}; transfer proof ${Math.round(ms)} ms in headless Chrome`;
+  }, [alice]);
+  await step('merchant: private balance shows 3.00 by itself (auto-refresh)', async () => {
+    await waitText(merchant, 'pBal', '/^3\\.00 tUSD/', 30000);
+    await shot(merchant, 'private-received');
+    return await privBal(merchant);
+  }, [merchant]);
+  await step('merchant: move 1 tUSD back to normal (withdraw proof)', async () => {
+    const before = await usdBalance(merchant.address);
+    await merchant.page.type('#pWd', '1');
+    await merchant.page.click('#btnPWithdraw');
+    await waitText(merchant, 'msg', '/volvieron a tu saldo normal/', PROOF_TIMEOUT);
+    await waitText(merchant, 'pBal', '/^2\\.00 tUSD/', 30000);
+    const after = await usdBalance(merchant.address);
+    if (after - before !== U(1)) throw new Error(`plain tUSD grew ${fmt(after - before)}, want 1`);
+    return `private ${await privBal(merchant)}; plain ${fmt(after)}`;
+  }, [merchant]);
+}
+
 const warn = all.filter((w) => w.page).flatMap((w) => w.page.logs.filter((l) => !/favicon/.test(l)).map((l) => `[${w.name}] ${l}`));
 if (warn.length) console.log('browser log (info):\n  ' + warn.slice(0, 10).join('\n  '));
 await finish();

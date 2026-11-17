@@ -61,3 +61,18 @@ Inherited general lessons: master-method KNOWLEDGE §9 (C1–C15).
 - What happened: `pkill -f fuji-split-proxy.mjs; node scripts/l1/fuji-split-proxy.mjs …` in one command line matched the running bash (its command line contains the pattern) and killed the whole command (exit 144).
 - RULE: stop your own processes by PID files (`kill "$(cat x.pid)"`), never `pkill -f` with a pattern that appears in the same command line.
 - Enforced by: `scripts/mvp/serve-public.sh` uses PID files.
+
+### L-011 · 2026-11-16 · BRAIN · tooling · a toolchain in a scratch folder vanished after a reboot
+- What happened: the S2 eERC clone (prepared deps, compiled artifacts, circuit files) lived in a session scratch folder under
+  `/tmp`; after the machine restarted it was gone and `s2-run.sh` pointed at a dead path. Rebuilding cost a clone + install.
+- Root cause: a durable dependency was placed in a per-session temp folder because that was convenient during the spike.
+- RULE: anything a later session or a script needs goes in a durable path (`~/.cache/arepapay/…`) created by a script with a
+  `prepare` step; scratch folders are for one-off outputs only.
+- Enforced by: `scripts/eerc/deploy.sh` (default `EERC_DIR=~/.cache/arepapay/EncryptedERC`, `prepare` mode, pinned commit check).
+
+### L-012 · 2026-11-16 · BRAIN · testing · a test server started without the supervisor's key env
+- What happened: for the D-032 e2e I started a second onboarding server by hand with `AUTO_APPROVE=1` on Fuji but without
+  `ADMIN_KEY_FILE`/`GAS_KEY_FILE`. It started "fine", every access request returned 502, and the e2e run was wasted (3/17).
+- Root cause: the service loaded the approval keys lazily, on the first request; only `serve-public.sh`/`e2e.sh` set them for Fuji.
+- RULE: a service that needs keys to do its job checks them at boot and refuses to start without them.
+- Enforced by: `backend/onboarding/server.mjs` calls `checkSigners()` at boot when `AUTO_APPROVE=1` (exit 2 with the reason).

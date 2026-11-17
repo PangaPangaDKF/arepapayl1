@@ -2,6 +2,37 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-032 · 2026-11-16 · Encrypted balances (eERC converter) on the Fuji L1 + "Privado" tab in the MVP dApp (Claude Opus 5.5, BRAIN lane)
+- What: Ava Labs EncryptedERC@8dc98cd deployed in converter mode over the MVP tUSD on chain 77078 (`config/l1/eerc.fuji.json`,
+  EncryptedERC `0x384f185983Ac8DB53a82Ea06D1C1839a2CfF19BC`, Registrar `0x39c7Ef2a263172c951d4b7bbceB24A7A3e51Ae58`); the
+  gas-station account (bank operations) registered and set as auditor (key `~/.avalanche-cli/key/arepapay-fuji-auditor.bjj`,
+  0600, testnet). dApp tab **Privado** (`app/private.js`): key from a wallet signature (the SDK 1.0.2 message), activate
+  (registration proof), Pasar a privado (deposit), Enviar privado (transfer proof, address / QR / `?pto=` link), Pasar a saldo
+  normal (withdraw proof); balance decrypted from the PCTs and checked against the ElGamal ciphertext; auto-refresh 6 s.
+  Browser crypto `app/vendor/eerc-lib.js` built from `scripts/eerc/browser/eerc-lib.src.mjs` (port of the repo's src/jub,
+  src/poseidon, test helpers; WebCrypto randomness). Circuits served from `app/circuits/` (gitignored, pinned by
+  `config/l1/eerc-circuits.sha256`). Tools: `scripts/eerc/deploy.sh prepare|circuits|local|fuji`, `scripts/eerc/audit-view.mjs`
+  (the bank's view). Gate stage 5. Service: eERC in `/config`, `.wasm` MIME, 1-day cache for circuit files, boot check of
+  approval keys (L-012).
+- Why: mission priority 4 ("privacy that is real, never cosmetic") and PLAN Phase 5b ("eERC register / deposit / private pay");
+  the pitch and landing promise encrypted balances while the public MVP moved plain tUSD. The user accepts slow proofs ("no
+  importa el tiempo"), and a phone run of this tab gives the S2 §8 phone measurement.
+- Honesty: amounts and balances are encrypted; sender/receiver addresses and the amounts entering/leaving are public; the
+  bank's auditor key reads every amount (proven below). The page says this in one line.
+- Tool: master-method M0; `arepapay-eerc` checklist; S2 code as the reference; zkey verification keys checked against the prod
+  verifiers before deploying (142/142 constants match).
+- Alternatives rejected: `@avalabs/eerc-sdk` (React/wagmi/viem hooks; the dApp has no build step); proving on the server (the
+  server would see the user's key: not private); our own trusted setup (the shipped audited circuits match the prod verifiers).
+- Verify: lib test 15/15 incl. registration/transfer/withdraw proofs verified by snarkjs and tampered signals rejected; wallet
+  e2e on Fuji **24/24** through the real UI (register x2, deposit 10, private send 3, receiver auto-refresh 3.00, withdraw 1;
+  plain tUSD moved only on deposit/withdraw; transfer proof 8.6 s in headless Chrome); `audit-view --expect-transfer 300` PASS
+  (auditor reads 3.00, a random key reads 0 of 2 PCTs), `--expect-transfer 301` exits 1; gate V9: a stale bundle turns stage 5
+  red; `bash tests/check.sh` rc=0.
+- Limits: 1.5 MB JS bundle + 15 MB transfer zkey on the first private send (cached a day); phone proof time unmeasured
+  (expected 25-60 s, S2 §7); the read key is derivable by anyone who obtains that signature (the page warns); one auditor key
+  held by one account (S3 splits it).
+- Commit: this commit.
+
 ### D-031 · 2026-11-16 · Merchant payment alerts over Telegram, also with the app closed (Claude Opus 5.5, BRAIN lane)
 - What: `backend/onboarding/telegram.mjs` (bot long-poll + escrow log watcher, started by `server.mjs`), routes `GET /tg/info`, `POST /tg/link` (rate-limited), `GET /tg/message`; app button "Avisos por Telegram" in Cobrar; `scripts/browser/telegram-mock.mjs` + optional e2e steps (`TG_MOCK=…`).
 - Flow: merchant signs a dated message (personal_sign) -> server verifies (<=10 min) -> one-time `t.me/<bot>?start=<token>` -> Start binds that chat. Alerts: every `Authorized` ("Te pagaron X en el cobro #N (van a de b)") and `Captured` ("Cobrado: recibiste net"). `/stop` unlinks. First run starts at the chain head (no old alerts).

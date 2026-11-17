@@ -5,7 +5,7 @@ description: Master skill for ArepaPay v2's BRAIN lane, the lead developer agent
 
 # ArepaPay BRAIN skill (lead developer)
 
-Version 1.0 · 2026-11-14 · D-002 · Agent: `.claude/agents/arepapay-brain.md` · Entry: `START_HERE.md` · Lessons: `references/CHANGELOG.md`.
+Version 1.1 · 2026-11-16 · D-032 · Agent: `.claude/agents/arepapay-brain.md` · Entry: `START_HERE.md` · Lessons: `references/CHANGELOG.md`.
 Adapted from DOGEON `dogeon-brain` 1.0 (D-113). Method and whys: `master-method`.
 
 ## 0. Start here (every session, in order)

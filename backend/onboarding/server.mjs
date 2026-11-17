@@ -9,7 +9,7 @@
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join, normalize, extname } from 'node:path';
-import { NET, REPO, addRequest, approve, loadConfig, normAddress, publicConfig, readStore, roleOf } from './lib.mjs';
+import { NET, REPO, addRequest, approve, checkSigners, loadConfig, normAddress, publicConfig, readStore, roleOf } from './lib.mjs';
 import { startTelegram, createLink, telegramInfo, linkMessage } from './telegram.mjs';
 
 const SINGLE = process.env.SINGLE_ORIGIN === '1';
@@ -17,7 +17,7 @@ const APP_DIR = join(REPO, 'app');
 // If the landing's static export exists, it is served at / and the dApp moves to /app/ (one public origin, D-026).
 const SITE_DIR = process.env.SITE_DIR || join(REPO, 'landing', 'out');
 const HAS_SITE = SINGLE && existsSync(join(SITE_DIR, 'index.html'));
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.md': 'text/plain; charset=utf-8', '.json': 'application/json' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.md': 'text/plain; charset=utf-8', '.json': 'application/json', '.wasm': 'application/wasm' };
 // JSON-RPC methods a dApp + MetaMask need. No admin/debug/personal/txpool; writes only as pre-signed raw txs.
 const RPC_ALLOW = new Set(['eth_chainId', 'net_version', 'eth_blockNumber', 'eth_getBalance', 'eth_getCode', 'eth_call', 'eth_estimateGas',
   'eth_gasPrice', 'eth_maxPriorityFeePerGas', 'eth_feeHistory', 'eth_getTransactionCount', 'eth_getTransactionByHash',
@@ -42,7 +42,9 @@ function serveStatic(res, root, pathname) {
   if (file.startsWith(root) && !existsSync(file) && existsSync(file + '.html')) file += '.html';
   if (file.startsWith(root) && existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
   if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile()) return false;
-  res.writeHead(200, { 'content-type': MIME[extname(file)] || 'application/octet-stream', 'cache-control': 'no-cache',
+  // eERC circuit files (D-032) are big (transfer.zkey 15 MB) and pinned by sha256: let phones keep them for a day.
+  const big = /[\\/]circuits[\\/][a-z]+\.(wasm|zkey|js)$/.test(file);
+  res.writeHead(200, { 'content-type': MIME[extname(file)] || 'application/octet-stream', 'cache-control': big ? 'public, max-age=86400' : 'no-cache',
     'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer' });
   res.end(readFileSync(file));
   return true;
@@ -78,6 +80,13 @@ async function proxyRpc(req, res, body) {
 const PORT = Number(process.env.PORT || 8787);
 const HOST = process.env.HOST || '127.0.0.1';
 const AUTO = process.env.AUTO_APPROVE === '1';
+// L-012: auto-approve without usable keys used to fail on the first request (502) after a silent start. Fail at boot instead.
+if (AUTO) {
+  try { checkSigners(); } catch (e) {
+    console.error(`AUTO_APPROVE=1 but the approval keys are not usable: ${e.message}. Set ADMIN_KEY_FILE and GAS_KEY_FILE (see scripts/mvp/serve-public.sh).`);
+    process.exit(2);
+  }
+}
 const ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:8080,http://127.0.0.1:8080').split(',').map((s) => s.trim());
 
 function send(req, res, code, body) {

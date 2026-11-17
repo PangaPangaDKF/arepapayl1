@@ -17,3 +17,6 @@ broadcast/
 
 # vendored Solidity libs (install: bash scripts/setup-contracts.sh)
 contracts/lib/
+
+# eERC browser circuits (D-032): scripts/eerc/deploy.sh circuits (pinned by config/l1/eerc-circuits.sha256)
+app/circuits/

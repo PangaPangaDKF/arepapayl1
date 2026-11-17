@@ -301,3 +301,10 @@ body:not(.is-connected) .acct-actions { margin-top: 0; }
 /* Telegram alerts (D-031) */
 .tg-box { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gold-line); display: grid; gap: 6px; text-align: center; }
 .tg-box .btn { justify-content: center; }
+
+/* ---------- saldo privado (eERC, D-032) ---------- */
+#private h3 { margin: 0 0 8px; font-size: 15px; font-weight: 800; color: var(--navy-dark); }
+#private .row-input + .row-input { margin-top: 10px; }
+.p-balance { text-align: center; margin: 6px 0 16px; }
+.p-block { padding: 14px 0; border-top: 1.5px solid var(--gold-line); }
+#pMe { display: block; text-align: center; word-break: break-all; }

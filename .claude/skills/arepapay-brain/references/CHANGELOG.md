@@ -1,5 +1,12 @@
 # arepapay-brain changelog and lessons (newest first)
 
+## 1.1 · 2026-11-16 · D-032 — encrypted balances in the MVP
+- Lesson (L-011): durable toolchains go in `~/.cache/arepapay` via a script with a `prepare` step, never in a scratch `/tmp` folder.
+- Lesson (L-012): services check their keys at boot; start Fuji test servers with the same env as `serve-public.sh`.
+- Lesson: before deploying third-party verifiers, export the zkey verification keys and match every constant against the
+  verifier source (142/142 for eERC); cheap, and it is the only proof the shipped circuits fit the contracts.
+- STATE gained a "Live" section (what runs where, how to recover after a reboot).
+
 ## 1.0 · 2026-11-14 · D-002 — skill created
 - Lesson: another vendor's "done" is a claim. DeepSeek's "encrypted L1 SDK / KYC / bank" commit was verified against code and was
   mostly false (C14). Verify every inherited feature before planning on it.

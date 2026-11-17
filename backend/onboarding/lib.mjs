@@ -43,7 +43,26 @@ export function publicConfig(net) {
     splitPayEscrow: c.mvp.splitPayEscrow,
     feeBps: c.mvp.feeBps,
     deployBlock: c.mvp.deployBlock,
+    eerc: eercPublic(net, c),
     testnet: true,
+  };
+}
+
+/** Encrypted balances (D-032): the generated config/l1/eerc.<net>.json, or null when not deployed on that net. */
+function eercPublic(net, c) {
+  const p = join(REPO, 'config', 'l1', `eerc.${net}.json`);
+  if (!existsSync(p)) return null;
+  const e = readJson(p);
+  if (Number(e.chainId) !== Number(c.chain.chainId) || e.token.toLowerCase() !== c.mvp.testUsd.toLowerCase()) return null;
+  return {
+    registrar: e.contracts.registrar,
+    encryptedERC: e.contracts.encryptedERC,
+    token: e.token,
+    tokenDecimals: e.tokenDecimals,
+    eercDecimals: e.eercDecimals,
+    auditor: e.auditor,
+    deployBlock: e.deployBlock,
+    circuits: 'circuits',   // relative to the dApp page (app/circuits, scripts/eerc/deploy.sh circuits)
   };
 }
 
@@ -126,6 +145,8 @@ function loadAccount(envName, cliKeyName, expected) {
   return acct;
 }
 let signers;
+/** Loads (and checks) the admin + gas-station keys now; throws with the reason. Used at boot when AUTO_APPROVE=1 (L-012). */
+export const checkSigners = () => { getSigners(); return true; };
 function getSigners() {
   if (signers) return signers;
   const { c, chain, transport } = chainCtx();
