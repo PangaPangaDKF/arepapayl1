@@ -229,17 +229,6 @@ section { padding-block: clamp(2.5rem, 7vw, 4.5rem); }
 }
 .hero .disclaimer { margin-top: 1.2rem; }
 
-/* ---- roadmap ---- */
-.phases { display: grid; gap: 0.8rem; }
-.phase {
-  display: grid; grid-template-columns: auto 1fr auto; gap: 0.9rem; align-items: center;
-  background: var(--card); border: 3px solid var(--gold-border); border-radius: 12px;
-  padding: 0.8rem 1rem; box-shadow: var(--shadow-sm);
-}
-.phase .ph { font-weight: 900; color: var(--navy); font-size: 0.8rem; letter-spacing: 0.08em; white-space: nowrap; }
-.phase b { color: var(--brown-dark); }
-@media (max-width: 560px) { .phase { grid-template-columns: 1fr; } .phase .status { justify-self: start; } }
-
 /* ---- FAQ ---- */
 .faq details {
   background: var(--card); border: 3px solid var(--gold-border); border-radius: 12px;
@@ -254,55 +243,9 @@ section { padding-block: clamp(2.5rem, 7vw, 4.5rem); }
 /* ---- announcement hero: the H1 is a full sentence, keep it readable ---- */
 .hero h1 { font-size: clamp(1.8rem, 4.4vw, 2.9rem); }
 
-/* ---- solution lines (each one a status-labeled feature, T6) ---- */
-.lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr)); }
-.lines li { background: var(--card); border: 3px solid var(--gold-border); border-left-width: 10px;
-  border-radius: 12px; padding: 1rem 1.2rem; box-shadow: var(--shadow-sm); }
-.lines li[data-status="testnet"] { border-left-color: var(--blue-info); }
-.lines li[data-status="in-development"] { border-left-color: var(--amber); }
-.lines li[data-status="planned"] { border-left-color: var(--brown-light); }
-.lines h3 { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; font-size: 1.02rem; }
-.lines p { margin: 0; color: var(--brown-dark); }
-
 /* ---- small print under a section ---- */
 .note { margin-top: 1.4rem; font-size: var(--fs-sm); color: var(--brown-mid); max-width: 75ch;
   border-left: 4px solid var(--gold-border); padding-left: 0.8rem; }
-
-/* ---- tables (wrapped so they scroll instead of overflowing at 360 px) ---- */
-.table-wrap { overflow-x: auto; border: 4px solid var(--gold-border); border-radius: 14px; box-shadow: var(--shadow); background: var(--card); }
-.tbl { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 0.97rem; }
-.tbl th, .tbl td { text-align: left; vertical-align: top; padding: 0.7rem 0.9rem; border-bottom: 2px solid color-mix(in srgb, var(--gold) 55%, var(--card)); }
-.tbl th { background: var(--navy); color: var(--cream); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
-.tbl td:first-child { font-weight: 800; color: var(--navy); }
-.tbl td { color: var(--brown-dark); }
-.tbl tr:last-child td { border-bottom: 0; }
-/* phones: each row becomes a small stacked block instead of a sideways-scrolling table */
-@media (max-width: 640px) {
-  .tbl { min-width: 0; }
-  .tbl thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
-  .tbl tr, .tbl td { display: block; }
-  .tbl tr { border-bottom: 2px solid var(--gold-border); padding: 0.4rem 0; }
-  .tbl tr:last-child { border-bottom: 0; }
-  .tbl td { border-bottom: 0; padding: 0.25rem 0.9rem; }
-  .tbl td[data-label]::before { content: attr(data-label); display: block; font-size: 0.7rem; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.08em; color: var(--brown-light); }
-}
-.supuesto { display: inline-block; font-size: 0.68rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--red-dark); border: 2px dashed var(--red); border-radius: 6px; padding: 0 0.35rem; white-space: nowrap; }
-
-/* ---- stages A/B/C ---- */
-.stages { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
-.stage { background: var(--card); border: 4px solid var(--gold-border); border-radius: 14px; box-shadow: var(--shadow); padding: 1.2rem 1.3rem; }
-.stage[data-status="testnet"] { border-color: var(--blue-info); box-shadow: 6px 6px 0 var(--navy); }
-.stage h3 { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; }
-.stage p { margin: 0; color: var(--brown-dark); }
-.stage p b { color: var(--navy); }
-h3.sub { margin-top: 2.2rem; }
-.risks { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.5rem; max-width: 80ch; }
-.risks li { color: var(--brown-dark); }
-.risks b { color: var(--navy); }
-.asks { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; }
 
 /* ---- alt band ---- */
 .band { background: var(--navy); color: var(--cream); }
@@ -312,9 +255,6 @@ h3.sub { margin-top: 2.2rem; }
 .band .card p { color: color-mix(in srgb, var(--cream) 80%, var(--navy)); }
 .band .eyebrow { color: var(--gold); }
 .band .note { color: color-mix(in srgb, var(--cream) 78%, var(--navy)); border-left-color: var(--gold); }
-.band .card li { color: color-mix(in srgb, var(--cream) 85%, var(--navy)); }
-.band .tbl td { color: var(--brown-dark); }
-.band .supuesto { background: var(--card); }
 .band .status.testnet { color: #8cc4ff; }
 .band .status.planned { color: var(--gold); }
 .band .step .n { background: var(--cream); color: var(--navy); box-shadow: 4px 4px 0 var(--gold-border); }

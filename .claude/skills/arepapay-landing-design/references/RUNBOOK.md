@@ -48,4 +48,7 @@ npm --prefix landing run build                                      # rebuild at
 ```
 BRAIN publishes `mvp-url.json` at the site root: `{"url":"https://<tunnel>","updated":"<iso>"}`. `probar/` reads it at runtime
 and redirects to `url + '/?net=fuji'`. Test the fallback by opening `out/probar/` with no `mvp-url.json` present.
-Tall sections: `node scripts/landing-probe.mjs --shot '#economia' --out shot.png --width 1280 --height 1400`.
+Tall sections: `node scripts/landing-probe.mjs --shot '#probar' --out shot.png --width 1280 --height 1400`.
+Full page at phone width (D-036): `node scripts/landing-probe.mjs --shot body --out p.png --width 390 --height 2900`. Widths below
+500 px render through an iframe (the PNG is 500 px wide with a grey strip on the right); a narrower window crops instead.
+Word budget: `landing-check.mjs` fails `index.html` above 250 visible words (`LANDING_MAX_WORDS=N` to test, V9).

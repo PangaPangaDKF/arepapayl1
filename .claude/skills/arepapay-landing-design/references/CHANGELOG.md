@@ -1,5 +1,25 @@
 # arepapay-landing-design changelog (newest first)
 
+## 1.7 · 2026-11-17 · D-036 — short page (L8): 2,150 → 250 visible words, word budget in the gate
+- User (2026-11-16): "the landing page should be more simple and less text". `landing/app/page.js` is now hero (one line, CTA,
+  disclaimer), 3 status-labeled points (Cobra con QR, Paga a un comercio de la lista with the D-034 store types and 0,5 %,
+  Saldo privado), one privacy line (who-pays-whom and in/out visible; one bank account holds the audit key), Cómo probar
+  (3 steps), 3 FAQ, footer. Cut: problema, solución ×6, comercios como casas de cambio, reservas, privacy table, economía,
+  plan A/B/C + riesgos, pedimos, 3 FAQ. Their truth sources stay in `docs/PITCH.md` / `docs/ECONOMICS.md`; no "Más detalles"
+  page (the user asked for less, and nothing left on the page depends on the cut text).
+- `scripts/landing-check.mjs` rule L8: the main page fails above 250 visible words (`LANDING_MAX_WORDS` overrides). Dead CSS
+  for the removed sections (lines, tables, stages, risks, asks, supuesto, phases) deleted; metadata description no longer says
+  "operada por un banco" in the present tense.
+- Lesson: my first short draft was 300 words, and it felt short. The new gate rule failed it on its first run (that was the V9
+  proof). A "short page" target needs a counter, because the writer's sense of length is not a measurement. Count the badges,
+  nav and footer too: the reader sees them.
+- Lesson: `landing-probe.mjs --shot … --width 390` looked clipped on the right while the overflow probe said clean. Chrome
+  lays a window narrower than ~500 px out wider and crops it, so the shot lied, not the page. `--shot` now renders widths
+  below 500 px through an iframe (same trick as the overflow probe). Trust the iframe probe; read phone shots only from it.
+- Lesson: cutting copy can create falsehood by context. Before deleting a section, check whether a sentence that stays leans on
+  it. Here, "Solo pagan las billeteras aprobadas" needed no bank context, but "operada por un banco" in the old meta description
+  was only honest next to the Planned sections, so it went too.
+
 ## 1.6 · 2026-11-16 · D-033 — privacy copy flipped to live eERC in the testnet MVP (L7)
 - `landing/app/page.js`: encrypted balances (eERC) were live in the public testnet MVP (D-032, e2e 24/24 LIVE, audit-view PASS),
   but five places still said "todavía no está en el MVP público" / "todavía no hay cifrado". Flipped the #solucion "Saldos y

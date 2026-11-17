@@ -1,5 +1,20 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-17 · LANDING · Short landing page (D-036, L8)
+- Done: `landing/app/page.js` cut from 11 sections / 2,150 visible words to hero, 3 status-labeled points, one privacy line,
+  Cómo probar (3 steps), 3 FAQ and footer: 250 visible words. New gate rule in `scripts/landing-check.mjs` (fails above 250);
+  `scripts/landing-probe.mjs --shot` renders phone widths through an iframe. Skill v1.7, CHANGELOG, STATE, RUNBOOK, D-036.
+- Verified: build rc 0; landing-check rc 0 (6 features labeled, disclaimer 2x, 250 words); landing-probe rc 0 (390/360 clean);
+  `bash tests/check.sh` ALL CHECKS PASSED; 1280 px and 390 px full-page renders read.
+- Next for BRAIN: rebuild + deploy the landing (arepapay.site). Any future landing copy must fit the 250-word budget, so a new
+  feature line means cutting one. LESSONS entry (please add): What happened: a 390 px `--shot` looked clipped while the overflow
+  probe said clean. Root cause: headless Chrome lays out windows under ~500 px wider and crops them. RULE: read phone renders only
+  through an iframe. Enforced by: `landing-probe.mjs --shot` switches to an iframe below 500 px.
+- Needs the user: nothing new. Optional: say if the cut pitch (reservas, economía, plan, pedimos) should come back as a separate
+  page for banks; it is not on the site now.
+- Retro: shipped a 250-word page with gate proof; the word rule caught two over-budget drafts; read STATE §2 "Current" first next
+  time; nothing waits on the user; improvement = word-budget gate + honest phone shots.
+
 ## 2026-11-16 · BRAIN · Store contacts + cleaner app (D-034)
 - Shipped + proof: MerchantPay (Fuji), store directory + demo stores, Mi negocio / Comercios UI, direct-payment alerts; forge 117/117; e2e 29/29; review subagent found L-1 (stranded funds when paying the contract/escrow/token), fixed test-first.
 - Broke + rule: nothing broke; the review caught a real low before deploy, so money contracts keep getting an unanchored review before any deploy.

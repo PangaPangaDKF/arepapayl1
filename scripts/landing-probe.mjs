@@ -40,8 +40,14 @@ if (shot) {
   const sel = JSON.stringify(shot);
   writeFileSync(join(tmp, 'shot.html'), page.replace('</body>', `<script>addEventListener('load',()=>{const el=document.querySelector(${sel});if(!el)return;` +
     `const y=el.getBoundingClientRect().top+scrollY-40;document.body.style.marginTop=(-y)+'px';const h=document.querySelector('.site-header');if(h)h.style.position='static';})</script></body>`));
-  run([`--window-size=${w},${h}`, '--virtual-time-budget=5000', `--screenshot=${out}`], join(tmp, 'shot.html'));
-  console.log(`screenshot of ${shot} at ${w}px -> ${out}`);
+  // Below ~500 px Chrome lays the window out wider and crops it (D-036 lesson): shoot a phone width through an iframe.
+  if (Number(w) < 500) {
+    writeFileSync(join(tmp, 'shotframe.html'), `<body style="margin:0;background:#888"><iframe src="shot.html" width="${w}" height="${h}" style="border:0;display:block"></iframe></body>`);
+    run([`--window-size=${Math.max(Number(w), 500)},${h}`, '--virtual-time-budget=5000', `--screenshot=${out}`], join(tmp, 'shotframe.html'));
+  } else {
+    run([`--window-size=${w},${h}`, '--virtual-time-budget=5000', `--screenshot=${out}`], join(tmp, 'shot.html'));
+  }
+  console.log(`screenshot of ${shot} at ${w}px${Number(w) < 500 ? ' (iframe)' : ''} -> ${out}`);
   process.exit(0);
 }
 

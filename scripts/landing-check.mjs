@@ -8,6 +8,7 @@
 //   T7  the testnet disclaimer appears in both the hero and the footer (>= 2 times in the rendered DOM)
 //   T8/R4  no forbidden yield/price words; no emoji; only an allow-listed set of external hosts
 //   T3  every local asset the page references exists in out/, and every relative link (e.g. "probar/") resolves (D-024)
+//   L8  the main content page stays short: <= MAX_WORDS visible words (user, D-036). LANDING_MAX_WORDS overrides (V9 test).
 // Utility pages (Next's 404, the probar/ redirect page) are exempt from the >=5-features rule; probar/ still needs the disclaimer.
 // Next.js inlines the page text a second time inside <script>self.__next_f...</script> (the RSC payload);
 // all text-level checks run on the DOM with those scripts stripped, so a duplicate can't mask a missing one.
@@ -46,6 +47,11 @@ const ALLOWED_HOSTS = new Set([
 try { if (process.env.NEXT_PUBLIC_SITE_URL) ALLOWED_HOSTS.add(new URL(process.env.NEXT_PUBLIC_SITE_URL).hostname); } catch {}
 const STATUSES = new Set(['live', 'testnet', 'in-development', 'planned']);
 const DISCLAIMER = 'Red de pruebas. Sin dinero real. No es asesoría financiera.';
+const MAX_WORDS = Number(process.env.LANDING_MAX_WORDS || 250); // D-036: "more simple and less text"
+// visible words = body text without scripts, styles and <head>; a word is any token with a letter or digit
+const visibleWords = (html) => html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')
+  .replace(/<head[\s\S]*?<\/head>/i, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/gi, ' ')
+  .split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 
 // allow-list of on-chain values that MAY appear: whatever config/ actually contains
 const configText = walk(configDir, (p) => /\.(json|js|mjs|ts|env|txt)$/.test(p)).map((p) => readFileSync(p, 'utf8')).join('\n');
@@ -98,6 +104,11 @@ for (const file of files) {
     // T7 — disclaimer in hero AND footer
     const disc = dom.split(DISCLAIMER).length - 1;
     disc >= 2 ? ok(tag(`disclaimer present ${disc}x (hero + footer)`)) : bad(tag(`disclaimer must appear in hero and footer; found ${disc} (T7)`));
+
+    // L8 — short page (D-036)
+    const words = visibleWords(raw);
+    words <= MAX_WORDS ? ok(tag(`${words} visible words (<= ${MAX_WORDS})`))
+      : bad(tag(`${words} visible words; the page must stay <= ${MAX_WORDS} (user: "more simple and less text", D-036)`));
   } else if (isProbar) {
     dom.includes(DISCLAIMER) ? ok(tag('disclaimer present (utility page)')) : bad(tag('probar/ page must show the disclaimer (T7)'));
     /trycloudflare\.com|ngrok|https?:\/\/(?!(?:www\.)?w3\.org)[a-z0-9.-]+/i.test(raw.replace(/<!--[\s\S]*?-->/g, ''))

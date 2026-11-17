@@ -2,6 +2,26 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-036 · 2026-11-17 · LANDING: short page, 2,150 → 250 visible words, word budget in the gate (L8) (Claude Opus 5.5, LANDING lane run by a BRAIN subagent)
+- What: `landing/app/page.js` rebuilt as hero (H1 "Pagos con QR para micro y pequeños comercios", one line, "Probar el MVP",
+  disclaimer), 3 Red-de-pruebas points (Cobra con QR; Paga a un comercio de la lista, with the D-034 store types and 0,5 %;
+  Saldo privado), one privacy line, Cómo probar (3 steps), 3 FAQ (dinero real, token, enlace), footer (disclaimer, X @ArepaPay).
+  Cut: problema, 6 solution lines, comercios como casas de cambio, reservas, privacy table, economía, plan A/B/C + riesgos,
+  pedimos, 3 FAQ. Dead CSS removed; meta description no longer says "operada por un banco". `scripts/landing-check.mjs` fails
+  the main page above 250 visible words; `scripts/landing-probe.mjs --shot` renders widths < 500 px through an iframe.
+- Why: user (2026-11-16): "the landing page should be more simple and less text" (board L8, target ≤ 250 words).
+- Truth kept: every remaining feature carries a T6 label (6 labeled, all testnet; hero + footer disclaimer, T7). The privacy line
+  keeps the D-032/D-033 honesty: who pays whom and what enters/leaves Privado is visible; in the test one bank account holds the
+  audit key and can read amounts. FAQ keeps "no token" (ARPB is gas only) and real money as Planned (R1). Sources: `app/README.md`
+  (Use; Stores as payment contacts; Saldo privado), `config/l1/mvp.fuji.json` feeBps 50, D-032, D-034.
+- Alternatives rejected: a "Más detalles" page for the cut pitch (the user asked for less; the pitch lives in `docs/PITCH.md`
+  and `docs/ECONOMICS.md`, and no remaining sentence depends on it); keeping a Planned roadmap strip (adds words, the FAQ already
+  states real money is planned); dropping the privacy caveat to save words (would overstate privacy, T7).
+- Verify: build rc 0; `node scripts/landing-check.mjs` rc 0 (250 visible words, 6 features labeled, disclaimer 2x); the word rule
+  failed first at 300 and 258 words (V9); `node scripts/landing-probe.mjs` rc 0 (390/360 clean); `bash tests/check.sh` ALL CHECKS
+  PASSED; full-page 1280 px and 390 px (iframe) renders read.
+- Commit: this commit (landing-lane + shared-doc paths only; BRAIN deploys).
+
 ### D-033 · 2026-11-16 · LANDING: privacy copy flipped to live eERC in the testnet MVP (L7) (Claude Opus 4.8, LANDING lane)
 - What: `landing/app/page.js` — encrypted balances were out of date. The #solucion "Saldos y montos cifrados" line went from
   `in-development` ("todavía no está en el MVP público") to `testnet` ("Red de pruebas · MVP") and was rewritten; the #privacidad

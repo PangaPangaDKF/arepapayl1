@@ -1,6 +1,11 @@
 # Landing STATE (live facts, page map, open tasks)
 
-Updated 2026-11-16 (D-033, LANDING). LANDING owns this file.
+Updated 2026-11-17 (D-036, LANDING). LANDING owns this file.
+
+**D-036 (2026-11-17, L8): the page is now short** (user: "more simple and less text"). 2,150 → 250 visible words (PROVEN by the gate, 2026-11-17).
+Sections: header, hero, 3 points + privacy line, Cómo probar (3 steps), 3 FAQ, footer. The long pitch (problema, reservas,
+comercios como casas de cambio, privacy table, economía, plan A/B/C, riesgos, pedimos) was cut from the page; its truth sources
+stay in `docs/PITCH.md`, `docs/ECONOMICS.md`, `docs/features/MERCHANT_FX.md`. The §2 table below is the D-024 map, kept as history.
 
 **D-033 (2026-11-16, L7): encrypted balances (eERC) are now LIVE in the public testnet MVP** (BRAIN's D-032: Privado tab, wallet
 e2e 24/24 LIVE, audit-view PASS). The #solucion "Saldos y montos cifrados" line is now `testnet`; #privacidad, Stage B and the FAQ
@@ -13,7 +18,19 @@ Hosting: GitHub Pages under a sub-path (`https://pangapangadkf.github.io/arepapa
 `NEXT_BASE_PATH=/arepapay-site`; the canonical/OG domain stays `arepapay.site`. BRAIN deploys and publishes `mvp-url.json` next
 to the site. Pre-launch cleanup still open (§4): cleaned transparent logo, crisp wordmark, real 1200×630 OG image, favicon.
 
-## 2. Page map (D-024; truth source per section)
+## 2. Page map
+### Current (D-036, 2026-11-17)
+| Section (#id) | Content | Truth source | data-status |
+|---|---|---|---|
+| Header | logo, 2 anchors (Cómo probar, Preguntas) | — | — |
+| Hero | H1 "Pagos con QR para micro y pequeños comercios", one lead line (red privada de Avalanche, solo billeteras con acceso aprobado), CTA "Probar el MVP" → `probar/`, disclaimer | txAllowList (D-024), BRAIN | testnet |
+| #que | 3 cards: Cobra con QR (Split Pay), Paga a un comercio de la lista (store types, 0,5 %), Saldo privado; privacy line (who-pays-whom + in/out public; one bank account holds the audit key) | app/README.md D-034/D-032, config/l1/mvp.fuji.json feeBps 50 | testnet ×4 |
+| #probar | 3 steps (MetaMask, add network, request access → test dollars), CTA | app/README.md "Use", onboarding approve = 50 tUSD | testnet |
+| #faq | 3: dinero real (no; planned later with caps + audit), token (no; ARPB gas only), enlace no abre (team PC) | charter R1, D-024 | — |
+| Footer | brand, tagline, disclaimer, X @ArepaPay | T7/T8 | — |
+| `probar/` | unchanged utility redirect | D-024 | (utility) |
+
+### D-024 map (superseded by D-036, history)
 | Section (#id) | Content | Truth source | data-status |
 |---|---|---|---|
 | Header | logo, 5 anchors (Solución, Probar, Economía, Plan, FAQ) | — | — |
@@ -78,7 +95,9 @@ Removed in D-024: Recompensas (raffles/WiFi, D-014), old "Cómo funciona", featu
   (Bs→USDT via a trusted local merchant, rewards from fees) is a Planned/In-dev truth source only via `docs/PLAN.md`, not their words.
 
 ## 4. Open tasks
-L1–L7 done (L4/L5/L6 in D-024; L7 = eERC-live privacy copy in D-033). Remaining:
+L1–L8 done (L4/L5/L6 in D-024; L7 = eERC-live privacy copy in D-033; L8 = short page in D-036). Remaining:
+- **Keep it short (D-036):** new copy must keep the main page ≤ 250 visible words; `landing-check.mjs` enforces it (rule L8, D-036).
+  Label flips (FxLedger, bridge, multisigs) now need a line only if the user asks for that feature on the page.
 - **Pre-launch cleanup (LANDING):** cleaned transparent logo + crisp wordmark; real 1200×630 OG image; `favicon.ico`.
 - **BRAIN:** publish `mvp-url.json` (`{"url":"https://…","updated":"…"}`) at the site root next to `index.html` on every tunnel
   restart; build Pages with `NEXT_BASE_PATH=/arepapay-site`.

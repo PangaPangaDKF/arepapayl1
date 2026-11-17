@@ -5,7 +5,7 @@ description: Handoff skill for ArepaPay v2's landing page (landing/index.html) a
 
 # ArepaPay landing skill
 
-Version 1.6 · 2026-11-16 · D-033 (was 1.5, D-024) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
+Version 1.7 · 2026-11-17 · D-036 (was 1.6, D-033) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
 DOGEON `dogeon-landing-design` 2.1 and master-method §4.6/§6.4. v0 built; gates `scripts/landing-{check,probe}.mjs` implemented and
 green; see §7 for the static-export playbook (build, preview, gate internals).
 
@@ -74,7 +74,8 @@ bash tests/check.sh                 # project suite
 `landing-check.mjs` must fail on: an address or chain id not present in `config/`, external hosts outside an allow-list
 (fonts.googleapis.com, fonts.gstatic.com), missing assets, emoji, a feature section without a status label, forbidden words
 (`garantizado`, `guaranteed`, `rendimiento`, `APY`, `interés`, `gana dinero`, `earn`), and the missing disclaimer in hero or footer.
-Make it fail once on purpose before trusting it (V9). Also view a 1280 px render of what you changed.
+It also fails when the main page passes **250 visible words** (rule L8, user D-036: "more simple and less text";
+`LANDING_MAX_WORDS` overrides it for the V9 test). Make it fail once on purpose before trusting it (V9). Also view a 1280 px render of what you changed.
 
 ## 5a. Learn and remember (master-method §5.7, D-023)
 - **Recall first.** Session start = STATE + the newest CHANGELOG Lessons + the newest `docs/LESSONS.md` entries that touch the
