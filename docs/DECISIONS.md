@@ -2,6 +2,21 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-037 · 2026-11-17 · Hosting option A: one-command start, logon autostart, fixed app.arepapay.site steps (Claude Opus 5.5, BRAIN lane)
+- What: `scripts/arepapay.sh up|status|down|logs|fixed-address|install-autostart|remove-autostart` (idempotent; loads nvm so
+  the service always runs on the same Node; lock against double runs; publishes the /probar/ pointer only when the address
+  changed); `docs/HOSTING.md` (where everything runs, everyday commands, the one-time Cloudflare steps with the 5 DNS records
+  that must survive the move, option B for later). `serve-public.sh publish-url` now pushes only the pointer (L-013).
+- Why: user: "option a but i want a way to start without asking again and losing tokens to start the chain getting context".
+  Options presented: A (this PC + Cloudflare named tunnel, free), B (VPS, ≈ €8-20/month), C (managed L1); user chose A.
+- Limits: the PC must stay on (one validator); installing the Windows Startup entry was refused by this session's safety
+  check (it changes what runs at every logon), so the user runs `bash scripts/arepapay.sh install-autostart` once; the fixed
+  address needs the user's Cloudflare account, nameserver change at Spaceship and `cloudflared tunnel login` (D-028).
+- Verify: `up` from a clean environment (`env -i`) → HTTP 200 when already running; cold start (stop → up) below; pointer
+  publishing tested on a throwaway bare remote (one commit, only `config/public/mvp-url.json`, planted local commit not pushed,
+  second run no-op); gate rc=0.
+- Commit: this commit.
+
 ### D-036 · 2026-11-17 · LANDING: short page, 2,150 → 250 visible words, word budget in the gate (L8) (Claude Opus 5.5, LANDING lane run by a BRAIN subagent)
 - What: `landing/app/page.js` rebuilt as hero (H1 "Pagos con QR para micro y pequeños comercios", one line, "Probar el MVP",
   disclaimer), 3 Red-de-pruebas points (Cobra con QR; Paga a un comercio de la lista, with the D-034 store types and 0,5 %;

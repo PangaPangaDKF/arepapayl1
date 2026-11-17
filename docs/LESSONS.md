@@ -76,3 +76,27 @@ Inherited general lessons: master-method KNOWLEDGE §9 (C1–C15).
 - Root cause: the service loaded the approval keys lazily, on the first request; only `serve-public.sh`/`e2e.sh` set them for Fuji.
 - RULE: a service that needs keys to do its job checks them at boot and refuses to start without them.
 - Enforced by: `backend/onboarding/server.mjs` calls `checkSigners()` at boot when `AUTO_APPROVE=1` (exit 2 with the reason).
+
+### L-013 · 2026-11-17 · BRAIN · deploy · an unattended script pushed local HEAD
+- What happened: `serve-public.sh publish-url` committed the /probar/ pointer and ran `git push origin HEAD`. Wiring it into
+  the logon autostart (D-037) would have published every unpushed local commit with no review or gate — at that moment
+  LANDING's D-036 commit with a false FAQ line ("la página te avisa").
+- Root cause: a helper written for a supervised session (push = "my commits are gated") was reused unattended.
+- RULE: unattended jobs never push a branch; they push exactly the one artifact they own, built on `origin/main`, and touch
+  no working-tree file.
+- Enforced by: `publish_url` builds one commit with a temporary index on top of `origin/main` and pushes `<commit>:main`;
+  tested against a throwaway bare remote with a planted unpushed commit (stays local; only `config/public/mvp-url.json` changes).
+
+### L-014 · 2026-11-17 · LANDING (recorded by BRAIN) · truth · a copy line described code that did not do it
+- What happened: the D-036 FAQ said "Si está apagada, la página te avisa", but `/probar/` only warned when the pointer file
+  failed; with the PC off it redirected to a dead tunnel (browser error).
+- Root cause: copy about behaviour was written from intent, not from the code's failure path.
+- RULE: a sentence that describes what the product does is a claim about code: test its failure path before publishing (T1).
+- Enforced by: `/probar/` now checks `/health` before redirecting; V9 run (dead pointer → "Entorno de prueba apagado",
+  old page → chrome-error) recorded in D-036; BRAIN reviews copy against code before every landing deploy.
+
+### L-015 · 2026-11-17 · LANDING (recorded by BRAIN) · tooling · phone screenshots were cropped
+- What happened: a 390 px `--shot` looked clipped while the overflow probe said clean.
+- Root cause: headless Chrome lays out windows narrower than ~500 px wider and crops the capture.
+- RULE: read phone-width renders only through an iframe.
+- Enforced by: `scripts/landing-probe.mjs --shot` switches to an iframe below 500 px (D-036).

@@ -3,8 +3,8 @@
 # behind a cloudflared quick tunnel (HTTPS, no account). A supervisor loop restarts either one if it dies and writes the
 # current public URL to backend/onboarding/data/public-url.fuji.txt (gitignored; quick-tunnel URLs change on restart).
 #   scripts/mvp/serve-public.sh start|stop|status|url|publish-url|setup-named
-#   start also boots the Fuji L1 node if its RPC is down. publish-url writes config/public/mvp-url.json (read by
-#   https://arepapay.site/probar/) and, if the repo has an 'origin' remote, commits that one file and pushes (Pages redeploys).
+#   start also boots the Fuji L1 node if its RPC is down. publish-url pushes ONE commit that changes only
+#   config/public/mvp-url.json (read by https://arepapay.site/probar/) on top of origin/main (L-013: never pushes local HEAD).
 # TESTNET ONLY. AUTO_APPROVE=1: anyone who asks is allowlisted (stand-in for bank KYC during the public test).
 set -uo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -56,12 +56,26 @@ PY
 }
 publish_url() {
   local u; u="$(cat "$URLF" 2>/dev/null)"; [ -n "$u" ] || { echo "no public URL yet"; return 1; }
-  local f="$REPO/config/public/mvp-url.json"; mkdir -p "$(dirname "$f")"
+  local f; f="$(mktemp)"   # temp copy: the working tree stays untouched (L-013)
   printf '{\n  "_note": "Pointer read by https://arepapay.site/probar/. Updated by scripts/mvp/serve-public.sh publish-url when the test tunnel changes. TESTNET ONLY.",\n  "url": "%s/app",\n  "network": "%s",\n  "updated": "%s"\n}\n' "$u" "$NET" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >"$f"
   echo "pointer -> $u/app"
-  if git -C "$REPO" remote get-url origin >/dev/null 2>&1 && ! git -C "$REPO" diff --quiet -- config/public/mvp-url.json; then
-    git -C "$REPO" commit -q -m "chore(site): MVP test URL -> $u" -- config/public/mvp-url.json && git -C "$REPO" push -q origin HEAD && echo "pushed; Pages redeploys in ~1 min"
+  git -C "$REPO" remote get-url origin >/dev/null 2>&1 || { rm -f "$f"; return 0; }
+  # L-013: push ONLY the pointer, as one commit on top of origin/main. Never `git push HEAD` here: this runs unattended
+  # (autostart, D-037) and HEAD may hold local commits nobody reviewed or gated yet. Built with a temporary index, so the
+  # working tree, the real index and local branches are untouched; the next normal push rebases over it (same content).
+  local msg="chore(site): MVP test URL -> $u" tmpidx blob tree c
+  git -C "$REPO" fetch -q origin main || { echo "fetch failed; pointer not published"; return 1; }
+  if [ "$(git -C "$REPO" show origin/main:config/public/mvp-url.json 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin)["url"])' 2>/dev/null)" = "$u/app" ]; then
+    echo "origin already points at $u/app"; rm -f "$f"; return 0
   fi
+  tmpidx="$(mktemp)"; rm -f "$tmpidx"
+  blob="$(git -C "$REPO" hash-object -w "$f")" \
+    && GIT_INDEX_FILE="$tmpidx" git -C "$REPO" read-tree origin/main \
+    && GIT_INDEX_FILE="$tmpidx" git -C "$REPO" update-index --add --cacheinfo "100644,$blob,config/public/mvp-url.json" \
+    && tree="$(GIT_INDEX_FILE="$tmpidx" git -C "$REPO" write-tree)" \
+    && c="$(git -C "$REPO" commit-tree "$tree" -p origin/main -m "$msg")" \
+    && git -C "$REPO" push -q origin "$c:refs/heads/main" && echo "pushed pointer only ($c); Pages redeploys in ~1 min"
+  local rc=$?; rm -f "$tmpidx" "$f"; return $rc
 }
 
 case "${1:-status}" in

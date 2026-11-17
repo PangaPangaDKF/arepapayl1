@@ -12,7 +12,8 @@ phone check of the Privado tab.
 - Fuji L1 node: `~/.avalanche-cli/bin/avalanchego/avalanchego-v1.15.3` with `local/arepapay-fuji` flags; RPC in `config/l1/arepapaybank.fuji.json`.
 - Public MVP: `scripts/mvp/serve-public.sh` (server :8788 + cloudflared quick tunnel); current URL in
   `backend/onboarding/data/public-url.fuji.txt`; `https://arepapay.site/probar/` follows `config/public/mvp-url.json`.
-  After a reboot: node + `serve-public.sh start` + `publish-url` (the quick-tunnel URL changes).
+  After a reboot: `bash scripts/arepapay.sh up` (node + service + tunnel + pointer; D-037). Status: `arepapay.sh status`.
+  Fixed address app.arepapay.site waits on the user's Cloudflare steps (`docs/HOSTING.md`, D-028).
 - eERC on Fuji (D-032): `config/l1/eerc.fuji.json`; auditor = gas station, key `~/.avalanche-cli/key/arepapay-fuji-auditor.bjj`
   (0600, testnet). Toolchain: `scripts/eerc/deploy.sh prepare|circuits|fuji` (clone in `~/.cache/arepapay/EncryptedERC`;
   `/tmp` scratch clones die on reboot). Circuit files in `app/circuits/` are gitignored: re-run `deploy.sh circuits` on a new machine.
