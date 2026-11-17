@@ -74,7 +74,8 @@ Tests: s1-verify 15/15, e2e 19/19, browser e2e 18/18. The user's goal ("function
 | D-029 | BRAIN | MVP app restyled with the original ArepaPay design (v1) | done |
 | D-030 | BRAIN | MVP app: minimal connected screen, v1 camera QR scanner, in-app payment alert | done |
 | D-031 | BRAIN | Merchant payment alerts over Telegram (app closed too) | done (needs user's bot token) |
-| D-032+ | | | Next free: reserve here first |
+| D-032 | BRAIN | Encrypted balances (eERC converter) on the Fuji L1 + Privado screen in the MVP dApp | in progress |
+| D-033+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-15 · BRAIN · Stage B DONE: L1 on Fuji (chain 77078), MVP deployed, public origin up, landing (D-024 via subagent) served at `/`. Gates: check.sh ALL PASSED; Fuji verify 15/15; e2e 19/19; browser 18/18. Needs the user for a stable domain (named tunnel / host login).
