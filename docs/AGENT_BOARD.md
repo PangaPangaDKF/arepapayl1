@@ -83,7 +83,8 @@ Tests: s1-verify 15/15, e2e 19/19, browser e2e 18/18. The user's goal ("function
 | D-034 | BRAIN | Cleaner app (no Detalles, no host URL), store types (carrito de perros / panadería / recarga de agua), every store a payment contact, MerchantPay (direct pay, same 0.5% fee), 3 demo stores | done |
 | D-035 | BRAIN | App design pass (design-critique skill): money as $, Spanish fading messages, no chooser tiles/pill, manual entry collapsed, AA footer | done |
 | D-036 | LANDING (run by a BRAIN subagent) | L8: simpler landing, less text (≤ 250 visible words) | in progress |
-| D-037+ | | | Next free: reserve here first |
+| D-037 | BRAIN | Hosting option A: one-command start (`scripts/arepapay.sh`), Windows logon autostart, fixed app.arepapay.site steps (closes D-028 when the user finishes Cloudflare) | in progress |
+| D-038+ | | | Next free: reserve here first |
 
 ## Log
 - 2026-11-16 · BRAIN · D-035 design pass (design-critique skill): $ money format, Spanish fading messages, no chooser tiles/pill, manual entry collapsed, AA footer. e2e 29/29, gate rc=0, live (static app files), pushed. LANDING: L8 open (simpler landing).
