@@ -25,9 +25,9 @@ const SOLUTION = [
     body: 'El comercio crea un cobro con QR y varias personas pagan una misma cuenta (Split Pay): por ejemplo, 5 $ = 3 + 2. Los fondos quedan retenidos hasta cubrir el total y entonces se cobran; si el cobro vence, cada pagador retira lo suyo.',
   },
   {
-    status: 'in-development',
+    status: 'testnet', note: 'MVP',
     title: 'Saldos y montos cifrados',
-    body: 'Con eERC de Avalanche, nadie de afuera ve saldos ni montos, y el dueño guarda su propia llave. Probado de punta a punta en red local; todavía no está en el MVP público.',
+    body: 'Con eERC de Avalanche, los saldos y los montos de un pago van cifrados en la cadena. En el MVP de prueba ya está la pestaña «Privado»: activas tu saldo privado, pasas dólares de prueba a privado, envías en privado y los sacas. Quién le paga a quién, y los montos que entran o salen del saldo privado, siguen siendo públicos; en esta prueba una cuenta del banco guarda la llave de auditoría y puede leer todos los montos. El tiempo de cifrado en el teléfono aún no se ha medido.',
   },
   {
     status: 'in-development',
@@ -214,7 +214,7 @@ export default function Home() {
               <table className="tbl">
                 <thead><tr><th scope="col">Qué</th><th scope="col">Quién lo ve (diseño)</th></tr></thead>
                 <tbody>
-                  <tr><td>Saldos y montos</td><td data-label="Quién lo ve">Nadie de afuera, y el banco tampoco: van cifrados. Solo el dueño, y la llave de auditoría en un caso concreto.</td></tr>
+                  <tr><td>Saldos y montos</td><td data-label="Quién lo ve">Van cifrados en la cadena: nadie de afuera ve saldos ni montos. Los lee el dueño con su llave y la llave de auditoría; en la prueba actual esa llave de auditoría la tiene una cuenta del banco y puede leer todos los montos (el reparto en multifirma es lo planeado).</td></tr>
                   <tr><td>Quién le pagó a quién</td><td data-label="Quién lo ve">El banco, como cualquier banco conoce las contrapartes de sus clientes. Nadie de afuera.</td></tr>
                   <tr><td>Datos personales</td><td data-label="Quién lo ve">Nunca en la cadena. Quedan en el banco; en la cadena solo hay nivel, vencimiento y un hash.</td></tr>
                 </tbody>
@@ -225,8 +225,10 @@ export default function Home() {
               <div className="card"><h3>Nunca una sola llave</h3><p>Auditoría y congelamiento en multifirmas lideradas por el banco (propuesta: 2 de 3). Cada uso queda registrado en la cadena. Estado: planeado.</p></div>
             </div>
             <p className="note">
-              En el MVP público de prueba los saldos todavía no están cifrados: quien use el acceso de prueba a la red puede ver
-              direcciones y montos de prueba.
+              En el MVP público de prueba los saldos privados ya van cifrados (pestaña «Privado», red de pruebas): los saldos y
+              los montos de un pago van cifrados en la cadena, pero quién le paga a quién —y los montos que entran o salen del
+              saldo privado— siguen siendo públicos. En esta prueba, una cuenta del banco guarda la llave de auditoría y puede
+              leer todos los montos; el reparto en multifirma (2 de 3) es lo planeado.
             </p>
           </div>
         </section>
@@ -276,7 +278,7 @@ export default function Home() {
               </article>
               <article className="stage" data-feature data-status="testnet">
                 <h3><span>B · Fuji</span><Status value="testnet" note="ahora" /></h3>
-                <p><b>Dinero de prueba.</b> La L1 corre en la red de pruebas de Avalanche con acceso por solicitud, dólares de prueba y Split Pay. Siguen en desarrollo los saldos cifrados en el MVP y el registro de ventas de los comercios.</p>
+                <p><b>Dinero de prueba.</b> La L1 corre en la red de pruebas de Avalanche con acceso por solicitud, dólares de prueba, Split Pay y saldos cifrados (eERC, pestaña «Privado»). Sigue en desarrollo el registro de ventas de los comercios.</p>
               </article>
               <article className="stage" data-feature data-status="planned">
                 <h3><span>C · Red principal</span><Status value="planned" /></h3>
@@ -337,7 +339,7 @@ export default function Home() {
             <details><summary>¿Hay un token o una moneda para invertir?</summary><p>No. ARPB es solo la moneda de gas de la red: no se vende, no tiene precio y el usuario no la compra. Los dólares de la cadena serán USDT/USDC reales bloqueados 1:1.</p></details>
             <details><summary>¿Quién controla la red?</summary><p>El banco opera los validadores y el único puente. Ver un caso o congelar una billetera requerirá varias firmas y quedará registrado.</p></details>
             <details><summary>¿Mis datos quedan en la cadena?</summary><p>No. La cadena guarda solo el nivel de verificación, el vencimiento y un hash. Los datos personales quedan en el banco.</p></details>
-            <details><summary>¿Las transacciones son privadas?</summary><p>En el diseño, los montos y los saldos van cifrados con eERC; eso no oculta quién le paga a quién al banco. En el MVP de prueba actual todavía no hay cifrado.</p></details>
+            <details><summary>¿Las transacciones son privadas?</summary><p>Los montos y los saldos van cifrados con eERC; eso no oculta quién le paga a quién, ni los montos que entran o salen del saldo privado. En el MVP de prueba actual ya funciona la pestaña «Privado»; en esta prueba una cuenta del banco guarda la llave de auditoría y puede leer todos los montos.</p></details>
             <details><summary>¿Por qué a veces el enlace de prueba no abre?</summary><p>El entorno de prueba corre en una PC del equipo. Si está apagada, la página te avisa; vuelve más tarde.</p></details>
           </div>
         </section>

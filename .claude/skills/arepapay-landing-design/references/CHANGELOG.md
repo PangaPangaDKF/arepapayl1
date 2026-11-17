@@ -1,5 +1,20 @@
 # arepapay-landing-design changelog (newest first)
 
+## 1.6 · 2026-11-16 · D-033 — privacy copy flipped to live eERC in the testnet MVP (L7)
+- `landing/app/page.js`: encrypted balances (eERC) were live in the public testnet MVP (D-032, e2e 24/24 LIVE, audit-view PASS),
+  but five places still said "todavía no está en el MVP público" / "todavía no hay cifrado". Flipped the #solucion "Saldos y
+  montos cifrados" line from `in-development` to `testnet` (Red de pruebas · MVP) and rewrote it, the #privacidad table row and
+  note, the Stage B paragraph and the FAQ answer.
+- Kept it honest (T7): the Privado tab exists and works, but who-pays-whom and the amounts entering/leaving the private balance
+  stay public, and in this test **one bank account holds the audit key and can read every private amount** (the multisig split is
+  Planned, S3); phone proof time is unmeasured (desktop ~5-9 s). All five sentences trace to D-032 + `app/README.md`.
+- Lesson: the T6 flip is only half the job. When a privacy feature goes live, the *overstatement* is the dangerous half — the old
+  table said "y el banco tampoco" (the bank can't see amounts), which became false the moment one bank account held the audit
+  key. Flipping a status label must be paired with re-reading every adjacent privacy sentence for a claim the new deployment
+  breaks, not just the one that now reads "live".
+- Lesson (supersedes 1.5's last lesson): ARCHITECTURE §3a's "testers see addresses never amounts" is now right for the public
+  (non-private) balances but still wrong for the audit key; the BRAIN-docs note in STATE §4 stays open.
+
 ## 1.5 · 2026-11-15 · D-024 — announcement + pitch page (L6), merchants as exchange houses (L4), Learn and remember (L5), Pages sub-path, probar/ link
 - Rewrote `landing/app/page.js` as the announcement: hero "ArepaPay: la cadena bancaria privada para micro y pequeños comercios",
   problem, six solution lines each with its own status, "Cómo probar" (testnet, MetaMask, chainId 77078 from config), merchants as

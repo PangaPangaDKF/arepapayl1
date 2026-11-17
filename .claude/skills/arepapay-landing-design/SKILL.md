@@ -5,7 +5,7 @@ description: Handoff skill for ArepaPay v2's landing page (landing/index.html) a
 
 # ArepaPay landing skill
 
-Version 1.5 · 2026-11-15 · D-024 (was 1.4, D-017) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
+Version 1.6 · 2026-11-16 · D-033 (was 1.5, D-024) · Lane: LANDING · Agent: `.claude/agents/arepapay-landing.md` · Seeded from
 DOGEON `dogeon-landing-design` 2.1 and master-method §4.6/§6.4. v0 built; gates `scripts/landing-{check,probe}.mjs` implemented and
 green; see §7 for the static-export playbook (build, preview, gate internals).
 

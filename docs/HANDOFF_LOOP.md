@@ -1,5 +1,22 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-16 · LANDING · Privacy copy now matches live eERC (D-033, L7)
+- Done: `landing/app/page.js` — encrypted balances were live in the public testnet MVP (D-032) but the copy still said "no está
+  en el MVP público / todavía no hay cifrado" in five places. Flipped the #solucion "Saldos y montos cifrados" line to `testnet`
+  (Red de pruebas · MVP) and rewrote it; updated the #privacidad table row + note, Stage B and the "¿Las transacciones son
+  privadas?" FAQ. Kept it honest (T7): the Privado tab works, but who-pays-whom and the amounts entering/leaving the private
+  balance stay public, one bank account holds the audit key and reads every private amount (multisig split = Planned, S3), and
+  phone proof time is unmeasured. Removed the now-false "y el banco tampoco". Closeout: skill v1.6 + CHANGELOG, STATE, DECISIONS
+  D-033.
+- Verified: `npm --prefix landing run build` rc 0; `node scripts/landing-check.mjs` 0 problems (15 features labeled, chainId 77078
+  from config, no forbidden words, 2 allow-listed hosts); `node scripts/landing-probe.mjs` 390/360 px nothing overflows;
+  `bash tests/check.sh` ALL CHECKS PASSED; 1280 px renders of #solucion and #privacidad read.
+- Next for BRAIN: rebuild + deploy the landing (arepapay.site / GitHub Pages Next static export) so the live page shows the
+  updated privacy copy. One doc follow-up (not landing's lane): ARCHITECTURE §3a "testers never see amounts" still needs the
+  audit-key caveat (one bank account can read every private amount) — see STATE §4.
+- Needs the user: nothing new. Still open from D-032: try the Privado tab on a phone in MetaMask and report the "prueba X s" time
+  (S2 §8), so the landing can later state a real phone proof time instead of "unmeasured".
+
 ## 2026-11-16 · BRAIN · Encrypted balances in the public MVP (D-032)
 - Shipped + proof: eERC converter on Fuji L1 + "Privado" tab; wallet e2e 24/24 on Fuji (registration, deposit, private send with a transfer proof in the page in 8.6 s, receiver auto-refresh, withdraw); `audit-view` PASS (bank key reads 3.00; a random key reads nothing); lib test 15/15 with snarkjs-verified proofs; gate rc=0 and V9 shown for the new stage.
 - Broke + rule: the S2 toolchain in /tmp died with the reboot (L-011, durable `~/.cache` + `deploy.sh prepare`); a hand-started test server lacked key env and wasted an e2e run (L-012, boot check).

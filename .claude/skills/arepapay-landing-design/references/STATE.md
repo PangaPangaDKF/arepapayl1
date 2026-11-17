@@ -1,6 +1,11 @@
 # Landing STATE (live facts, page map, open tasks)
 
-Updated 2026-11-15 (D-024, LANDING via BRAIN's delegated agent). LANDING owns this file.
+Updated 2026-11-16 (D-033, LANDING). LANDING owns this file.
+
+**D-033 (2026-11-16, L7): encrypted balances (eERC) are now LIVE in the public testnet MVP** (BRAIN's D-032: Privado tab, wallet
+e2e 24/24 LIVE, audit-view PASS). The #solucion "Saldos y montos cifrados" line is now `testnet`; #privacidad, Stage B and the FAQ
+say the Privado tab works, with the honest public parts (who-pays-whom + amounts in/out are public; one bank account holds the
+audit key; phone proof time unmeasured). See §3.
 
 ## 1. Live status
 **D-024 (2026-11-15): the page is now the announcement + pitch** (board L4, L5, L6). Next.js static export in `landing/`.
@@ -14,11 +19,11 @@ to the site. Pre-launch cleanup still open (§4): cleaned transparent logo, cris
 | Header | logo, 5 anchors (Solución, Probar, Economía, Plan, FAQ) | — | — |
 | Hero | announcement H1 "ArepaPay: la cadena bancaria privada para micro y pequeños comercios", CTA "Probar el MVP" → `probar/`, "Ver el plan" → #plan, disclaimer | PITCH title, BRAIN facts | testnet |
 | #problema | 3 cards | PITCH §1 | — |
-| #solucion | 6 lines, each with its own status | PITCH §2 + BRAIN status list | testnet ×2, in-development ×2, planned ×2 |
+| #solucion | 6 lines, each with its own status | PITCH §2 + BRAIN status list | testnet ×3 (incl. eERC, D-033), in-development ×1, planned ×2 |
 | #probar | 4 steps in MetaMask, chainId 77078, ARPB no value, PC-must-be-on note, e2e 19/19 + 18/18 | config/l1/arepapaybank.fuji.json, BRAIN 2026-11-15 | testnet |
 | #comercios | merchants as exchange houses: band rate, every sale recorded, no resale (R12); FxLedger built, not deployed | MERCHANT_FX §1–2, D-020 | in-development |
 | #reservas | 1:1 lock, invariant, no admin drain, bridge not built, issuer-freeze risk | PITCH §4 | planned |
-| #privacidad | who-sees-what table, freeze yes / reverse no, multisig 2-of-3 proposal; note: public MVP is NOT encrypted | PITCH §5, ARCH §3a | in-development |
+| #privacidad | who-sees-what table, freeze yes / reverse no, multisig 2-of-3 proposal; note: public MVP IS encrypted (Privado tab, eERC) but who-pays-whom + amounts in/out are public and one bank account holds the audit key (D-033) | PITCH §5, ARCH §3a, D-032 | in-development |
 | #economia | "sin token para invertir" + PITCH §6 table, SUPUESTO tags, pilot is a measured cost; testnet Split Pay fee = 0.5 % test money | PITCH §6, ECONOMICS §7, config/l1/mvp.fuji.json feeBps 50 | planned |
 | #plan | stages A/B/C + 4 known risks | PITCH §7–8 | in-development / testnet / planned |
 | #pedimos | asks to a bank (5) and merchants (3), CTA X @ArepaPay | PITCH §9 | — |
@@ -37,9 +42,11 @@ Removed in D-024: Recompensas (raffles/WiFi, D-014), old "Cómo funciona", featu
   value), Split Pay QR (funds held until fully covered, then captured; expired → each payer withdraws). e2e 19/19 scripted +
   18/18 through the real UI. MetaMask mobile in-app browser or desktop MetaMask; the page adds the network itself.
 - Testnet Split Pay fee is **50 bps** (`config/l1/mvp.fuji.json` feeBps), test money; the pilot recommendation is 0 % (ECONOMICS §7).
-- Status: eERC = in development (local only, not in the public MVP: **public MVP balances/amounts are NOT encrypted**); FxLedger =
-  in development (99 tests, not deployed); bridge = planned; multisig councils = planned. Testnet can be reset; the test
-  environment runs on the team PC and can be offline.
+- Status: **eERC = LIVE in the public testnet MVP (D-032/D-033): "Privado" tab (activate, Pasar a privado, Enviar privado, Pasar a
+  saldo normal); saldos + montos cifrados on chain, but who-pays-whom and the amounts entering/leaving the private balance are
+  PUBLIC, and in this test one bank account holds the audit key and reads every private amount (multisig split = Planned, S3);
+  phone proof time unmeasured, desktop ~5-9 s.** FxLedger = in development (99 tests, not deployed); bridge = planned; multisig
+  councils = planned. Testnet can be reset; the test environment runs on the team PC and can be offline.
 - v1 history: a Fuji testnet MVP with merchant payments, raffle tickets and WiFi minutes existed in 2026-03 (FACT in
   `docs/research/arepapay_ground_truth.md` §2). Its Vercel URL is **not verified live**; don't link it.
 - v1 did NOT have working KYC, encryption, fees or banking features (ground truth §4). Never claim them.
@@ -71,12 +78,13 @@ Removed in D-024: Recompensas (raffles/WiFi, D-014), old "Cómo funciona", featu
   (Bs→USDT via a trusted local merchant, rewards from fees) is a Planned/In-dev truth source only via `docs/PLAN.md`, not their words.
 
 ## 4. Open tasks
-L1–L6 done (L4/L5/L6 in D-024). Remaining:
+L1–L7 done (L4/L5/L6 in D-024; L7 = eERC-live privacy copy in D-033). Remaining:
 - **Pre-launch cleanup (LANDING):** cleaned transparent logo + crisp wordmark; real 1200×630 OG image; `favicon.ico`.
 - **BRAIN:** publish `mvp-url.json` (`{"url":"https://…","updated":"…"}`) at the site root next to `index.html` on every tunnel
   restart; build Pages with `NEXT_BASE_PATH=/arepapay-site`.
-- **Flip labels as things land (T6):** eERC in the MVP → #solucion line 3 + FAQ; FxLedger deployed → #comercios + line 4; bridge
+- **Flip labels as things land (T6):** eERC in the MVP → done (D-033); FxLedger deployed → #comercios + line 4; bridge
   → #reservas; multisigs → #privacidad. Re-run the gates after each flip.
-- **For BRAIN's docs:** ARCHITECTURE §3a says testers can read addresses "never amounts"; with the current unencrypted MVP they
-  can read test amounts too. The page states it honestly; the doc line needs the same caveat.
+- **For BRAIN's docs (still open):** ARCHITECTURE §3a says testers can read addresses "never amounts". For the public (non-private)
+  MVP balance that remains true, but the eERC audit key (one bank account, D-032) *can* read every private amount. The doc line
+  needs that caveat. The landing states it honestly.
 - Build + probe recipes: RUNBOOK §3–§6.

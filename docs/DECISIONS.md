@@ -2,6 +2,24 @@
 
 Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD.md` before writing it anywhere.
 
+### D-033 · 2026-11-16 · LANDING: privacy copy flipped to live eERC in the testnet MVP (L7) (Claude Opus 4.8, LANDING lane)
+- What: `landing/app/page.js` — encrypted balances were out of date. The #solucion "Saldos y montos cifrados" line went from
+  `in-development` ("todavía no está en el MVP público") to `testnet` ("Red de pruebas · MVP") and was rewritten; the #privacidad
+  table row "Saldos y montos", the #privacidad note, the Stage B paragraph and the "¿Las transacciones son privadas?" FAQ answer
+  were all updated to say the Privado tab is live in the test MVP.
+- Why: D-032 shipped eERC (converter mode) in the public testnet MVP (wallet e2e 24/24 LIVE, `audit-view` PASS); task L7. T6
+  requires the label to match what is live; T1/T2 require every claim to trace to code/D-entry.
+- Honesty (T7): the copy keeps the public parts explicit — who pays whom, and the amounts entering/leaving the private balance,
+  stay public; in this test one bank account holds the audit key and can read every private amount (the multisig split is Planned,
+  S3); phone proof time is unmeasured (desktop ~5-9 s). Removed the old "y el banco tampoco" claim, which the single-account audit
+  key makes false. Truth sources: D-032, `app/README.md` "Saldo privado", `config/l1/eerc.fuji.json`.
+- Alternatives rejected: leaving #privacidad section status at `in-development` only (kept — multisig/freeze oversight is still
+  Planned, so the section as a whole is not live); claiming full privacy from the bank (false under the single audit key).
+- Verify: `npm --prefix landing run build` rc 0; `node scripts/landing-check.mjs` 0 problems (15 feature sections labeled, chainId
+  77078 from config, no forbidden words); `node scripts/landing-probe.mjs` 390/360 px nothing overflows; `bash tests/check.sh`
+  ALL CHECKS PASSED; 1280 px renders of #solucion and #privacidad read.
+- Commit: this commit (landing-lane + shared-doc paths only; BRAIN owns deploy).
+
 ### D-032 · 2026-11-16 · Encrypted balances (eERC converter) on the Fuji L1 + "Privado" tab in the MVP dApp (Claude Opus 5.5, BRAIN lane)
 - What: Ava Labs EncryptedERC@8dc98cd deployed in converter mode over the MVP tUSD on chain 77078 (`config/l1/eerc.fuji.json`,
   EncryptedERC `0x384f185983Ac8DB53a82Ea06D1C1839a2CfF19BC`, Registrar `0x39c7Ef2a263172c951d4b7bbceB24A7A3e51Ae58`); the
