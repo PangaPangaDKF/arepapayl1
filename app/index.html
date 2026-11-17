@@ -45,8 +45,8 @@
       <button id="btnRequest" class="btn btn-ghost" type="button">Solicitar acceso</button>
     </div>
 
-    <details class="more acct-more">
-      <summary>Detalles</summary>
+    <!-- D-034: no visible "Detalles"; kept hidden for the tests and the saved Bs rate -->
+    <div class="hidden" aria-hidden="true">
       <dl class="info">
         <div><dt>Dirección</dt><dd class="mono" id="addr">-</dd></div>
         <div><dt>Red</dt><dd id="chain">-</dd></div>
@@ -57,7 +57,7 @@
         <span class="label">Tasa Bs/USD</span>
         <input id="rate" class="input input-sm" type="number" inputmode="decimal" min="0" step="0.01" value="0">
       </label>
-    </details>
+    </div>
   </section>
 
   <!-- Aún sin modo elegido -->
@@ -68,6 +68,25 @@
 
   <!-- Comercio -->
   <section id="merchant" class="card hidden">
+    <div id="myStore" class="my-store">
+      <div id="storeView" class="store-row hidden">
+        <span id="storeIco" class="store-ico" aria-hidden="true"></span>
+        <span class="store-txt"><b id="storeName"></b><span id="storeCat" class="hint"></span></span>
+        <button id="btnStoreEdit" class="btn btn-ghost btn-auto btn-sm" type="button">Editar</button>
+      </div>
+      <div id="storeForm" class="hidden">
+        <h2>Mi negocio</h2>
+        <p class="hint">Tu negocio aparece en la lista de comercios de todos los clientes.</p>
+        <div class="cats" role="radiogroup" aria-label="Tipo de negocio">
+          <button class="cat" type="button" role="radio" aria-checked="false" data-cat="perros"></button>
+          <button class="cat" type="button" role="radio" aria-checked="false" data-cat="panaderia"></button>
+          <button class="cat" type="button" role="radio" aria-checked="false" data-cat="agua"></button>
+          <button class="cat" type="button" role="radio" aria-checked="false" data-cat="otro"></button>
+        </div>
+        <label class="field"><span class="sr-only">Nombre del negocio</span><input id="storeNameIn" class="input" type="text" maxlength="40" autocomplete="off" placeholder="Nombre del negocio"></label>
+        <button id="btnStoreSave" class="btn" type="button">Guardar negocio</button>
+      </div>
+    </div>
     <div id="newCharge">
       <h2>Cobrar</h2>
       <label class="field">
@@ -105,6 +124,20 @@
   <!-- Cliente -->
   <section id="customer" class="card hidden">
     <h2>Pagar</h2>
+    <div id="contacts" class="contacts" aria-label="Comercios"></div>
+    <div id="cPay" class="c-pay hidden">
+      <div class="store-row">
+        <span id="cIco" class="store-ico" aria-hidden="true"></span>
+        <span class="store-txt"><b id="cName"></b><span id="cCat" class="hint"></span></span>
+        <button id="btnCClose" class="btn btn-ghost btn-auto btn-sm" type="button" aria-label="Cerrar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <label class="field">
+        <span class="sr-only">Monto a pagar</span>
+        <span class="money"><input id="cAmt" class="input input-big" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"><span class="money-unit">USD</span></span>
+      </label>
+      <p id="cFee" class="hint"></p>
+      <button id="btnCPay" class="btn btn-big" type="button">Pagar</button>
+    </div>
     <button id="btnScan" class="btn btn-big" type="button"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M7 12h10"/></svg> Escanear QR</button>
     <p id="scanMsg" class="inline-err" role="alert"></p>
     <p class="divider"><span>o escribe el número o pega el enlace</span></p>
@@ -124,8 +157,8 @@
       <div class="label">Total</div>
       <div class="intent-amount" id="iTotal"></div>
     </div>
-    <details class="more">
-      <summary>Detalles del cobro</summary>
+    <p id="iSummary" class="intent-sum"></p>
+    <div class="hidden" aria-hidden="true">
       <dl class="info">
         <div><dt>Cubierto</dt><dd id="iCovered"></dd></div>
         <div><dt>Falta</dt><dd id="iRemaining"></dd></div>
@@ -135,7 +168,7 @@
         <div><dt>Vence</dt><dd id="iExpiry"></dd></div>
         <div><dt>Mi parte</dt><dd id="iMine"></dd></div>
       </dl>
-    </details>
+    </div>
     <div id="payBox" class="pay-box">
       <label class="field">
         <span class="label">Tu pago</span>
@@ -248,5 +281,6 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
 <script src="app.js"></script>
 <script src="private.js"></script>
+<script src="stores.js"></script>
 </body>
 </html>

@@ -153,6 +153,10 @@ async function refreshIntent() {
     $('iPayers').textContent = `${it.payerCount}/${it.maxPayers}${it.requireConfirm ? `, confirmados ${it.confirmedCount}` : ''}`;
     $('iExpiry').textContent = new Date(Number(it.expiry) * 1000).toLocaleTimeString();
     $('iMine').textContent = usd(S.mine);
+    // the one visible detail line (D-034): the fee is always shown before paying
+    $('iSummary').textContent = state === 1 || state === 2
+      ? `Comisión ${usd(fee)} (${Number(it.feeBps) / 100}%) · Falta ${usd(remaining)}`
+      : `Comisión ${usd(fee)} · Comercio recibe ${usd(it.total - fee)}`;
     const canPay = state === 1 && !expired && !isMerchant;
     $('payBox').classList.toggle('hidden', !canPay);
     if (canPay && !$('share').value) $('share').value = ethers.formatUnits(remaining, S.cfg.testUsdDecimals);
@@ -176,6 +180,7 @@ async function connect() {
     S.account = accs[0] ? ethers.getAddress(accs[0]) : null;
     S.chainId = Number(await S.eth.request({ method: 'eth_chainId' }));
     await refreshAccount(); await refreshIntent();
+    if (typeof loadStores === 'function') loadStores();   // my store + contacts depend on the account (D-034)
   } catch (e) { err(e); }
 }
 
@@ -434,7 +439,8 @@ function beep() {
 }
 function paidAlert(id, net, total) {
   $('paidAmount').textContent = usd(total);
-  $('paidSub').textContent = `Cobro #${id} · recibes ${usd(net)}${bs(total)}`;
+  const what = String(id).startsWith('directo') ? 'Pago directo' : `Cobro #${id}`;   // D-034: contact payments too
+  $('paidSub').textContent = `${what} · recibes ${usd(net)}${bs(total)}`;
   $('paidAlert').classList.remove('hidden');
   try { beep(); } catch {}
   try { if (navigator.vibrate && navigator.userActivation?.hasBeenActive !== false) navigator.vibrate([200, 100, 200]); } catch {}
@@ -496,6 +502,7 @@ async function boot() {
     $('netinfo').textContent = `Red: ${S.cfg.chainName} · comisión ${S.cfg.feeBps / 100}%`;   // no host URL on screen (user, 2026-11-16)
     window.__arepapayConfigLoaded = true;
     if (typeof initPrivate === 'function') initPrivate();   // app/private.js (D-032)
+    if (typeof initStores === 'function') initStores();     // app/stores.js (D-034)
   } catch (e) {
     $('netinfo').textContent = 'No se pudo cargar la configuración.';
     return err(`No se pudo leer la configuración desde ${API}/config/${NET} (${e.message}). ¿Está corriendo el servicio de onboarding?`);
@@ -504,7 +511,7 @@ async function boot() {
   S.eth = pickProvider();
   if (S.eth) {
     S.eth.on?.('chainChanged', (c) => { S.chainId = Number(c); refreshAccount(); refreshIntent(); });
-    S.eth.on?.('accountsChanged', (a) => { S.account = a[0] ? ethers.getAddress(a[0]) : null; refreshAccount(); refreshIntent(); if (typeof privAccountChanged === 'function') privAccountChanged(); });
+    S.eth.on?.('accountsChanged', (a) => { S.account = a[0] ? ethers.getAddress(a[0]) : null; refreshAccount(); refreshIntent(); if (typeof privAccountChanged === 'function') privAccountChanged(); if (typeof storesAccountChanged === 'function') storesAccountChanged(); });
     try {   // silent: already-authorized accounts only, no popup (N7)
       const accs = await S.eth.request({ method: 'eth_accounts' });
       S.account = accs[0] ? ethers.getAddress(accs[0]) : null;
@@ -518,5 +525,6 @@ async function boot() {
   const qi = Q.get('intent');
   if (qi && /^\d+$/.test(qi)) { S.intentId = qi; $('intentId').value = qi; showTab('customer'); startPolling(); }
   refreshAccount(); refreshIntent();
+  if (typeof loadStores === 'function') loadStores();
 }
 boot();

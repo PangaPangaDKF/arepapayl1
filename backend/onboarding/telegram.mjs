@@ -14,7 +14,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes } from 'node:crypto';
 import { createPublicClient, http, parseAbiItem, verifyMessage, formatUnits, getAddress } from 'viem';
-import { NET, loadConfig, normAddress } from './lib.mjs';
+import { NET, REPO, loadConfig, normAddress } from './lib.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const TOKEN_FILE = process.env.TELEGRAM_TOKEN_FILE || join(homedir(), '.arepapay-telegram.token');
@@ -114,6 +114,10 @@ async function watchEscrow() {
   const sym = cfg.mvp.testUsdSymbol;
   const authEv = parseAbiItem('event Authorized(uint256 indexed id, address indexed payer, uint256 amount, uint256 covered)');
   const capEv = parseAbiItem('event Captured(uint256 indexed id, address indexed merchant, uint256 net, uint256 fee)');
+  // D-034: payments to a store from the contact list (MerchantPay), when deployed on this net
+  const mpFile = join(REPO, 'config', 'l1', `merchantpay.${NET}.json`);
+  const mp = existsSync(mpFile) ? getAddress(JSON.parse(readFileSync(mpFile, 'utf8')).merchantPay) : null;
+  const paidEv = parseAbiItem('event MerchantPaid(uint256 indexed id, address indexed payer, address indexed merchant, uint256 amount, uint256 net, uint256 fee)');
   const intentsFn = parseAbiItem('function intents(uint256) view returns (address merchant, uint64 expiry, uint16 feeBps, uint8 maxPayers, uint8 payerCount, uint8 confirmedCount, bool requireConfirm, uint8 state, uint256 total, uint256 covered)');
   for (;;) {
     try {
@@ -123,9 +127,10 @@ async function watchEscrow() {
       let from = s.lastBlock == null ? head + 1n : BigInt(s.lastBlock) + 1n;
       while (from <= head) {
         const to = from + MAX_RANGE - 1n < head ? from + MAX_RANGE - 1n : head;
-        const [auth, cap] = await Promise.all([
+        const [auth, cap, direct] = await Promise.all([
           client.getLogs({ address: escrow, event: authEv, fromBlock: from, toBlock: to }),
           client.getLogs({ address: escrow, event: capEv, fromBlock: from, toBlock: to }),
+          mp ? client.getLogs({ address: mp, event: paidEv, fromBlock: from, toBlock: to }) : [],
         ]);
         const links = readStore().links;
         for (const l of auth) {
@@ -137,6 +142,10 @@ async function watchEscrow() {
         for (const l of cap) {
           const chats = links[getAddress(l.args.merchant)] || [];
           for (const c of chats) await send(c, `Cobrado: cobro #${l.args.id}, recibiste ${formatUnits(l.args.net, dec)} ${sym} (comisión ${formatUnits(l.args.fee, dec)}). (Red de prueba.)`);
+        }
+        for (const l of direct) {
+          const chats = links[getAddress(l.args.merchant)] || [];
+          for (const c of chats) await send(c, `Te pagaron ${formatUnits(l.args.amount, dec)} ${sym} directo a tu negocio; recibiste ${formatUnits(l.args.net, dec)} ${sym} (comisión ${formatUnits(l.args.fee, dec)}). (Red de prueba, sin dinero real.)`);
         }
         const st = readStore(); st.lastBlock = Number(to); writeStore(st);
         from = to + 1n;

@@ -1,5 +1,11 @@
 # arepapay-brain changelog and lessons (newest first)
 
+## 1.2 · 2026-11-16 · D-034 — store contacts
+- Lesson: an unanchored review subagent (code only, no conclusions) found a PROVED low (L-1, stranded funds when the payee is a
+  contract of the same flow). Rule kept: every new money contract gets that review before its first deploy, and its PoC becomes
+  a repo test before the fix.
+- Lesson: a new money path that reuses an existing fee should read it from the same source (here the escrow) instead of a copy.
+
 ## 1.1 · 2026-11-16 · D-032 — encrypted balances in the MVP
 - Lesson (L-011): durable toolchains go in `~/.cache/arepapay` via a script with a `prepare` step, never in a scratch `/tmp` folder.
 - Lesson (L-012): services check their keys at boot; start Fuji test servers with the same env as `serve-public.sh`.

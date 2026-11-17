@@ -47,6 +47,19 @@ The network button shows only on the wrong chain, "Solicitar acceso" only while 
   "¡Pago recibido!" overlay with the amount, a WebAudio beep (unlocked by the merchant's earlier tap) and
   `navigator.vibrate`; once per charge, dismiss with "Listo", the backdrop or Escape.
 
+## Stores as payment contacts (D-034)
+- **Cobrar → Mi negocio:** pick a type (Carrito de perros, Panadería, Recarga de agua, Otro) and a name; the wallet signs it
+  and the service stores it (`POST /stores`: signature, ≤10 min old, wallet allowlisted, 2-40 plain characters). Edit any time.
+- **Pagar → Comercios:** every registered store is already a contact, plus three demo stores (tag "demo", they pay to the
+  bank's gas-station test wallet). Tap one, type the amount, the fee line shows before paying, "Pagar" = approve (first time)
+  + `MerchantPay.pay(store, amount, feeShown)`: the store gets amount − 0.5 %, the fee router the fee, in one transaction.
+  The fee is the SplitPayEscrow's own fee (one fee, one admin knob); `feeShown` as the cap means a fee change can only make the
+  payment fail, never overcharge.
+- The store gets "¡Pago recibido!" (MerchantPaid logs, polled every 4 s) and the Telegram alert when linked.
+- Deploy: `bash scripts/mvp/deploy-merchantpay.sh fuji` → `config/l1/merchantpay.fuji.json`.
+- Screen (D-034): no "Detalles" on the account card (fields kept hidden for the tests; the Bs rate input is hidden too), no
+  host URL anywhere; a charge shows one line "Comisión · Falta".
+
 ## Saldo privado: encrypted balances (eERC, D-032)
 Third tab **Privado**. Uses Ava Labs' EncryptedERC (converter mode, `ava-labs/EncryptedERC@8dc98cd`) over the same tUSD.
 1. **Ver mi saldo privado**: the wallet signs a fixed message (the official eERC SDK message); the page derives the

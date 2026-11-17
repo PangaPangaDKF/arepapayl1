@@ -1,5 +1,12 @@
 # ArepaPay v2 handoff loop (newest first)
 
+## 2026-11-16 · BRAIN · Store contacts + cleaner app (D-034)
+- Shipped + proof: MerchantPay (Fuji), store directory + demo stores, Mi negocio / Comercios UI, direct-payment alerts; forge 117/117; e2e 29/29; review subagent found L-1 (stranded funds when paying the contract/escrow/token), fixed test-first.
+- Broke + rule: nothing broke; the review caught a real low before deploy, so money contracts keep getting an unanchored review before any deploy.
+- Read first next time: `app/README.md` "Stores as payment contacts", `config/l1/merchantpay.fuji.json`, D-034 "Accepted".
+- Waits on the user: UI references for payment apps (redesign); phone proof time (Privado); D-028; D-031 token; U1–U3.
+- Prompt/skill improvement: STATE lists MerchantPay and the store directory.
+
 ## 2026-11-16 · LANDING · Privacy copy now matches live eERC (D-033, L7)
 - Done: `landing/app/page.js` — encrypted balances were live in the public testnet MVP (D-032) but the copy still said "no está
   en el MVP público / todavía no hay cifrado" in five places. Flipped the #solucion "Saldos y montos cifrados" line to `testnet`

@@ -9,6 +9,7 @@
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join, normalize, extname } from 'node:path';
+import { CATEGORIES, listStores, saveStore } from './stores.mjs';
 import { NET, REPO, addRequest, approve, checkSigners, loadConfig, normAddress, publicConfig, readStore, roleOf } from './lib.mjs';
 import { startTelegram, createLink, telegramInfo, linkMessage } from './telegram.mjs';
 
@@ -133,6 +134,15 @@ createServer(async (req, res) => {
       if (!rateOk(clientIp(req))) return send(req, res, 429, { error: 'rate limited' });
       try {
         return send(req, res, 200, await createLink(JSON.parse(await readBody(req, 2048))));
+      } catch (e) { return send(req, res, e.code || 400, { error: e.code ? e.message : 'bad request' }); }
+    }
+
+    // store directory (D-034): every store is a contact for payments
+    if (req.method === 'GET' && url.pathname === '/stores') return send(req, res, 200, { stores: listStores(), categories: CATEGORIES });
+    if (req.method === 'POST' && url.pathname === '/stores') {
+      if (!rateOk(clientIp(req))) return send(req, res, 429, { error: 'rate limited' });
+      try {
+        return send(req, res, 200, await saveStore(JSON.parse(await readBody(req, 2048))));
       } catch (e) { return send(req, res, e.code || 400, { error: e.code ? e.message : 'bad request' }); }
     }
 

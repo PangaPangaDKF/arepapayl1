@@ -16,6 +16,8 @@ phone check of the Privado tab.
 - eERC on Fuji (D-032): `config/l1/eerc.fuji.json`; auditor = gas station, key `~/.avalanche-cli/key/arepapay-fuji-auditor.bjj`
   (0600, testnet). Toolchain: `scripts/eerc/deploy.sh prepare|circuits|fuji` (clone in `~/.cache/arepapay/EncryptedERC`;
   `/tmp` scratch clones die on reboot). Circuit files in `app/circuits/` are gitignored: re-run `deploy.sh circuits` on a new machine.
+- Store contacts (D-034): MerchantPay `config/l1/merchantpay.fuji.json` (fee = escrow fee); directory `backend/onboarding/data/stores.fuji.json`
+  (gitignored) via `GET/POST /stores`; demo stores pay to the gas-station wallet.
 
 ## Verified facts (2026-11-14, BRAIN re-checked the research agent's claims)
 - Live v1 L1: chain 13370, Subnet-EVM v0.8.0, local only (`~/.avalanche-cli/subnets/ArepaPay/genesis.json`), genesis has only

@@ -305,6 +305,69 @@ if (TG_MOCK) await step('telegram: merchant got "Te pagaron" and "Cobrado" alert
   return t.filter((x) => !/^Listo/.test(x)).map((x) => x.slice(0, 48)).join(' | ');
 });
 
+// ---------------------------------------------------------------- stores as payment contacts (D-034), when MerchantPay is deployed
+// merchant registers "Panadería La Esquina" (signed); alice sees it (plus the 3 demo stores) in Pagar, pays 2 tUSD with the
+// fee shown; chain: merchant +1.99, fee router +0.01, alice -2; the merchant gets "¡Pago recibido!"; alice pays a demo store 1.
+if (cfg.merchantPay && process.env.STORES !== '0') {
+  const STORE = `Panadería La Esquina ${merchant.address.slice(2, 6)}`;
+  const feeRouter = await (async () => '0x' + (await rpc('eth_call', [{ to: cfg.merchantPay, data: '0xf29ebf61' }, 'latest'])).slice(26))().catch(() => null);
+  await step('merchant: register the store (type + name, signed)', async () => {
+    const p = merchant.page;
+    await p.click('#tabMerchant');
+    await p.waitFor(`!document.getElementById('storeForm').classList.contains('hidden')`, 15000);
+    await p.click('.cat[data-cat="panaderia"]');
+    await p.type('#storeNameIn', STORE);
+    await p.click('#btnStoreSave');
+    await waitText(merchant, 'storeName', new RegExp(STORE), 30000);
+    await shot(merchant, 'store-registered');
+    return `${await $text(merchant, 'storeName')} / ${await $text(merchant, 'storeCat')}`;
+  }, [merchant]);
+  await step('alice: Pagar lists the store and the 3 demo stores', async () => {
+    const p = alice.page;
+    await p.goto(pageUrl);
+    await p.waitFor('!!window.__arepapayConfigLoaded', 60000);
+    await waitText(alice, 'addr', new RegExp(alice.address), 15000);
+    await p.click('#tabCustomer');
+    const names = await p.waitFor(`(() => { const t = [...document.querySelectorAll('#contacts .contact b')].map((b) => b.textContent); return t.length >= 4 ? JSON.stringify(t) : false; })()`, 30000);
+    const list = JSON.parse(names);
+    for (const n of [STORE, 'Carrito de perros', 'Panadería', 'Recarga de agua']) if (!list.includes(n)) throw new Error(`missing "${n}" in ${names}`);
+    if ((await p.evaluate(`document.querySelectorAll('#contacts .tag').length`)) < 3) throw new Error('demo tags missing');
+    await shot(alice, 'contacts');
+    return `${list.length} contacts`;
+  }, [alice]);
+  await step('alice: pay the store 2 tUSD from the contact list (fee shown first)', async () => {
+    const p = alice.page;
+    const [aB, mB, fB] = await Promise.all([usdBalance(alice.address), usdBalance(merchant.address), feeRouter ? usdBalance(feeRouter) : 0n]);
+    await p.evaluate(`[...document.querySelectorAll('#contacts .contact')].find((b) => b.querySelector('b').textContent === ${JSON.stringify(STORE)}).click()`);
+    await p.waitFor(`!document.getElementById('cPay').classList.contains('hidden')`, 10000);
+    await p.type('#cAmt', '2');
+    const fee = await waitText(alice, 'cFee', '/Comisión 0\\.01 tUSD \\(0\\.5%\\)/', 10000);
+    await p.click('#btnCPay');
+    await waitText(alice, 'msg', '/Pagaste 2\\.0 tUSD/', TX_TIMEOUT);
+    const [aA, mA, fA] = await Promise.all([usdBalance(alice.address), usdBalance(merchant.address), feeRouter ? usdBalance(feeRouter) : 0n]);
+    if (aB - aA !== U(2) || mA - mB !== U(1.99) || (feeRouter && fA - fB !== U(0.01))) throw new Error(`alice -${fmt(aB - aA)} merchant +${fmt(mA - mB)} fee +${fmt(fA - fB)}`);
+    await shot(alice, 'contact-paid');
+    return `${fee}; alice -2, merchant +1.99, fee router +0.01`;
+  }, [alice]);
+  await step('merchant: "¡Pago recibido!" for the direct payment', async () => {
+    await merchant.page.waitFor(`!document.getElementById('paidAlert').classList.contains('hidden') && /Pago directo/.test(document.getElementById('paidSub').textContent)`, 30000);
+    const t = `${await $text(merchant, 'paidAmount')} · ${await $text(merchant, 'paidSub')}`;
+    await shot(merchant, 'direct-alert');
+    await merchant.page.click('#btnPaidOk');
+    return t;
+  }, [merchant]);
+  await step('alice: pay the demo "Recarga de agua" 1 tUSD', async () => {
+    const p = alice.page;
+    const before = await usdBalance(alice.address);
+    await p.evaluate(`[...document.querySelectorAll('#contacts .contact')].find((b) => b.querySelector('b').textContent === 'Recarga de agua').click()`);
+    await p.type('#cAmt', '1');
+    await p.click('#btnCPay');
+    await waitText(alice, 'msg', '/Pagaste 1\\.0 tUSD/', TX_TIMEOUT);
+    if (before - (await usdBalance(alice.address)) !== U(1)) throw new Error('alice not charged 1');
+    return 'paid';
+  }, [alice]);
+}
+
 // ---------------------------------------------------------------- encrypted balances (D-032), when the net has eERC
 // alice + merchant unlock (personal_sign -> key) and register (registration proof); alice moves 10 tUSD to private, sends
 // 3 privately to the merchant (transfer proof in the page); the merchant sees 3.00 and moves 1 back to normal (withdraw

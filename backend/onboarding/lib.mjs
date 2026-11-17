@@ -44,8 +44,18 @@ export function publicConfig(net) {
     feeBps: c.mvp.feeBps,
     deployBlock: c.mvp.deployBlock,
     eerc: eercPublic(net, c),
+    merchantPay: merchantPayPublic(net, c),
     testnet: true,
   };
+}
+
+/** Pay a store from the contact list (D-034): config/l1/merchantpay.<net>.json, or null when not deployed. */
+function merchantPayPublic(net, c) {
+  const p = join(REPO, 'config', 'l1', `merchantpay.${net}.json`);
+  if (!existsSync(p)) return null;
+  const m = readJson(p);
+  if (Number(m.chainId) !== Number(c.chain.chainId) || m.escrow.toLowerCase() !== c.mvp.splitPayEscrow.toLowerCase()) return null;
+  return m.merchantPay;
 }
 
 /** Encrypted balances (D-032): the generated config/l1/eerc.<net>.json, or null when not deployed on that net. */

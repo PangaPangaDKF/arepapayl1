@@ -20,6 +20,32 @@ Template: master-method TEMPLATES §1. Reserve the D-number on `docs/AGENT_BOARD
   ALL CHECKS PASSED; 1280 px renders of #solucion and #privacidad read.
 - Commit: this commit (landing-lane + shared-doc paths only; BRAIN owns deploy).
 
+### D-034 · 2026-11-16 · Stores as payment contacts (MerchantPay, same 0.5 % fee) + store types + cleaner app (Claude Opus 5.5, BRAIN lane)
+- What: `contracts/src/MerchantPay.sol` (pay a store in one call: store gets amount − fee, fee router the fee; token, router and
+  fee read from the live SplitPayEscrow; payer's `maxFeeBps` cap; MIN_AMOUNT 0.01; no owner, holds nothing) deployed on Fuji
+  `0x4db4A0EDD355d039f6beec04020677BF67aB478b` (`config/l1/merchantpay.fuji.json`, `scripts/mvp/deploy-merchantpay.sh`).
+  Store directory `backend/onboarding/stores.mjs` (`GET/POST /stores`; wallet-signed, ≤10 min, allowlisted wallets only,
+  2-40 plain characters, types perros / panaderia / agua / otro) + 3 demo stores paying to the gas-station test wallet.
+  App: Cobrar "Mi negocio", Pagar "Comercios" (every store is a contact; fee line before paying), "¡Pago recibido!" and
+  Telegram alerts for direct payments; account "Detalles" removed, charge details reduced to one "Comisión · Falta" line,
+  no host URL on screen (4901dd3).
+- Why: user: "i want it more clean and remove the details too, also i want a carros de perros, panaderia y recarga de agua
+  option, every single merchant store should be already added as a contact for payments"; asked (AskUserQuestion) and chose
+  "through the escrow, 0.5 % fee" and "3 demo stores labelled demo".
+- Tool: arepapay-solidity workflow (failing tests first), independent review subagent (nothing above low; L-1 PROVED: paying
+  the contract itself, the escrow or the token stranded `net` → fixed test-first), master-method M0.
+- Alternatives rejected: a function added to SplitPayEscrow (touches an audited contract and needs a redeploy that drops open
+  charges); a plain transfer with no fee (fee bypass, breaks D-021 economics); stores on chain (gas + PII-free names don't need it now).
+- Accepted (review): USDC/USDT blacklisting of the fee router would stop payments in both contracts (immutable router; real
+  stablecoins are Phase 8); fee changes are immediate (timelock is N1 governance work on the escrow); outgoing transfers are not
+  balance-checked (fine for 6-dp test token and USDC/USDT).
+- Verify: forge 117/117 (MerchantPay 16 unit/fuzz + 2 invariants x 8192 calls); mutations caught (delivery check removed → 1
+  red; fee skewed → 3 red; L-1 test red before the fix); store API refusals (403 not allowlisted, 401 forged / altered name,
+  400 stale / bad type / control chars); wallet e2e 29/29 on a Fuji test instance (store registered; 4 contacts; pay 2 → alice
+  −2, store +1.99, fee router +0.01; "Pago directo" alert; demo store paid); screenshots read; `bash tests/check.sh` rc=0.
+- Notes: the Bs rate input is hidden with Detalles (Bs amounts show only if a rate was saved earlier).
+- Commit: this commit.
+
 ### D-032 · 2026-11-16 · Encrypted balances (eERC converter) on the Fuji L1 + "Privado" tab in the MVP dApp (Claude Opus 5.5, BRAIN lane)
 - What: Ava Labs EncryptedERC@8dc98cd deployed in converter mode over the MVP tUSD on chain 77078 (`config/l1/eerc.fuji.json`,
   EncryptedERC `0x384f185983Ac8DB53a82Ea06D1C1839a2CfF19BC`, Registrar `0x39c7Ef2a263172c951d4b7bbceB24A7A3e51Ae58`); the
